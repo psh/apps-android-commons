@@ -1,0 +1,45 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/app_shortcut_camera"
+        android:shortcutDisabledMessage="@string/menu_from_camera"
+        android:shortcutId="camera"
+        android:shortcutLongLabel="@string/menu_from_camera"
+        android:shortcutShortLabel="@string/menu_from_camera"
+        tools:ignore="UnusedAttribute">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="fr.free.nrw.commons.auth.LoginActivity"
+            android:targetPackage="fr.free.nrw.commons" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/app_shortcut_gallery"
+        android:shortcutDisabledMessage="@string/menu_from_gallery"
+        android:shortcutId="gallery"
+        android:shortcutLongLabel="@string/menu_from_gallery"
+        android:shortcutShortLabel="@string/menu_from_gallery"
+        tools:ignore="UnusedAttribute">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="fr.free.nrw.commons.auth.LoginActivity"
+            android:targetPackage="fr.free.nrw.commons" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/app_shortcut_nearby"
+        android:shortcutDisabledMessage="@string/nearby_places"
+        android:shortcutId="nearby"
+        android:shortcutLongLabel="@string/nearby_places"
+        android:shortcutShortLabel="@string/nearby_places"
+        tools:ignore="UnusedAttribute">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="fr.free.nrw.commons.auth.LoginActivity"
+            android:targetPackage="fr.free.nrw.commons" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>
