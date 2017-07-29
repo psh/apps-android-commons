@@ -1,6 +1,7 @@
 package fr.free.nrw.commons.mwapi;
 
 import android.os.Build;
+import android.support.annotation.NonNull;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,8 +30,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class ApacheHttpClientMediaWikiApiTest {
-
-    private ApacheHttpClientMediaWikiApi testObject;
+    private MediaWikiApi testObject;
     private MockWebServer server;
 
     @Before
@@ -55,8 +55,9 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void simpleLoginWithWrongPassword() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"FAIL\" message=\"Incorrect password entered.&#10;Please try again.\" messagecode=\"wrongpassword\" /></api>"));
+        String payload = "<tokens logintoken=\"baz\" />";
+        server.enqueue(new MockResponse().setBody(apiBatchBody(query(payload))));
+        server.enqueue(new MockResponse().setBody(apiBody("<clientlogin status=\"FAIL\" message=\"Incorrect password entered.&#10;Please try again.\" messagecode=\"wrongpassword\" />")));
 
         String result = testObject.login("foo", "bar");
 
@@ -81,8 +82,8 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void simpleLogin() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"PASS\" username=\"foo\" /></api>"));
+        server.enqueue(new MockResponse().setBody(apiBatchBody(query("<tokens logintoken=\"baz\" />"))));
+        server.enqueue(new MockResponse().setBody(apiBody("<clientlogin status=\"PASS\" username=\"foo\" />")));
 
         String result = testObject.login("foo", "bar");
 
@@ -107,8 +108,8 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void twoFactorLogin() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"PASS\" username=\"foo\" /></api>"));
+        server.enqueue(new MockResponse().setBody(apiBatchBody(query("<tokens logintoken=\"baz\" />"))));
+        server.enqueue(new MockResponse().setBody(apiBody("<clientlogin status=\"PASS\" username=\"foo\" />")));
 
         String result = testObject.login("foo", "bar", "2fa");
 
@@ -134,7 +135,7 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void validateLoginForLoggedInUser() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><query><userinfo id=\"10\" name=\"foo\"/></query></api>"));
+        server.enqueue(new MockResponse().setBody(apiBody(query("<userinfo id=\"10\" name=\"foo\"/>"))));
 
         boolean result = testObject.validateLogin();
 
@@ -149,7 +150,7 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void validateLoginForLoggedOutUser() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><query><userinfo id=\"0\" name=\"foo\"/></query></api>"));
+        server.enqueue(new MockResponse().setBody(apiBody(query("<userinfo id=\"0\" name=\"foo\"/>"))));
 
         boolean result = testObject.validateLogin();
 
@@ -164,7 +165,7 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void editToken() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><tokens edittoken=\"baz\" /></api>"));
+        server.enqueue(new MockResponse().setBody(apiBody("<tokens edittoken=\"baz\" />")));
 
         String result = testObject.getEditToken();
 
@@ -179,7 +180,7 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void fileExistsWithName_FileNotFound() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query> <normalized><n from=\"File:foo\" to=\"File:Foo\" /></normalized><pages><page _idx=\"-1\" ns=\"6\" title=\"File:Foo\" missing=\"\" imagerepository=\"\" /></pages></query></api>"));
+        server.enqueue(new MockResponse().setBody(apiBatchBody(query("<normalized><n from=\"File:foo\" to=\"File:Foo\" /></normalized><pages><page _idx=\"-1\" ns=\"6\" title=\"File:Foo\" missing=\"\" imagerepository=\"\" /></pages>"))));
 
         boolean result = testObject.fileExistsWithName("foo");
 
@@ -193,6 +194,54 @@ public class ApacheHttpClientMediaWikiApiTest {
         assertFalse(result);
     }
 
+    @Test
+    public void edit() throws Exception {
+        server.enqueue(new MockResponse().setBody(apiBody("<edit result=\"foo\" />")));
+
+        String result = testObject.edit("token-1", "the content", "a file has no name", "summary");
+
+        RecordedRequest editRequest = assertBasicRequestParameters(server, "POST");
+        Map<String, String> body = parseBody(editRequest.getBody().readUtf8());
+        assertEquals("a file has no name", body.get("title"));
+        assertEquals("token-1", body.get("token"));
+        assertEquals("the content", body.get("text"));
+        assertEquals("summary", body.get("summary"));
+
+        assertEquals("foo", result);
+    }
+
+    @Test
+    public void findThumbnailByFilename() throws Exception {
+        server.enqueue(new MockResponse().setBody(apiBatchBody(query("<pages><page><imageinfo><ii thumburl=\"bar\"/></imageinfo></page></pages>"))));
+
+        String result = testObject.findThumbnailByFilename("foo");
+
+        RecordedRequest request = assertBasicRequestParameters(server, "GET");
+        Map<String, String> params = parseQueryParams(request);
+        assertEquals("xml", params.get("format"));
+        assertEquals("query", params.get("action"));
+        assertEquals("imageinfo", params.get("prop"));
+        assertEquals("foo", params.get("titles"));
+        assertEquals("url", params.get("iiprop"));
+        assertEquals("640", params.get("iiurlwidth"));
+
+        assertEquals("bar", result);
+    }
+
+    @NonNull
+    private String query(String payload) {
+        return "<query>" + payload + "</query>";
+    }
+
+    @NonNull
+    private String apiBody(String payload) {
+        return "<?xml version=\"1.0\"?><api>" + payload + "</api>";
+    }
+
+    @NonNull
+    private String apiBatchBody(String payload) {
+        return "<?xml version=\"1.0\"?><api batchcomplete=\"\">" + payload + "</api>";
+    }
 
     private RecordedRequest assertBasicRequestParameters(MockWebServer server, String method) throws InterruptedException {
         RecordedRequest request = server.takeRequest();
@@ -224,4 +273,5 @@ public class ApacheHttpClientMediaWikiApiTest {
         }
         return result;
     }
+
 }
