@@ -77,7 +77,7 @@ public class WikiAccountAuthenticator extends AbstractAccountAuthenticator {
     private String getAuthCookie(String username, String password) throws IOException {
         MediaWikiApi api = CommonsApplication.getInstance().getMWApi();
         //TODO add 2fa support here
-        String result = api.login(username, password);
+        String result = api.login(api.getLoginToken(), username, password);
         if(result.equals("PASS")) {
             return api.getAuthCookie();
         } else {

@@ -41,6 +41,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     private AbstractHttpClient httpClient;
     private MWApi api;
 
+    @Deprecated
     public ApacheHttpClientMediaWikiApi(String apiURL) {
         BasicHttpParams params = new BasicHttpParams();
         SchemeRegistry schemeRegistry = new SchemeRegistry();
@@ -48,7 +49,8 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
         final SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
         schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
         ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
-        params.setParameter(CoreProtocolPNames.USER_AGENT, "Commons/" + BuildConfig.VERSION_NAME + " (https://mediawiki.org/wiki/Apps/Commons) Android/" + Build.VERSION.RELEASE);
+        params.setParameter(CoreProtocolPNames.USER_AGENT,
+                "Commons/" + BuildConfig.VERSION_NAME + " (https://mediawiki.org/wiki/Apps/Commons) Android/" + Build.VERSION.RELEASE);
         httpClient = new DefaultHttpClient(cm, params);
         api = new MWApi(apiURL, httpClient);
     }
@@ -59,12 +61,13 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
      * @return String as returned by this.getErrorCodeToReturn()
      * @throws IOException On api request IO issue
      */
-    public String login(String username, String password) throws IOException {
+    @Deprecated
+    public String login(String loginToken, String username, String password) throws IOException {
         return getErrorCodeToReturn(api.action("clientlogin")
                 .param("rememberMe", "1")
                 .param("username", username)
                 .param("password", password)
-                .param("logintoken", getLoginToken())
+                .param("logintoken", loginToken)
                 .param("loginreturnurl", "https://commons.wikimedia.org")
                 .post());
     }
@@ -76,18 +79,21 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
      * @return String as returned by this.getErrorCodeToReturn()
      * @throws IOException On api request IO issue
      */
-    public String login(String username, String password, String twoFactorCode) throws IOException {
+    @Deprecated
+    public String login(String loginToken, String username, String password, String twoFactorCode) throws IOException {
         return getErrorCodeToReturn(api.action("clientlogin")
                 .param("rememberMe", "1")
                 .param("username", username)
                 .param("password", password)
-                .param("logintoken", getLoginToken())
+                .param("logintoken", loginToken)
                 .param("logincontinue", "1")
                 .param("OATHToken", twoFactorCode)
                 .post());
     }
 
-    private String getLoginToken() throws IOException {
+    @Deprecated
+    @Override
+    public String getLoginToken() throws IOException {
         return api.action("query")
                 .param("action", "query")
                 .param("meta", "tokens")
@@ -103,6 +109,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
      * failure: A failure message code (defined by mediawiki)
      * misc:    genericerror-UI, genericerror-REDIRECT, genericerror-RESTART
      */
+    @Deprecated
     private String getErrorCodeToReturn(ApiResult loginApiResult) {
         String status = loginApiResult.getString("/api/clientlogin/@status");
         if (status.equals("PASS")) {
@@ -123,26 +130,31 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     }
 
     @Override
+    @Deprecated
     public String getAuthCookie() {
         return api.getAuthCookie();
     }
 
     @Override
+    @Deprecated
     public void setAuthCookie(String authCookie) {
         api.setAuthCookie(authCookie);
     }
 
     @Override
+    @Deprecated
     public boolean validateLogin() throws IOException {
         return api.validateLogin();
     }
 
     @Override
+    @Deprecated
     public String getEditToken() throws IOException {
         return api.getEditToken();
     }
 
     @Override
+    @Deprecated
     public boolean fileExistsWithName(String fileName) throws IOException {
         return api.action("query")
                 .param("prop", "imageinfo")
@@ -153,6 +165,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @Nullable
+    @Deprecated
     public String edit(String editToken, String processedPageContent, String filename, String summary) throws IOException {
         return api.action("edit")
                 .param("title", filename)
@@ -164,6 +177,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     }
 
     @Override
+    @Deprecated
     public String findThumbnailByFilename(String filename) throws IOException {
         return api.action("query")
                 .param("format", "xml")
@@ -177,6 +191,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public MediaResult fetchMediaByFilename(String filename) throws IOException {
         ApiResult apiResult = api.action("query")
                 .param("prop", "revisions")
@@ -193,6 +208,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public List<String> searchCategories(int searchCatsLimit, String filterValue) throws IOException {
         List<ApiResult> categoryNodes = api.action("query")
                 .param("format", "xml")
@@ -220,6 +236,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public List<String> allCategories(int searchCatsLimit, String filterValue) throws IOException {
         ArrayList<ApiResult> categoryNodes = api.action("query")
                 .param("list", "allcategories")
@@ -242,6 +259,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public List<String> searchTitles(int searchCatsLimit, String title) throws IOException {
         ArrayList<ApiResult> categoryNodes = api.action("query")
                 .param("format", "xml")
@@ -269,6 +287,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public LogEventResult logEvents(String user, String lastModified, String queryContinue, int limit) throws IOException {
         org.mediawiki.api.MWApi.RequestBuilder builder = api.action("query")
                 .param("list", "logevents")
@@ -290,6 +309,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     }
 
     @NonNull
+    @Deprecated
     private ArrayList<LogEventResult.LogEvent> getLogEventsFromResult(ApiResult result) {
         ArrayList<ApiResult> uploads = result.getNodes("/api/query/logevents/item");
         Timber.d("%d results!", uploads.size());
@@ -306,6 +326,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @Nullable
+    @Deprecated
     public String revisionsByFilename(String filename) throws IOException {
         return api.action("query")
                 .param("prop", "revisions")
@@ -316,6 +337,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     }
 
     @Override
+    @Deprecated
     public boolean existingFile(String fileSha1) throws IOException {
         return api.action("query")
                 .param("format", "xml")
@@ -326,6 +348,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     }
 
     @Override
+    @Deprecated
     public boolean logEvents(LogBuilder[] logBuilders) {
         boolean allSuccess = true;
         // Not using the default URL connection, since that seems to have different behavior than the rest of the code
@@ -350,6 +373,7 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
 
     @Override
     @NonNull
+    @Deprecated
     public UploadResult uploadFile(String filename, InputStream file, long dataLength, String pageContents, String editSummary, final ProgressListener progressListener) throws IOException {
         ApiResult result = api.upload(filename, file, dataLength, pageContents, editSummary, progressListener::onProgress);
 

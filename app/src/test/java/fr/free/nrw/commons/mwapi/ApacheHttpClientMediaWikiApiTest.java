@@ -54,11 +54,10 @@ public class ApacheHttpClientMediaWikiApiTest {
     }
 
     @Test
-    public void simpleLoginWithWrongPassword() throws Exception {
+    public void loginToken() throws Exception {
         server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"FAIL\" message=\"Incorrect password entered.&#10;Please try again.\" messagecode=\"wrongpassword\" /></api>"));
 
-        String result = testObject.login("foo", "bar");
+        String result = testObject.getLoginToken();
 
         RecordedRequest loginTokenRequest = assertBasicRequestParameters(server, "POST");
         Map<String, String> body = parseBody(loginTokenRequest.getBody().readUtf8());
@@ -67,8 +66,17 @@ public class ApacheHttpClientMediaWikiApiTest {
         assertEquals("login", body.get("type"));
         assertEquals("tokens", body.get("meta"));
 
+        assertEquals("baz", result);
+    }
+
+    @Test
+    public void simpleLoginWithWrongPassword() throws Exception {
+        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"FAIL\" message=\"Incorrect password entered.&#10;Please try again.\" messagecode=\"wrongpassword\" /></api>"));
+
+        String result = testObject.login("baz", "foo", "bar");
+
         RecordedRequest loginRequest = assertBasicRequestParameters(server, "POST");
-        body = parseBody(loginRequest.getBody().readUtf8());
+        Map<String, String> body = parseBody(loginRequest.getBody().readUtf8());
         assertEquals("1", body.get("rememberMe"));
         assertEquals("foo", body.get("username"));
         assertEquals("bar", body.get("password"));
@@ -81,20 +89,12 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void simpleLogin() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
         server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"PASS\" username=\"foo\" /></api>"));
 
-        String result = testObject.login("foo", "bar");
-
-        RecordedRequest loginTokenRequest = assertBasicRequestParameters(server, "POST");
-        Map<String, String> body = parseBody(loginTokenRequest.getBody().readUtf8());
-        assertEquals("xml", body.get("format"));
-        assertEquals("query", body.get("action"));
-        assertEquals("login", body.get("type"));
-        assertEquals("tokens", body.get("meta"));
+        String result = testObject.login("baz", "foo", "bar");
 
         RecordedRequest loginRequest = assertBasicRequestParameters(server, "POST");
-        body = parseBody(loginRequest.getBody().readUtf8());
+        Map<String, String> body = parseBody(loginRequest.getBody().readUtf8());
         assertEquals("1", body.get("rememberMe"));
         assertEquals("foo", body.get("username"));
         assertEquals("bar", body.get("password"));
@@ -107,20 +107,12 @@ public class ApacheHttpClientMediaWikiApiTest {
 
     @Test
     public void twoFactorLogin() throws Exception {
-        server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api batchcomplete=\"\"><query><tokens logintoken=\"baz\" /></query></api>"));
         server.enqueue(new MockResponse().setBody("<?xml version=\"1.0\"?><api><clientlogin status=\"PASS\" username=\"foo\" /></api>"));
 
-        String result = testObject.login("foo", "bar", "2fa");
-
-        RecordedRequest loginTokenRequest = assertBasicRequestParameters(server, "POST");
-        Map<String, String> body = parseBody(loginTokenRequest.getBody().readUtf8());
-        assertEquals("xml", body.get("format"));
-        assertEquals("query", body.get("action"));
-        assertEquals("login", body.get("type"));
-        assertEquals("tokens", body.get("meta"));
+        String result = testObject.login("baz", "foo", "bar", "2fa");
 
         RecordedRequest loginRequest = assertBasicRequestParameters(server, "POST");
-        body = parseBody(loginRequest.getBody().readUtf8());
+        Map<String, String> body = parseBody(loginRequest.getBody().readUtf8());
         assertEquals("1", body.get("rememberMe"));
         assertEquals("foo", body.get("username"));
         assertEquals("bar", body.get("password"));

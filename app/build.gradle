@@ -21,7 +21,12 @@ dependencies {
     annotationProcessor "com.jakewharton:butterknife-compiler:$BUTTERKNIFE_VERSION"
     compile 'com.jakewharton.timber:timber:4.5.1'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.8.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
     compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+
     compile ('com.mapbox.mapboxsdk:mapbox-android-sdk:5.1.0@aar'){
         transitive=true
     }
@@ -30,7 +35,7 @@ dependencies {
     compile "com.google.guava:guava:${GUAVA_VERSION}"
 
     testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.3.2') {
+    testCompile ('org.robolectric:robolectric:3.4') {
         exclude module: 'guava'
     }
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.mwapi.EventLog;
+import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import timber.log.Timber;
 
 class LoginTask extends AsyncTask<String, String, String> {
@@ -43,10 +44,11 @@ class LoginTask extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... params) {
         try {
+            MediaWikiApi mwApi = app.getMWApi();
             if (twoFactorCode.isEmpty()) {
-                return app.getMWApi().login(username, password);
+                return mwApi.login(mwApi.getLoginToken(), username, password);
             } else {
-                return app.getMWApi().login(username, password, twoFactorCode);
+                return mwApi.login(mwApi.getLoginToken(), username, password, twoFactorCode);
             }
         } catch (IOException e) {
             // Do something better!

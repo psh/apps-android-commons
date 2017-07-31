@@ -12,9 +12,11 @@ public interface MediaWikiApi {
 
     void setAuthCookie(String authCookie);
 
-    String login(String username, String password) throws IOException;
+    String getLoginToken() throws IOException;
 
-    String login(String username, String password, String twoFactorCode) throws IOException;
+    String login(String loginToken, String username, String password) throws IOException;
+
+    String login(String loginToken, String username, String password, String twoFactorCode) throws IOException;
 
     boolean validateLogin() throws IOException;
 
