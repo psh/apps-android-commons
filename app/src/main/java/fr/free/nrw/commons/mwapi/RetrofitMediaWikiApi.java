@@ -1,7 +1,6 @@
 package fr.free.nrw.commons.mwapi;
 
 import android.os.Build;
-import android.util.Log;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -9,9 +8,9 @@ import java.util.Map;
 
 import fr.free.nrw.commons.BuildConfig;
 import fr.free.nrw.commons.mwapi.api.RequestBuilder;
-import fr.free.nrw.commons.mwapi.api.response.ApiResponse;
-import fr.free.nrw.commons.mwapi.api.response.LoginResponse;
-import fr.free.nrw.commons.mwapi.api.response.QueryResponse;
+import fr.free.nrw.commons.mwapi.api.ApiResponse;
+import fr.free.nrw.commons.mwapi.api.LoginResponse;
+import fr.free.nrw.commons.mwapi.api.QueryResponse;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -63,62 +62,67 @@ public class RetrofitMediaWikiApi {
     }
 
     public String getLoginToken() {
-        Call<ApiResponse> c = post(action("query")
+        ApiResponse body = post(action("query")
                 .param("type", "login")
                 .param("meta", "tokens"));
-        try {
-            Response<ApiResponse> response = c.execute();
-            ApiResponse body = response.body();
-            if (body != null) {
-                return body.query.tokens.loginToken;
-            }
-        } catch (IOException e) {
-            Log.e("MW", "Failed to get login token", e);
-        }
-        return null;
+        QueryResponse query = body != null ? body.query : null;
+        QueryResponse.TokenResponse tokens = query != null ? query.tokens : null;
+        return tokens != null ? tokens.loginToken : null;
     }
 
     public String login(String loginToken, String username, String password) {
-        Call<ApiResponse> c = post(action("clientlogin")
+        ApiResponse body = post(action("clientlogin")
                 .param("loginreturnurl", "https://commons.wikimedia.org")
                 .param("rememberMe", "1")
                 .param("logintoken", loginToken)
                 .param("username", username)
                 .param("password", password));
-        try {
-            Response<ApiResponse> response = c.execute();
-            ApiResponse body = response.body();
-            LoginResponse loginResponse = body != null ? body.clientlogin : null;
-            if (loginResponse != null) {
-                return loginResponse.getStatusCodeToReturn();
-            }
-        } catch (IOException e) {
-            Log.e("MW", "Failed to login", e);
+        LoginResponse loginResponse = body != null ? body.clientlogin : null;
+        if (loginResponse != null) {
+            return loginResponse.getStatusCodeToReturn();
         }
         return null;
     }
 
     public boolean validateLogin() {
-        Call<ApiResponse> c = get(action("query").param("meta", "userinfo"));
+        ApiResponse body = get(action("query").param("meta", "userinfo"));
+        QueryResponse query = body != null ? body.query : null;
+        QueryResponse.UserInfoResponse userInfo = query != null ? query.userInfo : null;
+        // note: may want to hold on to the username and the id for later.
+        return userInfo != null && !userInfo.id.equals("0");
+    }
+
+    public String getEditToken() {
+        ApiResponse body = get(action("query").param("meta", "tokens").param("type", "csrf"));
+        QueryResponse query = body != null ? body.query : null;
+        QueryResponse.TokenResponse tokens = query != null ? query.tokens : null;
+        return tokens != null ? tokens.csrfToken : null;
+    }
+
+
+
+
+
+    private ApiResponse get(RequestBuilder requestBuilder) {
         try {
-            Response<ApiResponse> response = c.execute();
-            ApiResponse body = response.body();
-            QueryResponse query = body != null ? body.query : null;
-            QueryResponse.UserInfoResponse userInfo = query != null ? query.userInfo : null;
-            // note: may want to hold on to the username and the id for later.
-            return userInfo != null && !userInfo.id.equals("0");
+            Call<ApiResponse> apiResponseCall = api.remoteGetAction(requestBuilder.build());
+            Response<ApiResponse> response = apiResponseCall.execute();
+            return response.body();
         } catch (IOException e) {
-            Log.e("MW", "Failed to login", e);
+            e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
-    private Call<ApiResponse> get(RequestBuilder requestBuilder) {
-        return api.remoteGetAction(requestBuilder.build());
-    }
-
-    private Call<ApiResponse> post(RequestBuilder requestBuilder) {
-        return api.remotePostAction(requestBuilder.build());
+    private ApiResponse post(RequestBuilder requestBuilder) {
+        try {
+            Call<ApiResponse> apiResponseCall = api.remotePostAction(requestBuilder.build());
+            Response<ApiResponse> response = apiResponseCall.execute();
+            return response.body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public interface ApiService {
@@ -126,7 +130,6 @@ public class RetrofitMediaWikiApi {
         @POST("/w/api.php")
         Call<ApiResponse> remotePostAction(@FieldMap Map<String, String> parameters);
 
-        @FormUrlEncoded
         @GET("/w/api.php")
         Call<ApiResponse> remoteGetAction(@QueryMap Map<String, String> parameters);
     }

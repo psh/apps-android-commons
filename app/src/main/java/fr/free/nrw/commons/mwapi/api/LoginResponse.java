@@ -1,4 +1,4 @@
-package fr.free.nrw.commons.mwapi.api.response;
+package fr.free.nrw.commons.mwapi.api;
 
 public class LoginResponse {
     public String status;
