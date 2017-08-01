@@ -51,7 +51,7 @@ public class MediaWikiApiFacade implements MediaWikiApi {
 
     @Override
     public boolean validateLogin() throws IOException {
-        return legacy.validateLogin();
+        return newApi.validateLogin();
     }
 
     @Override

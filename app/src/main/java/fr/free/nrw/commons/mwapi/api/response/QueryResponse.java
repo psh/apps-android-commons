@@ -4,11 +4,14 @@ import com.google.gson.annotations.SerializedName;
 
 public class QueryResponse {
     public TokenResponse tokens;
+    @SerializedName("userinfo")
+    public UserInfoResponse userInfo;
 
     @Override
     public String toString() {
         return "QueryResponse{" +
                 "tokens=" + tokens +
+                ", userInfo=" + userInfo +
                 '}';
     }
 
@@ -23,5 +26,11 @@ public class QueryResponse {
                     "loginToken='" + loginToken + '\'' +
                     '}';
         }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class UserInfoResponse {
+        public String id;
+        public String name;
     }
 }
