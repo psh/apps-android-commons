@@ -19,6 +19,7 @@ public class MediaWikiApiFacade implements MediaWikiApi {
     private ApacheHttpClientMediaWikiApi legacy;
     private RetrofitMediaWikiApi newApi;
 
+    @SuppressWarnings("deprecation")
     public MediaWikiApiFacade() {
         legacy = new ApacheHttpClientMediaWikiApi(API_HOST + API_PATH);
         newApi = new RetrofitMediaWikiApi(API_HOST);
@@ -26,12 +27,12 @@ public class MediaWikiApiFacade implements MediaWikiApi {
 
     @Override
     public String getAuthCookie() {
-        return legacy.getAuthCookie();
+        return newApi.getAuthCookie();
     }
 
     @Override
     public void setAuthCookie(String authCookie) {
-        legacy.setAuthCookie(authCookie);
+        newApi.setAuthCookie(authCookie);
     }
 
     @Override
@@ -45,13 +46,13 @@ public class MediaWikiApiFacade implements MediaWikiApi {
     }
 
     @Override
-    public String login(String loginToken, String username, String password, String twoFactorCode) throws IOException {
-        return legacy.login(loginToken, username, password, twoFactorCode);
+    public boolean validateLogin() throws IOException {
+        return newApi.validateLogin();
     }
 
     @Override
-    public boolean validateLogin() throws IOException {
-        return newApi.validateLogin();
+    public String login(String loginToken, String username, String password, String twoFactorCode) throws IOException {
+        return legacy.login(loginToken, username, password, twoFactorCode);
     }
 
     @Override
