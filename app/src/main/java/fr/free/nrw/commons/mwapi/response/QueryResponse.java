@@ -4,16 +4,12 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.mediawiki.api.ApiResult;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import fr.free.nrw.commons.mwapi.LogEventResult;
-import fr.free.nrw.commons.mwapi.MediaResult;
-
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class QueryResponse {
     @SerializedName("tokens")
     public TokenResponse tokens;
@@ -56,9 +52,7 @@ public class QueryResponse {
         }
         List<String> categories = new ArrayList<>(searchResults.size());
         for (Map<String, String> map : allCategories) {
-            for (String category : map.values()) {
-                categories.add(category);
-            }
+            categories.addAll(map.values());
         }
         return categories;
     }
@@ -75,7 +69,6 @@ public class QueryResponse {
         return categories;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public static class TokenResponse {
         @SerializedName("logintoken")
         public String loginToken;
@@ -91,7 +84,6 @@ public class QueryResponse {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class UserInfoResponse {
         @SerializedName("id")
         public String id;
@@ -107,7 +99,6 @@ public class QueryResponse {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class PageResponse {
         @SerializedName("ns")
         public String ns;
@@ -140,17 +131,6 @@ public class QueryResponse {
             return revisions != null && revisions.size() > 0 ? revisions.get(0).content : "";
         }
 
-        // TODO
-        public MediaResult mediaResult() {
-/*
-        return new MediaResult(
-                apiResult.getString("/api/query/pages/page/revisions/rev"),
-                apiResult.getString("/api/query/pages/page/revisions/rev/@parsetree"));
-* */            return revisions!=null && revisions.size()>0
-                    ? new MediaResult(revisions.get(0).content, "")
-                    : new MediaResult("","");
-        }
-
         public class Revision {
             @SerializedName("contentformat")
             public String contentFormat;
@@ -161,7 +141,6 @@ public class QueryResponse {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class ImageInfo {
         @SerializedName("timestamp")
         public String timestamp;
@@ -181,7 +160,6 @@ public class QueryResponse {
         public String descriptionShortUrl;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class SearchInfoResponse {
         @SerializedName("searchinfo")
         public SearchInfo searchInfo;
@@ -192,7 +170,6 @@ public class QueryResponse {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class SearchResult {
         private static final String CATEGORY_PREFIX = "Category:";
 
@@ -218,7 +195,6 @@ public class QueryResponse {
         }
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class LogEventResponse {
         @SerializedName("logid")
         public String logId;

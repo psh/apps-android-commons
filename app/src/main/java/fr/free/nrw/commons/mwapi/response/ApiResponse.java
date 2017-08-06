@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Map;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ApiResponse {
     @SerializedName("query")
     public QueryResponse query;
@@ -31,7 +32,6 @@ public class ApiResponse {
                 '}';
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class Continue {
         @SerializedName("iistart")
         public String iistart;
@@ -39,13 +39,11 @@ public class ApiResponse {
         public String continueIndicator;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class EditResponse {
         @SerializedName("result")
         public String result;
     }
 
-    @SuppressWarnings("WeakerAccess")
     public class ParseResponse {
         @SerializedName("title")
         public String title;

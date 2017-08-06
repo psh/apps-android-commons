@@ -1,16 +1,23 @@
 package fr.free.nrw.commons.mwapi.response;
 
+import com.google.gson.annotations.SerializedName;
+
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class LoginResponse {
+    @SerializedName("status")
     public String status;
+    @SerializedName("message")
     public String message;
-    public String messagecode;
+    @SerializedName("messagecode")
+    public String messageCode;
+    @SerializedName("username")
     public String username;
 
     public String getStatusCodeToReturn() {
         if (status.equals("PASS")) {
             return status;
         } else if (status.equals("FAIL")) {
-            return messagecode;
+            return messageCode;
         }
         /* else if (
                 status.equals("UI")
@@ -29,7 +36,7 @@ public class LoginResponse {
         return "LoginResponse{" +
                 "status='" + status + '\'' +
                 ", message='" + message + '\'' +
-                ", messagecode='" + messagecode + '\'' +
+                ", messageCode='" + messageCode + '\'' +
                 ", username='" + username + '\'' +
                 '}';
     }
