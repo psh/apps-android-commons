@@ -34,6 +34,7 @@ import java.util.Locale;
 import fr.free.nrw.commons.BuildConfig;
 import fr.free.nrw.commons.PageTitle;
 import fr.free.nrw.commons.Utils;
+import fr.free.nrw.commons.mwapi.response.ApiResponse;
 import in.yuvi.http.fluent.Http;
 import io.reactivex.Single;
 import timber.log.Timber;
@@ -287,9 +288,10 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
         }
         ApiResult result = builder.get();
 
-        return new LogEventResult(
-                getLogEventsFromResult(result),
-                result.getString("/api/query-continue/logevents/@lestart"));
+//        return new LogEventResult(
+//                getLogEventsFromResult(result),
+//                result.getString("/api/query-continue/logevents/@lestart"));
+        return new LogEventResult(new ApiResponse(), "");
     }
 
     @NonNull

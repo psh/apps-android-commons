@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -30,9 +29,7 @@ import fr.free.nrw.commons.category.Category;
 import fr.free.nrw.commons.contributions.Contribution;
 import fr.free.nrw.commons.data.DBOpenHelper;
 import fr.free.nrw.commons.modifications.ModifierSequence;
-import fr.free.nrw.commons.mwapi.ApacheHttpClientMediaWikiApi;
 import fr.free.nrw.commons.mwapi.MediaWikiApi;
-import fr.free.nrw.commons.mwapi.MediaWikiApiFacade;
 import fr.free.nrw.commons.mwapi.OkHttpMediaWikiApi;
 import fr.free.nrw.commons.nearby.NearbyPlaces;
 import fr.free.nrw.commons.utils.FileUtils;
@@ -90,7 +87,7 @@ public class CommonsApplication extends Application {
 
     public MediaWikiApi getMWApi() {
         if (api == null) {
-            api = new OkHttpMediaWikiApi("https://commons.wikimedia.org/");
+            api = new OkHttpMediaWikiApi("https://commons.wikimedia.org/w/api.php");
         }
         return api;
     }
@@ -144,34 +141,34 @@ public class CommonsApplication extends Application {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
                 CommonsApplication.getInstance());
         // Increase counter by one, starts from 1
-        prefs.edit().putInt("app_start_counter", prefs.getInt("app_start_counter" ,0) + 1).commit();
+        prefs.edit().putInt("app_start_counter", prefs.getInt("app_start_counter", 0) + 1).commit();
 
         //For caching area -> categories
-        cacheData  = new CacheController();
+        cacheData = new CacheController();
     }
 
     /**
      * @return Account|null
      */
     public Account getCurrentAccount() {
-        if(currentAccount == null) {
+        if (currentAccount == null) {
             AccountManager accountManager = AccountManager.get(this);
             Account[] allAccounts = accountManager.getAccountsByType(AccountUtil.accountType());
-            if(allAccounts.length != 0) {
+            if (allAccounts.length != 0) {
                 currentAccount = allAccounts[0];
             }
         }
         return currentAccount;
     }
-    
+
     public Boolean revalidateAuthToken() {
         AccountManager accountManager = AccountManager.get(this);
         Account curAccount = getCurrentAccount();
-       
-        if(curAccount == null) {
+
+        if (curAccount == null) {
             return false; // This should never happen
         }
-        
+
         accountManager.invalidateAuthToken(AccountUtil.accountType(), getMWApi().getAuthCookie());
         try {
             String authCookie = accountManager.blockingGetAuthToken(curAccount, "", false);

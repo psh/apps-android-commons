@@ -1,4 +1,4 @@
-package fr.free.nrw.commons.mwapi.api;
+package fr.free.nrw.commons.mwapi.response;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -5,34 +5,35 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.free.nrw.commons.BuildConfig;
 import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.settings.Prefs;
+import okhttp3.HttpUrl;
 
+@SuppressWarnings("WeakerAccess")
 public class LogBuilder {
-    private JSONObject data;
+    private Map<String, Object> data;
     private long rev;
     private String schema;
+    private Gson gsonParser;
 
-    LogBuilder(String schema, long revision) {
-        data = new JSONObject();
+    LogBuilder(String schema, long revision, Gson gsonParser) {
+        this.gsonParser = gsonParser;
+        this.data = new HashMap<>();
         this.schema = schema;
         this.rev = revision;
     }
 
     public LogBuilder param(String key, Object value) {
-        try {
-            data.put(key, value);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        data.put(key, value);
         return this;
     }
 
@@ -42,6 +43,10 @@ public class LogBuilder {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    HttpUrl toHttpUrl() {
+        return HttpUrl.parse(toUrlString());
     }
 
     // force param disregards user preference
@@ -60,20 +65,15 @@ public class LogBuilder {
         log(false);
     }
 
-    public String toUrlString() {
-        try {
-            JSONObject fullData = new JSONObject();
-            fullData.put("schema", schema);
-            fullData.put("revision", rev);
-            fullData.put("wiki", CommonsApplication.EVENTLOG_WIKI);
-            data.put("device", EventLog.DEVICE);
-            data.put("platform", "Android/" + Build.VERSION.RELEASE);
-            data.put("appversion", "Android/" + BuildConfig.VERSION_NAME);
-            fullData.put("event", data);
-            return CommonsApplication.EVENTLOG_URL + "?" + Utils.urlEncode(fullData.toString()) + ";";
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return "";
+    String toUrlString() {
+        Map<String, Object> fullData = new HashMap<>();
+        fullData.put("schema", schema);
+        fullData.put("revision", rev);
+        fullData.put("wiki", CommonsApplication.EVENTLOG_WIKI);
+        data.put("device", EventLog.DEVICE);
+        data.put("platform", "Android/" + Build.VERSION.RELEASE);
+        data.put("appversion", "Android/" + BuildConfig.VERSION_NAME);
+        fullData.put("event", data);
+        return CommonsApplication.EVENTLOG_URL + "?" + Utils.urlEncode(gsonParser.toJson(fullData)) + ";";
     }
 }

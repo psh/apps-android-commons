@@ -1,4 +1,4 @@
-package fr.free.nrw.commons.mwapi.api;
+package fr.free.nrw.commons.mwapi.response;
 
 import android.support.annotation.NonNull;
 

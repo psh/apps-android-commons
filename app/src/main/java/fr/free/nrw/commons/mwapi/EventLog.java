@@ -2,10 +2,13 @@ package fr.free.nrw.commons.mwapi;
 
 import android.os.Build;
 
+import com.google.gson.Gson;
+
 import fr.free.nrw.commons.Utils;
 
 public class EventLog {
     static final String DEVICE;
+    private static Gson gsonParser = new Gson();
 
     static {
         if (Build.MODEL.startsWith(Build.MANUFACTURER)) {
@@ -16,7 +19,7 @@ public class EventLog {
     }
 
     private static LogBuilder schema(String schema, long revision) {
-        return new LogBuilder(schema, revision);
+        return new LogBuilder(schema, revision, gsonParser);
     }
 
     public static LogBuilder schema(Object[] scid) {
