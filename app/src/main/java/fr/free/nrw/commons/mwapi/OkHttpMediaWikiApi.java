@@ -23,6 +23,7 @@ import java.util.List;
 import fr.free.nrw.commons.BuildConfig;
 import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.mwapi.api.ApiResponse;
+import fr.free.nrw.commons.mwapi.api.QueryResponse;
 import fr.free.nrw.commons.mwapi.api.RequestBuilder;
 import okhttp3.HttpUrl;
 import okhttp3.JavaNetCookieJar;
@@ -231,8 +232,7 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .param("prop", "revisions")
                 .param("titles", filename)
                 .param("rvprop", "content")
-                .param("rvlimit", "1")
-                .param("rvgeneratexml", "1"))
+                .param("rvlimit", "1"))
                 .query.firstPage().mediaResult();
     }
 
@@ -297,46 +297,25 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
         }
         ApiResponse result = get(builder);
 
-        /*
-
-        if (!TextUtils.isEmpty(lastModified)) {
-            builder.param("leend", lastModified);
-        }
-        if (!TextUtils.isEmpty(queryContinue)) {
-            builder.param("lestart", queryContinue);
-        }
-        ApiResult result = builder.get();
-
-        return new LogEventResult(
-                getLogEventsFromResult(result),
-                result.getString("/api/query-continue/logevents/@lestart"));*/
-        return new LogEventResult(Collections.emptyList(), "");
+        return new LogEventResult(getLogEventsFromResult(result), "");
     }
 
     @NonNull
-    @Deprecated
-    private ArrayList<LogEventResult.LogEvent> getLogEventsFromResult(ApiResult result) {
-        ArrayList<ApiResult> uploads = result.getNodes("/api/query/logevents/item");
-        Timber.d("%d results!", uploads.size());
+    private ArrayList<LogEventResult.LogEvent> getLogEventsFromResult(ApiResponse result) {
+        List<QueryResponse.LogEventResponse> uploads = result.query != null
+                ? result.query.logEvents : Collections.emptyList();
         ArrayList<LogEventResult.LogEvent> logEvents = new ArrayList<>();
-        for (ApiResult image : uploads) {
-            logEvents.add(new LogEventResult.LogEvent(
-                    image.getString("@pageid"),
-                    image.getString("@title"),
-                    Utils.parseMWDate(image.getString("@timestamp")))
-            );
+        for (QueryResponse.LogEventResponse image : uploads) {
+            logEvents.add(new LogEventResult.LogEvent(image.pageId, image.title,
+                    Utils.parseMWDate(image.timestamp)));
         }
         return logEvents;
     }
 
     private ApiResponse get(RequestBuilder requestBuilder) {
         try {
-            okhttp3.Call call = okHttpClient.newCall(
-                    new Request.Builder()
-                            .url(requestBuilder.buildGetRequest(apiHost))
-                            .get()
-                            .build()
-            );
+            HttpUrl url = requestBuilder.buildGetRequest(apiHost);
+            okhttp3.Call call = okHttpClient.newCall(new Request.Builder().url(url).get().build());
             okhttp3.Response response = call.execute();
             if (response.code() < 300) {
                 String stream = response.body().string();

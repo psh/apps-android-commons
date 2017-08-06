@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import fr.free.nrw.commons.mwapi.LogEventResult;
 import fr.free.nrw.commons.mwapi.MediaResult;
 
 public class QueryResponse {
@@ -26,6 +27,8 @@ public class QueryResponse {
     public List<SearchResult> searchResults;
     @SerializedName("allcategories")
     public List<Map<String, String>> allCategories;
+    @SerializedName("logevents")
+    public List<LogEventResponse> logEvents;
 
     @Override
     public String toString() {
@@ -108,6 +111,8 @@ public class QueryResponse {
     public class PageResponse {
         @SerializedName("ns")
         public String ns;
+        @SerializedName("pageid")
+        public String pageId;
         @SerializedName("missing")
         public String missing;
         @SerializedName("known")
@@ -118,6 +123,8 @@ public class QueryResponse {
         public String imageRepository;
         @SerializedName("imageinfo")
         public List<ImageInfo> imageInfo;
+        @SerializedName("revisions")
+        public List<Revision> revisions;
 
         public int imageInfoCount() {
             return imageInfo != null ? imageInfo.size() : 0;
@@ -135,9 +142,18 @@ public class QueryResponse {
         return new MediaResult(
                 apiResult.getString("/api/query/pages/page/revisions/rev"),
                 apiResult.getString("/api/query/pages/page/revisions/rev/@parsetree"));
-* */            return imageInfo!=null &&imageInfo.size()>0
-                    ? new MediaResult("","")
+* */            return revisions!=null && revisions.size()>0
+                    ? new MediaResult(revisions.get(0).content, "")
                     : new MediaResult("","");
+        }
+
+        public class Revision {
+            @SerializedName("contentformat")
+            public String contentFormat;
+            @SerializedName("contentmodel")
+            public String contentModel;
+            @SerializedName("*")
+            public String content;
         }
     }
 
@@ -196,5 +212,21 @@ public class QueryResponse {
 
             return title.substring(CATEGORY_PREFIX.length(), title.length());
         }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class LogEventResponse {
+        @SerializedName("logid")
+        public String logId;
+        @SerializedName("ns")
+        public String ns;
+        @SerializedName("title")
+        public String title;
+        @SerializedName("pageid")
+        public String pageId;
+        @SerializedName("logpage")
+        public String logPage;
+        @SerializedName("timestamp")
+        public String timestamp;
     }
 }
