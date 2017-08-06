@@ -14,22 +14,22 @@ public class RequestBuilder {
     private RequestBuilder() {
     }
 
-    public static ActionRequest post() {
-        return new PostRequestBuilder(okHttpClient, gsonParser, parsedApiEndpoint);
-    }
-
-    public static ActionRequest get() {
-        return new GetRequestBuilder(okHttpClient, gsonParser, parsedApiEndpoint);
-    }
-
     public static void use(OkHttpClient httpClient, Gson gson, String apiHost) {
         okHttpClient = httpClient;
         gsonParser = gson;
         parsedApiEndpoint = HttpUrl.parse(apiHost);
     }
 
+    public static ActionBuilder post() {
+        return new PostBuilder(okHttpClient, gsonParser, parsedApiEndpoint);
+    }
+
+    public static ActionBuilder get() {
+        return new GetBuilder(okHttpClient, gsonParser, parsedApiEndpoint);
+    }
+
     @SuppressWarnings("WeakerAccess")
-    public interface ActionRequest {
+    public interface ActionBuilder {
         ParameterBuilder action(String action);
     }
 
