@@ -223,6 +223,15 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
         return new MediaResult(wikiContent, renderedXml);
     }
 
+    @Override
+    public boolean existingFile(String fileSha1) throws IOException {
+        return get().action("query")
+                .param("list", "allimages")
+                .param("aisha1", fileSha1)
+                .execute()
+                .query.imageCount() > 0;
+    }
+
     @NonNull
     @Override
     // TODO:
@@ -257,16 +266,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .getString("/api/query/pages/page/revisions/rev")*/;
     }
 
-    // TODO:
-    @Override
-    public boolean existingFile(String fileSha1) throws IOException {
-        return false; /*RequestBuilder.get().action("query")
-                .param("list", "allimages")
-                .param("aisha1", fileSha1))
-                .getNodes("/api/query/allimages/img").size() > 0;*/
-    }
-
-    // TODO:
     @NonNull
     @Override
     public LogEventResult logEvents(String user, String lastModified, String queryContinue, int limit) throws IOException {

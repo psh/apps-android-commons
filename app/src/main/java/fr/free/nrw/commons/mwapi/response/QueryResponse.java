@@ -25,6 +25,8 @@ public class QueryResponse {
     public List<Map<String, String>> allCategories;
     @SerializedName("logevents")
     public List<LogEventResponse> logEvents;
+    @SerializedName("allimages")
+    public List<ImageInfo> allImages;
 
     @Override
     public String toString() {
@@ -67,6 +69,10 @@ public class QueryResponse {
             categories.add(result.getCategory());
         }
         return categories;
+    }
+
+    public int imageCount() {
+        return allImages != null ? allImages.size() : 0;
     }
 
     public static class TokenResponse {
@@ -142,6 +148,12 @@ public class QueryResponse {
     }
 
     public class ImageInfo {
+        @SerializedName("ns")
+        public String ns;
+        @SerializedName("title")
+        public String title;
+        @SerializedName("name")
+        public String name;
         @SerializedName("timestamp")
         public String timestamp;
         @SerializedName("user")
