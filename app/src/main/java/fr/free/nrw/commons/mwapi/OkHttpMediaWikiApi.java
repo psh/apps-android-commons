@@ -315,8 +315,7 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 ? result.query.logEvents : Collections.emptyList();
         ArrayList<LogEventResult.LogEvent> logEvents = new ArrayList<>();
         for (QueryResponse.LogEventResponse image : uploads) {
-            logEvents.add(new LogEventResult.LogEvent(image.pageId, image.title,
-                    Utils.parseMWDate(image.timestamp)));
+            logEvents.add(new LogEventResult.LogEvent(image.pageId, image.title, Utils.parseMWDate(image.timestamp)));
         }
         return logEvents;
     }

@@ -232,5 +232,17 @@ public class QueryResponse {
         public String logPage;
         @SerializedName("timestamp")
         public String timestamp;
+
+        @Override
+        public String toString() {
+            return "LogEventResponse{" +
+                    "logId='" + logId + '\'' +
+                    ", ns='" + ns + '\'' +
+                    ", title='" + title + '\'' +
+                    ", pageId='" + pageId + '\'' +
+                    ", logPage='" + logPage + '\'' +
+                    ", timestamp='" + timestamp + '\'' +
+                    '}';
+        }
     }
 }
