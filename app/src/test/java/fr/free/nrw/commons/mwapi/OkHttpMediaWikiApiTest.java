@@ -28,15 +28,15 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 23)
-public class RetrofitMediaWikiApiTest {
+public class OkHttpMediaWikiApiTest {
 
-    private RetrofitMediaWikiApi testObject;
+    private OkHttpMediaWikiApi testObject;
     private MockWebServer server;
 
     @Before
     public void setUp() throws Exception {
         server = new MockWebServer();
-        testObject = new RetrofitMediaWikiApi("http://" + server.getHostName() + "/");
+        testObject = new OkHttpMediaWikiApi("http://" + server.getHostName() + "/");
     }
 
     @After

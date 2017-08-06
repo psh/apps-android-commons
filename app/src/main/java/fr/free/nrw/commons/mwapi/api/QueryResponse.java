@@ -1,18 +1,75 @@
 package fr.free.nrw.commons.mwapi.api;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
+import org.mediawiki.api.ApiResult;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import fr.free.nrw.commons.mwapi.MediaResult;
+
 public class QueryResponse {
+    @SerializedName("tokens")
     public TokenResponse tokens;
     @SerializedName("userinfo")
     public UserInfoResponse userInfo;
+    @SerializedName("searchinfo")
+    public SearchInfoResponse searchInfo;
+    @SerializedName("pages")
+    public Map<String, PageResponse> pages;
+    @SerializedName("search")
+    public List<SearchResult> searchResults;
+    @SerializedName("allcategories")
+    public List<Map<String, String>> allCategories;
 
     @Override
     public String toString() {
         return "QueryResponse{" +
                 "tokens=" + tokens +
                 ", userInfo=" + userInfo +
+                ", searchInfo=" + searchInfo +
+                ", pages=" + pages +
+                ", searchResults=" + searchResults +
+                ", allCategories=" + allCategories +
                 '}';
+    }
+
+    @NonNull
+    public PageResponse firstPage() {
+        return pages != null && pages.size() > 0
+                ? new ArrayList<>(pages.values()).get(0)
+                : new PageResponse();
+    }
+
+    @NonNull
+    public List<String> allCategories() {
+        if (allCategories == null || allCategories.size() == 0) {
+            return Collections.emptyList();
+        }
+        List<String> categories = new ArrayList<>(searchResults.size());
+        for (Map<String, String> map : allCategories) {
+            for (String category : map.values()) {
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+    @NonNull
+    public List<String> categories() {
+        if (searchResults == null || searchResults.size() == 0) {
+            return Collections.emptyList();
+        }
+        List<String> categories = new ArrayList<>(searchResults.size());
+        for (SearchResult result : searchResults) {
+            categories.add(result.getCategory());
+        }
+        return categories;
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -33,7 +90,9 @@ public class QueryResponse {
 
     @SuppressWarnings("WeakerAccess")
     public class UserInfoResponse {
+        @SerializedName("id")
         public String id;
+        @SerializedName("name")
         public String name;
 
         @Override
@@ -42,6 +101,100 @@ public class QueryResponse {
                     "id='" + id + '\'' +
                     ", name='" + name + '\'' +
                     '}';
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class PageResponse {
+        @SerializedName("ns")
+        public String ns;
+        @SerializedName("missing")
+        public String missing;
+        @SerializedName("known")
+        public String known;
+        @SerializedName("title")
+        public String title;
+        @SerializedName("imagerepository")
+        public String imageRepository;
+        @SerializedName("imageinfo")
+        public List<ImageInfo> imageInfo;
+
+        public int imageInfoCount() {
+            return imageInfo != null ? imageInfo.size() : 0;
+        }
+
+        public String thumbUrl() {
+            return imageInfo != null && imageInfo.size() > 0
+                    ? imageInfo.get(0).thumbUrl
+                    : "";
+        }
+
+        // TODO
+        public MediaResult mediaResult() {
+/*
+        return new MediaResult(
+                apiResult.getString("/api/query/pages/page/revisions/rev"),
+                apiResult.getString("/api/query/pages/page/revisions/rev/@parsetree"));
+* */            return imageInfo!=null &&imageInfo.size()>0
+                    ? new MediaResult("","")
+                    : new MediaResult("","");
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class ImageInfo {
+        @SerializedName("timestamp")
+        public String timestamp;
+        @SerializedName("user")
+        public String user;
+        @SerializedName("url")
+        public String url;
+        @SerializedName("thumburl")
+        public String thumbUrl;
+        @SerializedName("thumbwidth")
+        public int thumbWidth;
+        @SerializedName("thumbheight")
+        public int thumbHeight;
+        @SerializedName("descriptionUrl")
+        public String descriptionurl;
+        @SerializedName("descriptionshorturl")
+        public String descriptionShortUrl;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class SearchInfoResponse {
+        @SerializedName("searchinfo")
+        public SearchInfo searchInfo;
+
+        public class SearchInfo {
+            @SerializedName("totalhits")
+            int totalhits;
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class SearchResult {
+        private static final String CATEGORY_PREFIX = "Category:";
+
+        @SerializedName("ns")
+        public String ns;
+        @SerializedName("title")
+        public String title;
+        @SerializedName("size")
+        public int size;
+        @SerializedName("wordcount")
+        public int wordcount;
+        @SerializedName("snippet")
+        public String snippet;
+        @SerializedName("timestamp")
+        public String timestamp;
+
+        public String getCategory() {
+            if (title == null || !title.startsWith(CATEGORY_PREFIX)) {
+                return null;
+            }
+
+            return title.substring(CATEGORY_PREFIX.length(), title.length());
         }
     }
 }

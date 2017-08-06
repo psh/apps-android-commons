@@ -33,6 +33,7 @@ import fr.free.nrw.commons.modifications.ModifierSequence;
 import fr.free.nrw.commons.mwapi.ApacheHttpClientMediaWikiApi;
 import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.mwapi.MediaWikiApiFacade;
+import fr.free.nrw.commons.mwapi.OkHttpMediaWikiApi;
 import fr.free.nrw.commons.nearby.NearbyPlaces;
 import fr.free.nrw.commons.utils.FileUtils;
 import timber.log.Timber;
@@ -89,7 +90,7 @@ public class CommonsApplication extends Application {
 
     public MediaWikiApi getMWApi() {
         if (api == null) {
-            api = new MediaWikiApiFacade();
+            api = new OkHttpMediaWikiApi("https://commons.wikimedia.org/");
         }
         return api;
     }

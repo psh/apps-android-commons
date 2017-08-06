@@ -37,17 +37,9 @@ public class LogBuilder {
     }
 
     URL toUrl() {
-        JSONObject fullData = new JSONObject();
         try {
-            fullData.put("schema", schema);
-            fullData.put("revision", rev);
-            fullData.put("wiki", CommonsApplication.EVENTLOG_WIKI);
-            data.put("device", EventLog.DEVICE);
-            data.put("platform", "Android/" + Build.VERSION.RELEASE);
-            data.put("appversion", "Android/" + BuildConfig.VERSION_NAME);
-            fullData.put("event", data);
-            return new URL(CommonsApplication.EVENTLOG_URL + "?" + Utils.urlEncode(fullData.toString()) + ";");
-        } catch (MalformedURLException | JSONException e) {
+            return new URL(toUrlString());
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -68,4 +60,20 @@ public class LogBuilder {
         log(false);
     }
 
+    public String toUrlString() {
+        try {
+            JSONObject fullData = new JSONObject();
+            fullData.put("schema", schema);
+            fullData.put("revision", rev);
+            fullData.put("wiki", CommonsApplication.EVENTLOG_WIKI);
+            data.put("device", EventLog.DEVICE);
+            data.put("platform", "Android/" + Build.VERSION.RELEASE);
+            data.put("appversion", "Android/" + BuildConfig.VERSION_NAME);
+            fullData.put("event", data);
+            return CommonsApplication.EVENTLOG_URL + "?" + Utils.urlEncode(fullData.toString()) + ";";
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
