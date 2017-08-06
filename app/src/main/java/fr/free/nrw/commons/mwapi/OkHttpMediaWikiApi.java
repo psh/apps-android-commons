@@ -192,12 +192,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .query.allCategories();
     }
 
-    @NonNull
-    @Override
-    public List<String> searchTitles(int searchCatsLimit, String title) throws IOException {
-        return searchCategories(searchCatsLimit, title);
-    }
-
     @Override
     public boolean logEvents(LogBuilder[] logBuilders) {
         boolean allSuccess = true;
@@ -223,7 +217,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
         return allSuccess;
     }
 
-    // TODO:
     @NonNull
     @Override
     public MediaResult fetchMediaByFilename(String filename) throws IOException {

@@ -33,7 +33,7 @@ class TitleCategories extends AsyncTask<Void, Void, List<String>> {
 
         //URL https://commons.wikimedia.org/w/api.php?action=query&format=xml&list=search&srwhat=text&srenablerewrites=1&srnamespace=14&srlimit=10&srsearch=
         try {
-            titleCategories = api.searchTitles(SEARCH_CATS_LIMIT, this.title);
+            titleCategories = api.searchCategories(SEARCH_CATS_LIMIT, this.title);
         } catch (IOException e) {
             Timber.e(e, "IO Exception: ");
             //Return empty arraylist

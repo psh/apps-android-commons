@@ -45,9 +45,6 @@ public interface MediaWikiApi {
     @NonNull
     List<String> allCategories(int searchCatsLimit, String filter) throws IOException;
 
-    @NonNull
-    List<String> searchTitles(int searchCatsLimit, String title) throws IOException;
-
     @Nullable
     String revisionsByFilename(String filename) throws IOException;
 

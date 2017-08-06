@@ -272,34 +272,6 @@ public class ApacheHttpClientMediaWikiApi implements MediaWikiApi {
     @Override
     @NonNull
     @Deprecated
-    public List<String> searchTitles(int searchCatsLimit, String title) throws IOException {
-        ArrayList<ApiResult> categoryNodes = api.action("query")
-                .param("format", "xml")
-                .param("list", "search")
-                .param("srwhat", "text")
-                .param("srnamespace", "14")
-                .param("srlimit", searchCatsLimit)
-                .param("srsearch", title)
-                .get()
-                .getNodes("/api/query/search/p/@title");
-
-        if (categoryNodes == null) {
-            return Collections.emptyList();
-        }
-
-        List<String> titleCategories = new ArrayList<>();
-        for (ApiResult categoryNode : categoryNodes) {
-            String cat = categoryNode.getDocument().getTextContent();
-            String catString = cat.replace("Category:", "");
-            titleCategories.add(catString);
-        }
-
-        return titleCategories;
-    }
-
-    @Override
-    @NonNull
-    @Deprecated
     public LogEventResult logEvents(String user, String lastModified, String queryContinue, int limit) throws IOException {
         org.mediawiki.api.MWApi.RequestBuilder builder = api.action("query")
                 .param("list", "logevents")

@@ -107,12 +107,6 @@ public class MediaWikiApiFacade implements MediaWikiApi {
         return newApi.allCategories(searchCatsLimit, filter);
     }
 
-    @NonNull
-    @Override
-    public List<String> searchTitles(int searchCatsLimit, String title) throws IOException {
-        return newApi.searchTitles(searchCatsLimit, title);
-    }
-
     @Nullable
     @Override
     public String revisionsByFilename(String filename) throws IOException {
