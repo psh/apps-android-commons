@@ -8,8 +8,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.mediawiki.api.ApiResult;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.CookieManager;
@@ -25,6 +23,7 @@ import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.mwapi.api.ApiResponse;
 import fr.free.nrw.commons.mwapi.api.QueryResponse;
 import fr.free.nrw.commons.mwapi.api.RequestBuilder;
+import io.reactivex.Single;
 import okhttp3.HttpUrl;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -228,12 +227,22 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
     @NonNull
     @Override
     public MediaResult fetchMediaByFilename(String filename) throws IOException {
-        return get(action("query")
+        String wikiContent = get(action("query")
                 .param("prop", "revisions")
                 .param("titles", filename)
                 .param("rvprop", "content")
                 .param("rvlimit", "1"))
-                .query.firstPage().mediaResult();
+                .query.firstPage().wikiContent();
+
+        String renderedXml = post(action("parse")
+                .param("title", "File:" + filename)
+                .param("text", wikiContent)
+                .param("prop", "parsetree")
+                .param("contentformat", "text/x-wiki")
+                .param("contentmodel", "wikitext"))
+                .parsedContent();
+
+        return new MediaResult(wikiContent, renderedXml);
     }
 
     @NonNull
@@ -298,6 +307,13 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
         ApiResponse result = get(builder);
 
         return new LogEventResult(getLogEventsFromResult(result), "");
+    }
+
+    // TODO
+    @NonNull
+    @Override
+    public Single<Integer> getUploadCount(String userName) {
+        return Single.fromCallable(() -> 0);
     }
 
     @NonNull

@@ -136,6 +136,10 @@ public class QueryResponse {
                     : "";
         }
 
+        public String wikiContent() {
+            return revisions != null && revisions.size() > 0 ? revisions.get(0).content : "";
+        }
+
         // TODO
         public MediaResult mediaResult() {
 /*

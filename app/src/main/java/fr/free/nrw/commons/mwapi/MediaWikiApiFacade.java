@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import io.reactivex.Single;
+
 /**
  * As the API calls are migrated from old / legacy code to new, the change can be made
  * in this file to reduce the scope of the change rippling out or a mix of old / new
@@ -126,5 +128,11 @@ public class MediaWikiApiFacade implements MediaWikiApi {
     @Override
     public LogEventResult logEvents(String user, String lastModified, String queryContinue, int limit) throws IOException {
         return newApi.logEvents(user, lastModified, queryContinue, limit);
+    }
+
+    @NonNull
+    @Override
+    public Single<Integer> getUploadCount(String userName) {
+        return legacy.getUploadCount(userName);
     }
 }

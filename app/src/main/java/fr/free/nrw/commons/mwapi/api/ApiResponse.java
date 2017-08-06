@@ -2,6 +2,9 @@ package fr.free.nrw.commons.mwapi.api;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class ApiResponse {
     @SerializedName("query")
     public QueryResponse query;
@@ -11,6 +14,12 @@ public class ApiResponse {
     public Continue cont;
     @SerializedName("edit")
     public EditResponse edit;
+    @SerializedName("parse")
+    public ParseResponse parse;
+
+    public String parsedContent() {
+        return parse != null ? parse.parsedContent() : "";
+    }
 
     @Override
     public String toString() {
@@ -34,5 +43,19 @@ public class ApiResponse {
     public class EditResponse {
         @SerializedName("result")
         public String result;
+    }
+
+    @SuppressWarnings("WeakerAccess")
+    public class ParseResponse {
+        @SerializedName("title")
+        public String title;
+        @SerializedName("pageid")
+        public String pageId;
+        @SerializedName("parsetree")
+        public Map<String, String> parseTree;
+
+        public String parsedContent() {
+            return parseTree != null && parseTree.size() > 0 ? new ArrayList<>(parseTree.values()).get(0) : "";
+        }
     }
 }
