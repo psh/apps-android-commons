@@ -36,7 +36,7 @@ public class OkHttpMediaWikiApiTest {
     @Before
     public void setUp() throws Exception {
         server = new MockWebServer();
-        testObject = new OkHttpMediaWikiApi("http://" + server.getHostName() + "/");
+        testObject = new OkHttpMediaWikiApi("http://" + server.getHostName() + "/", "https://tools.wmflabs.org/");
     }
 
     @After

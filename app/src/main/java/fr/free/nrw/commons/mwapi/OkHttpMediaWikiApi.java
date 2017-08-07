@@ -19,6 +19,8 @@ import fr.free.nrw.commons.mwapi.request.RequestBuilder;
 import fr.free.nrw.commons.mwapi.request.RequestBuilder.ParameterBuilder;
 import fr.free.nrw.commons.mwapi.response.ApiResponse;
 import io.reactivex.Single;
+import okhttp3.Call;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -34,11 +36,15 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
     private final CookieManager cookieHandler;
     private final OkHttpClient okHttpClient;
     private final String apiHost;
+    private final HttpUrl uploadsPerUser;
 
-    public OkHttpMediaWikiApi(String apiHost) {
+    public OkHttpMediaWikiApi(String apiHost, String wikimediaForge) {
         this.apiHost = apiHost;
         this.cookieHandler = new CookieManager();
         this.okHttpClient = HttpClientFactory.create(cookieHandler);
+        this.uploadsPerUser = HttpUrl.parse(wikimediaForge +
+                "urbanecmbot/uploadsbyuser/uploadsbyuser.py");
+
         RequestBuilder.use(okHttpClient, new Gson(), apiHost);
     }
 
@@ -257,6 +263,12 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
     @Nullable
     @Override
     public String revisionsByFilename(String filename) throws IOException {
+        ApiResponse result = get().action("query")
+                .param("prop", "revisions")
+                .param("rvprop", "timestamp|content")
+                .param("titles", filename)
+                .execute();
+
         return ""
                 /*api.action("query")
                 .param("prop", "revisions")
@@ -287,10 +299,18 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
         return new LogEventResult(result, "");
     }
 
-    // TODO
     @NonNull
     @Override
     public Single<Integer> getUploadCount(String userName) {
-        return Single.fromCallable(() -> 0);
+        return Single.fromCallable(() -> {
+            HttpUrl url = uploadsPerUser.newBuilder().addQueryParameter("user", userName).build();
+            Call call = okHttpClient.newCall(new Request.Builder().url(url).get().build());
+            Response response = call.execute();
+            int count = 0;
+            if (response.code() < 300) {
+                count = Integer.parseInt(response.body().string().trim());
+            }
+            return count;
+        });
     }
 }

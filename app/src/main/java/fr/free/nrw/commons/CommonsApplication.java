@@ -87,7 +87,7 @@ public class CommonsApplication extends Application {
 
     public MediaWikiApi getMWApi() {
         if (api == null) {
-            api = new OkHttpMediaWikiApi("https://commons.wikimedia.org/w/api.php");
+            api = new OkHttpMediaWikiApi("https://commons.wikimedia.org/w/api.php", "https://tools.wmflabs.org/");
         }
         return api;
     }
