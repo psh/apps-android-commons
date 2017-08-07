@@ -24,6 +24,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import timber.log.Timber;
 
 import static fr.free.nrw.commons.mwapi.request.RequestBuilder.get;
@@ -109,7 +110,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .clientlogin.getStatusCodeToReturn(); // TODO
     }
 
-    // note: may want to hold on to the username and the id for later.
     public boolean validateLogin() {
         return !get().action("query").param("meta", "userinfo")
                 .execute()
@@ -240,46 +240,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
 
     @NonNull
     @Override
-    // TODO:
-    public UploadResult uploadFile(String filename, InputStream file, long dataLength, String pageContents, String editSummary, ProgressListener progressListener) throws IOException {
-//        ApiResult result = api.upload(filename, file, dataLength, pageContents, editSummary, progressListener::onProgress);
-//
-//        Log.e("WTF", "Result: " + result.toString());
-//
-//        String resultStatus = result.getString("/api/upload/@result");
-//        if (!resultStatus.equals("Success")) {
-//            String errorCode = result.getString("/api/error/@code");
-//            return new UploadResult(resultStatus, errorCode);
-//        } else {
-//            Date dateUploaded = Utils.parseMWDate(result.getString("/api/upload/imageinfo/@timestamp"));
-//            String canonicalFilename = "File:" + result.getString("/api/upload/@filename").replace("_", " "); // Title vs Filename
-//            String imageUrl = result.getString("/api/upload/imageinfo/@url");
-//            return new UploadResult(resultStatus, dateUploaded, canonicalFilename, imageUrl);
-//        }
-        return new UploadResult("", "");
-    }
-
-    // TODO:
-    @Nullable
-    @Override
-    public String revisionsByFilename(String filename) throws IOException {
-        ApiResponse result = get().action("query")
-                .param("prop", "revisions")
-                .param("rvprop", "timestamp|content")
-                .param("titles", filename)
-                .execute();
-
-        return ""
-                /*api.action("query")
-                .param("prop", "revisions")
-                .param("rvprop", "timestamp|content")
-                .param("titles", filename)
-                .get()
-                .getString("/api/query/pages/page/revisions/rev")*/;
-    }
-
-    @NonNull
-    @Override
     public LogEventResult logEvents(String user, String lastModified, String queryContinue, int limit) throws IOException {
         ParameterBuilder builder = get().action("query")
                 .param("list", "logevents")
@@ -308,9 +268,52 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
             Response response = call.execute();
             int count = 0;
             if (response.code() < 300) {
-                count = Integer.parseInt(response.body().string().trim());
+                ResponseBody body = response.body();
+                if (body != null) {
+                    count = Integer.parseInt(body.string().trim());
+                }
             }
             return count;
         });
+    }
+
+    @NonNull
+    @Override
+    // TODO:
+    public UploadResult uploadFile(String filename, InputStream file, long dataLength, String pageContents, String editSummary, ProgressListener progressListener) throws IOException {
+//        ApiResult result = api.upload(filename, file, dataLength, pageContents, editSummary, progressListener::onProgress);
+//
+//        Log.e("WTF", "Result: " + result.toString());
+//
+//        String resultStatus = result.getString("/api/upload/@result");
+//        if (!resultStatus.equals("Success")) {
+//            String errorCode = result.getString("/api/error/@code");
+//            return new UploadResult(resultStatus, errorCode);
+//        } else {
+//            Date dateUploaded = Utils.parseMWDate(result.getString("/api/upload/imageinfo/@timestamp"));
+//            String canonicalFilename = "File:" + result.getString("/api/upload/@filename").replace("_", " "); // Title vs Filename
+//            String imageUrl = result.getString("/api/upload/imageinfo/@url");
+//            return new UploadResult(resultStatus, dateUploaded, canonicalFilename, imageUrl);
+//        }
+        return new UploadResult("", "");
+    }
+
+    // TODO:
+    @Nullable
+    @Override
+    public String revisionsByFilename(String filename) throws IOException {
+        get().action("query")
+                .param("prop", "revisions")
+                .param("rvprop", "timestamp|content")
+                .param("titles", filename)
+                .execute();
+
+        return ""
+                /*api.action("query")
+                .param("prop", "revisions")
+                .param("rvprop", "timestamp|content")
+                .param("titles", filename)
+                .get()
+                .getString("/api/query/pages/page/revisions/rev")*/;
     }
 }
