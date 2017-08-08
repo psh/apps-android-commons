@@ -129,11 +129,14 @@ public class CommonsApplication extends Application {
 
         Timber.plant(new Timber.DebugTree());
 
-        Stetho.initializeWithDefaults(this);
+
 
         if (!BuildConfig.DEBUG) {
             ACRA.init(this);
+        } else {
+            Stetho.initializeWithDefaults(this);
         }
+
         // Fire progress callbacks for every 3% of uploaded content
         System.setProperty("in.yuvi.http.fluent.PROGRESS_TRIGGER_THRESHOLD", "3.0");
 
