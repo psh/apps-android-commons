@@ -127,7 +127,7 @@ public class Utils {
     public static String makeThumbBaseUrl(String filename) {
         String name = new PageTitle(filename).getPrefixedText();
         String sha = new String(Hex.encodeHex(DigestUtils.md5(name)));
-        return String.format("%s/%s/%s/%s", CommonsApplication.IMAGE_URL_BASE, sha.substring(0, 1), sha.substring(0, 2), urlEncode(name));
+        return String.format("%s/%s/%s/%s", BuildConfig.IMAGE_URL_BASE, sha.substring(0, 1), sha.substring(0, 2), urlEncode(name));
     }
 
     public static String getStringFromDOM(Node dom) {
