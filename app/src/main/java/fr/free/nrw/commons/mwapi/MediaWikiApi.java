@@ -46,9 +46,6 @@ public interface MediaWikiApi {
     @NonNull
     Observable<String> allCategories(String filter, int searchCatsLimit);
 
-    @NonNull
-    Observable<String> searchTitles(String title, int searchCatsLimit);
-
     @Nullable
     String revisionsByFilename(String filename) throws IOException;
 

@@ -18,6 +18,7 @@ import fr.free.nrw.commons.mwapi.request.HttpClientFactory;
 import fr.free.nrw.commons.mwapi.request.RequestBuilder;
 import fr.free.nrw.commons.mwapi.request.RequestBuilder.ParameterBuilder;
 import fr.free.nrw.commons.mwapi.response.ApiResponse;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
@@ -157,30 +158,6 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .edit.result;
     }
 
-    @NonNull
-    @Override
-    public List<String> searchCategories(int searchCatsLimit, String filterValue) throws IOException {
-        return get().action("query")
-                .param("list", "search")
-                .param("srwhat", "text")
-                .param("srnamespace", CATEGORIES_NAMESPACE)
-                .param("srlimit", searchCatsLimit)
-                .param("srsearch", filterValue)
-                .execute()
-                .query.categories();
-    }
-
-    @NonNull
-    @Override
-    public List<String> allCategories(int searchCatsLimit, String filter) throws IOException {
-        return get().action("query")
-                .param("list", "allcategories")
-                .param("acprefix", filter)
-                .param("aclimit", searchCatsLimit)
-                .execute()
-                .query.allCategories();
-    }
-
     @Override
     public boolean logEvents(LogBuilder[] logBuilders) {
         boolean allSuccess = true;
@@ -227,6 +204,30 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
                 .parsedContent();
 
         return new MediaResult(wikiContent, renderedXml);
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> searchCategories(String filterValue, int searchCatsLimit) {
+        return Observable.fromIterable(get().action("query")
+                .param("list", "search")
+                .param("srwhat", "text")
+                .param("srnamespace", CATEGORIES_NAMESPACE)
+                .param("srlimit", searchCatsLimit)
+                .param("srsearch", filterValue)
+                .execute()
+                .query.categories());
+    }
+
+    @NonNull
+    @Override
+    public Observable<String> allCategories(String filter, int searchCatsLimit) {
+        return Observable.fromIterable(get().action("query")
+                .param("list", "allcategories")
+                .param("acprefix", filter)
+                .param("aclimit", searchCatsLimit)
+                .execute()
+                .query.allCategories());
     }
 
     @Override
@@ -281,6 +282,16 @@ public class OkHttpMediaWikiApi implements MediaWikiApi {
     @Override
     // TODO:
     public UploadResult uploadFile(String filename, InputStream file, long dataLength, String pageContents, String editSummary, ProgressListener progressListener) throws IOException {
+        String token = this.getEditToken();
+        ApiResponse response = post().action("upload").withListener(progressListener)
+                .param("token", token)
+                .param("text", pageContents)
+                .param("ignorewarnings", "1")
+                .param("comment", editSummary)
+                .param("filename", filename)
+                .param("file", new RequestBuilder.InputStreamDescriptor(filename, "image/jpeg", file, dataLength))
+                .execute();
+
 //        ApiResult result = api.upload(filename, file, dataLength, pageContents, editSummary, progressListener::onProgress);
 //
 //        Log.e("WTF", "Result: " + result.toString());

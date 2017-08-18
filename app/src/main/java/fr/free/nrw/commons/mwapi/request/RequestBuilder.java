@@ -2,6 +2,9 @@ package fr.free.nrw.commons.mwapi.request;
 
 import com.google.gson.Gson;
 
+import java.io.InputStream;
+
+import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.mwapi.response.ApiResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -39,6 +42,24 @@ public class RequestBuilder {
 
         ParameterBuilder param(String name, int value);
 
+        ParameterBuilder param(String name, InputStreamDescriptor value);
+
+        ParameterBuilder withListener(MediaWikiApi.ProgressListener listener);
+
         ApiResponse execute();
+    }
+
+    public static class InputStreamDescriptor {
+        public final String filename;
+        public final String mediaType;
+        public final InputStream inputStream;
+        public final long totalSize;
+
+        public InputStreamDescriptor(String filename, String mediaType, InputStream inputStream, long totalSize) {
+            this.filename = filename;
+            this.mediaType = mediaType;
+            this.inputStream = inputStream;
+            this.totalSize = totalSize;
+        }
     }
 }

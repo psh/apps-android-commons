@@ -27,8 +27,8 @@ class GetBuilder extends AbstractBuilder {
 
     private HttpUrl buildGetRequest() {
         HttpUrl.Builder builder = parsedApiEndpoint.newBuilder();
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            builder.addQueryParameter(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            builder.addQueryParameter(entry.getKey(), (String) entry.getValue());
         }
         return builder.build();
     }

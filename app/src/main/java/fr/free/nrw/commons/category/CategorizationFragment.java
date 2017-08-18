@@ -249,7 +249,7 @@ public class CategorizationFragment extends Fragment {
         String title = titleDesc.getString("Title", "");
 
         return CommonsApplication.getInstance().getMWApi()
-                .searchTitles(title, SEARCH_CATS_LIMIT)
+                .searchCategories(title, SEARCH_CATS_LIMIT)
                 .map(name -> new CategoryItem(name, false));
     }
 

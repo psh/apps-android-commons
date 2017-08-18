@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import fr.free.nrw.commons.BuildConfig;
+import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.mwapi.response.ApiResponse;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -16,7 +17,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 abstract class AbstractBuilder implements RequestBuilder.ActionBuilder, RequestBuilder.ParameterBuilder {
-    protected Map<String, String> params = new HashMap<>();
+    protected Map<String, Object> params = new HashMap<>();
+    protected MediaWikiApi.ProgressListener listener;
     private final Gson gsonParser;
     OkHttpClient okHttpClient;
     HttpUrl parsedApiEndpoint;
@@ -43,6 +45,18 @@ abstract class AbstractBuilder implements RequestBuilder.ActionBuilder, RequestB
     @Override
     public RequestBuilder.ParameterBuilder param(String name, int value) {
         params.put(name, "" + value);
+        return this;
+    }
+
+    @Override
+    public RequestBuilder.ParameterBuilder param(String name, RequestBuilder.InputStreamDescriptor value) {
+        params.put(name, value);
+        return this;
+    }
+
+    @Override
+    public RequestBuilder.ParameterBuilder withListener(MediaWikiApi.ProgressListener listener) {
+        this.listener = listener;
         return this;
     }
 
