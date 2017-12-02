@@ -27,7 +27,7 @@ public class ModifierSequence {
     public ModifierSequence(Uri mediaUri, JSONObject data) {
         this(mediaUri);
         JSONArray modifiersJSON = data.optJSONArray("modifiers");
-        for(int i=0; i< modifiersJSON.length(); i++) {
+        for (int i = 0; i < modifiersJSON.length(); i++) {
             modifiers.add(PageModifier.fromJSON(modifiersJSON.optJSONObject(i)));
         }
     }
@@ -41,15 +41,15 @@ public class ModifierSequence {
     }
 
     public String executeModifications(String pageName, String pageContents) {
-        for(PageModifier modifier: modifiers) {
+        for (PageModifier modifier: modifiers) {
             pageContents = modifier.doModification(pageName,  pageContents);
         }
         return pageContents;
     }
 
     public String getEditSummary() {
-        StringBuffer editSummary = new StringBuffer();
-        for(PageModifier modifier: modifiers) {
+        StringBuilder editSummary = new StringBuilder();
+        for (PageModifier modifier: modifiers) {
             editSummary.append(modifier.getEditSumary()).append(" ");
         }
         editSummary.append("Via Commons Mobile App");
@@ -60,7 +60,7 @@ public class ModifierSequence {
         JSONObject data = new JSONObject();
         try {
             JSONArray modifiersJSON = new JSONArray();
-            for(PageModifier modifier: modifiers) {
+            for (PageModifier modifier: modifiers) {
                 modifiersJSON.put(modifier.toJSON());
             }
             data.put("modifiers", modifiersJSON);
@@ -81,7 +81,8 @@ public class ModifierSequence {
         // Hardcoding column positions!
         ModifierSequence ms = null;
         try {
-            ms = new ModifierSequence(Uri.parse(cursor.getString(1)), new JSONObject(cursor.getString(2)));
+            ms = new ModifierSequence(Uri.parse(cursor.getString(1)),
+                new JSONObject(cursor.getString(2)));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -92,12 +93,12 @@ public class ModifierSequence {
 
     public void save() {
         try {
-            if(contentUri == null) {
+            if (contentUri == null) {
                 contentUri = client.insert(ModificationsContentProvider.BASE_URI, this.toContentValues());
             } else {
                 client.update(contentUri, toContentValues(), null, null);
             }
-        } catch(RemoteException e) {
+        } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }

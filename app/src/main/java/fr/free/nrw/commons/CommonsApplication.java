@@ -2,8 +2,11 @@ package fr.free.nrw.commons;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +18,7 @@ import android.support.v4.util.LruCache;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
@@ -23,11 +27,17 @@ import org.acra.annotation.ReportsCrashes;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import fr.free.nrw.commons.auth.AccountUtil;
 import fr.free.nrw.commons.caching.CacheController;
 import fr.free.nrw.commons.contributions.Contribution;
 import fr.free.nrw.commons.data.Category;
 import fr.free.nrw.commons.data.DBOpenHelper;
+import fr.free.nrw.commons.di.DaggerAppComponent;
 import fr.free.nrw.commons.modifications.ModifierSequence;
 import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.mwapi.OkHttpMediaWikiApi;
@@ -44,7 +54,7 @@ import timber.log.Timber;
         resDialogCommentPrompt = R.string.crash_dialog_comment_prompt,
         resDialogOkToast = R.string.crash_dialog_ok_toast
 )
-public class CommonsApplication extends Application {
+public class CommonsApplication extends Application implements HasActivityInjector {
 
     private Account currentAccount = null; // Unlike a savings account...
 
@@ -55,8 +65,11 @@ public class CommonsApplication extends Application {
 
     public static final String DEFAULT_EDIT_SUMMARY = "Uploaded using Android Commons app";
 
-    public static final String FEEDBACK_EMAIL = "commons-app-android@googlegroups.com";
+    public static final String FEEDBACK_EMAIL = "commons-app-android-private@googlegroups.com";
     public static final String FEEDBACK_EMAIL_SUBJECT = "Commons Android App (%s) Feedback";
+
+    @Inject DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
+    @Inject MediaWikiApi mediaWikiApi;
 
     private static CommonsApplication instance = null;
     private MediaWikiApi api = null;
@@ -64,6 +77,8 @@ public class CommonsApplication extends Application {
     private CacheController cacheData = null;
     private DBOpenHelper dbOpenHelper = null;
     private NearbyPlaces nearbyPlaces = null;
+
+    private RefWatcher refWatcher;
 
     /**
      * This should not be called by ANY application code (other than the magic Android glue)
@@ -117,16 +132,18 @@ public class CommonsApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
+
+        if (setupLeakCanary() == RefWatcher.DISABLED) {
             return;
         }
-        LeakCanary.install(this);
 
         Timber.plant(new Timber.DebugTree());
 
-
+        DaggerAppComponent
+                .builder()
+                .application(this)
+                .build()
+                .inject(this);
 
         if (!BuildConfig.DEBUG) {
             ACRA.init(this);
@@ -138,13 +155,21 @@ public class CommonsApplication extends Application {
         System.setProperty("in.yuvi.http.fluent.PROGRESS_TRIGGER_THRESHOLD", "3.0");
 
         Fresco.initialize(this);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
-                CommonsApplication.getInstance());
-        // Increase counter by one, starts from 1
-        prefs.edit().putInt("app_start_counter", prefs.getInt("app_start_counter", 0) + 1).commit();
 
         //For caching area -> categories
         cacheData = new CacheController();
+    }
+
+    protected RefWatcher setupLeakCanary() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return RefWatcher.DISABLED;
+        }
+        return LeakCanary.install(this);
+    }
+
+    public static RefWatcher getRefWatcher(Context context) {
+        CommonsApplication application = (CommonsApplication) context.getApplicationContext();
+        return application.refWatcher;
     }
 
     /**
@@ -169,10 +194,10 @@ public class CommonsApplication extends Application {
             return false; // This should never happen
         }
 
-        accountManager.invalidateAuthToken(AccountUtil.accountType(), getMWApi().getAuthCookie());
+        accountManager.invalidateAuthToken(AccountUtil.accountType(), mediaWikiApi.getAuthCookie());
         try {
             String authCookie = accountManager.blockingGetAuthToken(curAccount, "", false);
-            getMWApi().setAuthCookie(authCookie);
+            mediaWikiApi.setAuthCookie(authCookie);
             return true;
         } catch (OperationCanceledException | NullPointerException | IOException | AuthenticatorException e) {
             e.printStackTrace();
@@ -182,11 +207,11 @@ public class CommonsApplication extends Application {
 
     public boolean deviceHasCamera() {
         PackageManager pm = getPackageManager();
-        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
-                pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)
+                || pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
     }
 
-    public void clearApplicationData(Context context) {
+    public void clearApplicationData(Context context, LogoutListener logoutListener) {
         File cacheDirectory = context.getCacheDir();
         File applicationDirectory = new File(cacheDirectory.getParent());
         if (applicationDirectory.exists()) {
@@ -200,19 +225,58 @@ public class CommonsApplication extends Application {
 
         AccountManager accountManager = AccountManager.get(this);
         Account[] allAccounts = accountManager.getAccountsByType(AccountUtil.accountType());
-        for (Account allAccount : allAccounts) {
-            accountManager.removeAccount(allAccount, null, null);
-        }
 
-        //TODO: fix preference manager 
-        PreferenceManager.getDefaultSharedPreferences(getInstance()).edit().clear().commit();
-        SharedPreferences preferences = context
-                .getSharedPreferences("fr.free.nrw.commons", MODE_PRIVATE);
-        preferences.edit().clear().commit();
-        context.getSharedPreferences("prefs", Context.MODE_PRIVATE).edit().clear().commit();
-        preferences.edit().putBoolean("firstrun", false).apply();
-        updateAllDatabases();
-        currentAccount = null;
+        AccountManagerCallback<Boolean> amCallback = new AccountManagerCallback<Boolean>() {
+
+            private int index = 0;
+
+            void setIndex(int index) {
+                this.index = index;
+            }
+
+            int getIndex() {
+                return index;
+            }
+
+            @Override
+            public void run(AccountManagerFuture<Boolean> accountManagerFuture) {
+                setIndex(getIndex() + 1);
+
+                try {
+                    if (accountManagerFuture != null && accountManagerFuture.getResult()) {
+                        Timber.d("Account removed successfully.");
+                    }
+                } catch (OperationCanceledException | IOException | AuthenticatorException e) {
+                    e.printStackTrace();
+                }
+
+                if (getIndex() == allAccounts.length) {
+                    Timber.d("All accounts have been removed");
+                    //TODO: fix preference manager
+                    PreferenceManager.getDefaultSharedPreferences(getInstance())
+                            .edit().clear().commit();
+                    SharedPreferences preferences = context
+                            .getSharedPreferences("fr.free.nrw.commons", MODE_PRIVATE);
+                    preferences.edit().clear().commit();
+                    context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                            .edit().clear().commit();
+                    preferences.edit().putBoolean("firstrun", false).apply();
+                    updateAllDatabases();
+                    currentAccount = null;
+
+                    logoutListener.onLogoutComplete();
+                }
+            }
+        };
+
+        for (Account account : allAccounts) {
+            accountManager.removeAccount(account, amCallback, null);
+        }
+    }
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingActivityInjector;
     }
 
     /**
@@ -226,5 +290,9 @@ public class CommonsApplication extends Application {
         ModifierSequence.Table.onDelete(db);
         Category.Table.onDelete(db);
         Contribution.Table.onDelete(db);
+    }
+
+    public interface LogoutListener {
+        void onLogoutComplete();
     }
 }
