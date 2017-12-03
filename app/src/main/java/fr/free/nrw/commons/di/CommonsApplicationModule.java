@@ -20,6 +20,8 @@ import fr.free.nrw.commons.mwapi.ApacheHttpClientMediaWikiApi;
 import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.nearby.NearbyPlaces;
 import fr.free.nrw.commons.upload.UploadController;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -53,6 +55,12 @@ public class CommonsApplicationModule {
     @Named("prefs")
     public SharedPreferences providesOtherSharedPreferences() {
         return application.getSharedPreferences("prefs", MODE_PRIVATE);
+    }
+
+    @Provides
+    @Named("io")
+    public Scheduler provideIoScheduler() {
+        return Schedulers.io();
     }
 
     @Provides

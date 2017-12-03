@@ -68,4 +68,8 @@ public class SessionManager {
                 .map(a -> accountManager.removeAccount(a, null, null).getResult()))
                 .doOnComplete(() -> currentAccount = null);
     }
+
+    public String getCurrentAccountName() {
+        return getCurrentAccount().name;
+    }
 }

@@ -32,12 +32,10 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.auth.AuthenticatedActivity;
 import fr.free.nrw.commons.auth.SessionManager;
 import fr.free.nrw.commons.media.MediaDetailPagerFragment;
-import fr.free.nrw.commons.mwapi.MediaWikiApi;
 import fr.free.nrw.commons.settings.Prefs;
 import fr.free.nrw.commons.upload.UploadService;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.ContentResolver.requestSync;
@@ -55,9 +53,9 @@ public  class       ContributionsActivity
                     FragmentManager.OnBackStackChangedListener,
                     ContributionsListFragment.SourceRefresher {
 
-    @Inject MediaWikiApi mediaWikiApi;
     @Inject SessionManager sessionManager;
     @Inject @Named("default_preferences") SharedPreferences prefs;
+    @Inject ContributionsModel contributionsModel;
 
     private Cursor allContributions;
     private ContributionsListFragment contributionsList;
@@ -284,16 +282,12 @@ public  class       ContributionsActivity
 
     @SuppressWarnings("ConstantConditions")
     private void setUploadCount() {
-        compositeDisposable.add(mediaWikiApi
-                .getUploadCount(sessionManager.getCurrentAccount().name)
-                .subscribeOn(Schedulers.io())
+        contributionsModel.observeUploadCount()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        uploadCount -> getSupportActionBar().setSubtitle(getResources()
-                                .getQuantityString(R.plurals.contributions_subtitle,
-                                        uploadCount, uploadCount)),
-                        t -> Timber.e(t, "Fetching upload count failed")
-                ));
+                .subscribe(uploadCount -> getSupportActionBar().setSubtitle(getResources()
+                        .getQuantityString(R.plurals.contributions_subtitle,
+                                uploadCount, uploadCount)));
+        contributionsModel.refreshUploadCount();
     }
 
     @Override
