@@ -22,6 +22,7 @@ public class HttpClientFactory {
                                 .newBuilder()
                                 .header("User-Agent", USER_AGENT).build()))
                 .cookieJar(new JavaNetCookieJar(cookieHandler));
+        httpClientBuilder.socketFactory(new RestrictedSocketFactory(16 * 1024));
 
         // Only enable logging when it's a debug build.
         if (BuildConfig.DEBUG) {

@@ -68,6 +68,11 @@ class PostBuilder extends AbstractBuilder {
             this.totalSize = totalSize;
         }
 
+        @Override
+        public long contentLength() throws IOException {
+            return totalSize;
+        }
+
         @Nullable
         @Override
         public MediaType contentType() {
@@ -75,46 +80,64 @@ class PostBuilder extends AbstractBuilder {
         }
 
         @Override
-        public void writeTo(@NonNull BufferedSink sink) throws IOException {
+        public void writeTo(BufferedSink sink) throws IOException {
             Source source = null;
             try {
-                source = Okio.source(new WrappedInputStream(inputStream, totalSize));
-                sink.writeAll(source);
+                source = Okio.source(inputStream);
+                long total = 0;
+                long read;
+
+                while ((read = source.read(sink.buffer(), 2048)) != -1) {
+                    total += read;
+                    sink.flush();
+                    listener.onProgress(total, totalSize);
+
+                }
             } finally {
                 Util.closeQuietly(source);
             }
         }
+//        @Override
+//        public void writeTo(@NonNull BufferedSink sink) throws IOException {
+//            Source source = null;
+//            try {
+//                source = Okio.source(new WrappedInputStream(inputStream, totalSize));
+//                sink.writeAll(source);
+//            } finally {
+//                Util.closeQuietly(source);
+//            }
+//        }
     }
 
-    private class WrappedInputStream extends InputStream {
-        private long sent = 0;
-        private long total = 0;
-        private InputStream inputStream;
-
-        WrappedInputStream(InputStream inputStream, long total) {
-            this.inputStream = inputStream;
-            this.total = total;
-        }
-
-        @Override
-        public int read(@NonNull byte[] b, int off, int len) throws IOException {
-            int read = inputStream.read(b, off, len);
-            if (read > -1) {
-                sent += read;
-            }
-            Log.e("MW", "### Upload " + sent + " / " + total);
-            listener.onProgress(sent, total);
-            return read;
-        }
-
-        @Override
-        public void close() throws IOException {
-            inputStream.close();
-        }
-
-        @Override
-        public int read() throws IOException {
-            return 0;
-        }
-    }
+//    private class WrappedInputStream extends InputStream {
+//        private long sent = 0;
+//        private long total = 0;
+//        private InputStream inputStream;
+//
+//        WrappedInputStream(InputStream inputStream, long total) {
+//            this.inputStream = inputStream;
+//            this.total = total;
+//        }
+//
+//        @Override
+//        public int read(@NonNull byte[] b, int off, int len) throws IOException {
+//            int read = inputStream.read(b, off, len);
+//            if (read > -1) {
+//                sent += read;
+//            }
+//            Log.e("MW", "### Upload " + sent + " / " + total);
+//            listener.onProgress(sent, total);
+//            return read;
+//        }
+//
+//        @Override
+//        public void close() throws IOException {
+//            inputStream.close();
+//        }
+//
+//        @Override
+//        public int read() throws IOException {
+//            return 0;
+//        }
+//    }
 }
