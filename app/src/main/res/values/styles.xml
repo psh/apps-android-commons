@@ -9,7 +9,9 @@
 
         <item name="semitransparentText">@color/commons_app_blue_dark</item>
         <item name="subBackground">@color/sub_background_dark</item>
-        <item name="fragmentCategorisationBackground">@color/fragment_categorisation_background_dark</item>
+        <item name="fragmentCategorisationBackground">
+            @color/fragment_categorisation_background_dark
+        </item>
         <item name="buttonBackground">@color/button_background_dark</item>
         <item name="uploadOverlayBackground">@color/upload_overlay_background_dark</item>
         <item name="spinnerTheme">@style/DarkSpinnerTheme</item>
@@ -24,7 +26,9 @@
 
         <item name="semitransparentText">@color/commons_app_blue_light</item>
         <item name="subBackground">@color/sub_background_light</item>
-        <item name="fragmentCategorisationBackground">@color/fragment_categorisation_background_light</item>
+        <item name="fragmentCategorisationBackground">
+            @color/fragment_categorisation_background_light
+        </item>
         <item name="buttonBackground">@color/button_background_light</item>
         <item name="uploadOverlayBackground">@color/upload_overlay_background_light</item>
         <item name="spinnerTheme">@style/LightSpinnerTheme</item>
@@ -46,5 +50,9 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+    <style name="LightAppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="LightAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

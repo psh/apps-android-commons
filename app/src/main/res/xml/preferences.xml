@@ -12,6 +12,13 @@
         />
 
     <CheckBoxPreference
+        android:key="uploadOverWifi"
+        android:title="Wifi Uploads"
+        android:defaultValue="false"
+        android:summary="Wait for Wifi connection before uploading"
+        />
+
+    <CheckBoxPreference
         android:key="allowGps"
         android:title="@string/allow_gps"
         android:defaultValue="false"

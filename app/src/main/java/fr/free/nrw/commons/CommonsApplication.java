@@ -2,8 +2,10 @@ package fr.free.nrw.commons;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -26,6 +28,7 @@ import fr.free.nrw.commons.data.DBOpenHelper;
 import fr.free.nrw.commons.di.ApplicationlessInjection;
 import fr.free.nrw.commons.di.CommonsApplicationComponent;
 import fr.free.nrw.commons.modifications.ModifierSequenceDao;
+import fr.free.nrw.commons.upload.queue.ConnectivityMonitor;
 import fr.free.nrw.commons.utils.FileUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -44,6 +47,7 @@ public class CommonsApplication extends Application {
 
     @Inject SessionManager sessionManager;
     @Inject DBOpenHelper dbOpenHelper;
+    @Inject ConnectivityMonitor connectivityMonitor;
 
     @Inject @Named("default_preferences") SharedPreferences defaultPrefs;
     @Inject @Named("application_preferences") SharedPreferences applicationPrefs;
@@ -88,8 +92,9 @@ public class CommonsApplication extends Application {
 
         // Fire progress callbacks for every 3% of uploaded content
         System.setProperty("in.yuvi.http.fluent.PROGRESS_TRIGGER_THRESHOLD", "3.0");
-    }
 
+        registerReceiver(connectivityMonitor, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
 
     /**
      * Helps in setting up LeakCanary library

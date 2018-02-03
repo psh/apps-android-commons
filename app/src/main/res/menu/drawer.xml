@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_home"
@@ -9,6 +10,12 @@
         android:id="@+id/action_nearby"
         android:icon="@drawable/ic_location_black_24dp"
         android:title="@string/navigation_item_nearby"/>
+
+    <item
+        android:id="@+id/upload_queue"
+        android:icon="@drawable/ic_file_upload_black_24dp"
+        app:actionViewClass="android.widget.TextView"
+        android:title="@string/upload_queue_menu_item" />
 
     <item
         android:id="@+id/action_about"

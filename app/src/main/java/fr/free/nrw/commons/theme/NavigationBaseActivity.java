@@ -5,12 +5,14 @@ import android.accounts.AccountManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,7 @@ import fr.free.nrw.commons.contributions.ContributionsActivity;
 import fr.free.nrw.commons.nearby.NearbyActivity;
 import fr.free.nrw.commons.notification.NotificationActivity;
 import fr.free.nrw.commons.settings.SettingsActivity;
+import fr.free.nrw.commons.upload.queue.UploadQueueActivity;
 import timber.log.Timber;
 
 public abstract class NavigationBaseActivity extends BaseActivity
@@ -42,6 +45,7 @@ public abstract class NavigationBaseActivity extends BaseActivity
     DrawerLayout drawerLayout;
 
     private ActionBarDrawerToggle toggle;
+    private TextView uploads;
 
     public void initDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
@@ -55,8 +59,16 @@ public abstract class NavigationBaseActivity extends BaseActivity
         toggle.syncState();
         setDrawerPaneWidth();
         setUserName();
+
+        uploads = (TextView) navigationView.getMenu().findItem(R.id.upload_queue).getActionView();
+        uploads.setGravity(Gravity.CENTER_VERTICAL);
+        uploads.setTypeface(null, Typeface.BOLD);
+        uploads.setTextColor(getResources().getColor(R.color.secondaryDarkColor));
     }
 
+    protected void displayUploadCount(int count) {
+        uploads.setText((count > 0) ? String.valueOf(count) : null);
+    }
     /**
      * Set the username in navigationHeader.
      */
@@ -116,6 +128,10 @@ public abstract class NavigationBaseActivity extends BaseActivity
             case R.id.action_introduction:
                 drawerLayout.closeDrawer(navigationView);
                 WelcomeActivity.startYourself(this);
+                return true;
+            case R.id.upload_queue:
+                drawerLayout.closeDrawer(navigationView);
+                UploadQueueActivity.startYourself(this);
                 return true;
             case R.id.action_feedback:
                 drawerLayout.closeDrawer(navigationView);

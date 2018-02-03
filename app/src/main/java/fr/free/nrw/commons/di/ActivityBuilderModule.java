@@ -12,6 +12,8 @@ import fr.free.nrw.commons.notification.NotificationActivity;
 import fr.free.nrw.commons.settings.SettingsActivity;
 import fr.free.nrw.commons.upload.MultipleShareActivity;
 import fr.free.nrw.commons.upload.ShareActivity;
+import fr.free.nrw.commons.upload.queue.UploadQueueActivity;
+import fr.free.nrw.commons.upload.queue.UploadQueueModule;
 
 @Module
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -46,4 +48,7 @@ public abstract class ActivityBuilderModule {
 
     @ContributesAndroidInjector
     abstract NotificationActivity bindNotificationActivity();
+
+    @ContributesAndroidInjector(modules = {UploadQueueModule.class})
+    abstract UploadQueueActivity bindUploadQueueActivity();
 }
