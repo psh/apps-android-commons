@@ -5,31 +5,53 @@ import android.content.SharedPreferences;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import io.reactivex.disposables.Disposable;
+import fr.free.nrw.commons.upload.UploadService;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class UploadQueuePresenter implements UploadQueueContract.Presenter {
     private final SharedPreferences prefs;
+    private final UploadQueueModel model;
     private final ConnectivityMonitor connectivityMonitor;
-    private Disposable connectivityDisposable;
+    private CompositeDisposable subscriptions;
     private UploadQueueContract.View view;
+    private UploadService uploadService;
 
     @Inject
-    public UploadQueuePresenter(ConnectivityMonitor connectivityMonitor, @Named("default_preferences") SharedPreferences prefs) {
+    public UploadQueuePresenter(ConnectivityMonitor connectivityMonitor,
+                                @Named("default_preferences") SharedPreferences prefs,
+                                UploadQueueModel model) {
         this.connectivityMonitor = connectivityMonitor;
         this.prefs = prefs;
+        this.model = model;
+        this.subscriptions = new CompositeDisposable();
     }
 
+    @Override
     public void start(UploadQueueContract.View view) {
         this.view = view;
-        connectivityDisposable = connectivityMonitor
+
+        subscriptions.add(connectivityMonitor
                 .observeConnection()
-                .subscribe(this::onConnectivityChange);
+                .subscribe(this::onConnectivityChange));
+
+        subscriptions.add(model.observeContributions()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::displayContributions));
+
+        model.reloadContributions();
     }
 
+    @Override
     public void stop() {
-        if (connectivityDisposable != null && !connectivityDisposable.isDisposed()) {
-            connectivityDisposable.dispose();
-        }
+        subscriptions.dispose();
+        view = null;
+        uploadService = null;
+    }
+
+    @Override
+    public void setUploadService(UploadService uploadService) {
+        this.uploadService = uploadService;
     }
 
     private void onConnectivityChange(@ConnectivityMonitor.ConnectionType int connectionType) {

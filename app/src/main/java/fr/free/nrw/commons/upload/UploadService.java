@@ -243,22 +243,23 @@ public class UploadService extends HandlerService<Contribution> {
                     getString(R.string.upload_progress_notification_title_finishing, contribution.getDisplayTitle()),
                     contribution
             );
-            UploadResult uploadResult = mwApi.uploadFile(filename, file, contribution.getDataLength(), contribution.getPageContents(), contribution.getEditSummary(), notificationUpdater);
 
-            Timber.d("Response is %s", uploadResult.toString());
-
-            curProgressNotification = null;
-
-            String resultStatus = uploadResult.getResultStatus();
-            if (!resultStatus.equals("Success")) {
-                showFailedNotification(contribution);
-            } else {
-                contribution.setFilename(uploadResult.getCanonicalFilename());
-                contribution.setImageUrl(uploadResult.getImageUrl());
-                contribution.setState(Contribution.STATE_COMPLETED);
-                contribution.setDateUploaded(uploadResult.getDateUploaded());
-                contributionDao.save(contribution);
-            }
+//            UploadResult uploadResult = mwApi.uploadFile(filename, file, contribution.getDataLength(), contribution.getPageContents(), contribution.getEditSummary(), notificationUpdater);
+//
+//            Timber.d("Response is %s", uploadResult.toString());
+//
+//            curProgressNotification = null;
+//
+//            String resultStatus = uploadResult.getResultStatus();
+//            if (!resultStatus.equals("Success")) {
+//                showFailedNotification(contribution);
+//            } else {
+//                contribution.setFilename(uploadResult.getCanonicalFilename());
+//                contribution.setImageUrl(uploadResult.getImageUrl());
+//                contribution.setState(Contribution.STATE_COMPLETED);
+//                contribution.setDateUploaded(uploadResult.getDateUploaded());
+//                contributionDao.save(contribution);
+//            }
         } catch (IOException e) {
             Timber.d("I have a network fuckup");
             showFailedNotification(contribution);
