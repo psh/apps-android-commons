@@ -19,6 +19,7 @@ import fr.free.nrw.commons.settings.Prefs;
 
 import static fr.free.nrw.commons.contributions.ContributionDao.Table.ALL_FIELDS;
 import static fr.free.nrw.commons.contributions.ContributionsContentProvider.BASE_URI;
+import static fr.free.nrw.commons.contributions.ContributionsContentProvider.INCOMPLETE_URI;
 import static fr.free.nrw.commons.contributions.ContributionsContentProvider.uriForId;
 
 public class ContributionDao {
@@ -43,13 +44,33 @@ public class ContributionDao {
         this.clientProvider = clientProvider;
     }
 
-    Cursor loadAllContributions() {
+    public Cursor loadAllContributions() {
         ContentProviderClient db = clientProvider.get();
         try {
             return db.query(BASE_URI, ALL_FIELDS, "", null, CONTRIBUTION_SORT);
         } catch (RemoteException e) {
             return null;
         } finally {
+            db.release();
+        }
+    }
+
+    public int getIncompleteUploadsCount() {
+        ContentProviderClient db = clientProvider.get();
+        Cursor query = null;
+        try {
+            query = db.query(INCOMPLETE_URI, null, "", null, null);
+            int count = 0;
+            if (query != null && query.getCount() > 0 && query.moveToFirst()) {
+                count = query.getInt(query.getColumnIndex("INCOMPLETE_COUNT"));
+            }
+            return count;
+        } catch (RemoteException e) {
+            return 0;
+        } finally {
+            if (query != null) {
+                query.close();
+            }
             db.release();
         }
     }
@@ -166,6 +187,10 @@ public class ContributionDao {
         public static final String COLUMN_WIDTH = "width";
         public static final String COLUMN_HEIGHT = "height";
         public static final String COLUMN_LICENSE = "license";
+
+        static final String INCOMPLETE_COUNT_QUERY = "select count(" + COLUMN_ID + ") as INCOMPLETE_COUNT " +
+                "from " + TABLE_NAME +
+                " where " + COLUMN_STATE + " != " + Contribution.STATE_COMPLETED;
 
         // NOTE! KEEP IN SAME ORDER AS THEY ARE DEFINED UP THERE. HELPS HARD CODE COLUMN INDICES.
         public static final String[] ALL_FIELDS = {

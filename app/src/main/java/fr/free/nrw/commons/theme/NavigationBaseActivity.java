@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -27,12 +28,15 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.WelcomeActivity;
 import fr.free.nrw.commons.auth.AccountUtil;
 import fr.free.nrw.commons.auth.LoginActivity;
+import fr.free.nrw.commons.contributions.ContributionDao;
 import fr.free.nrw.commons.contributions.ContributionsActivity;
 import fr.free.nrw.commons.nearby.NearbyActivity;
 import fr.free.nrw.commons.notification.NotificationActivity;
 import fr.free.nrw.commons.settings.SettingsActivity;
 import fr.free.nrw.commons.upload.queue.UploadQueueActivity;
 import timber.log.Timber;
+
+import static fr.free.nrw.commons.contributions.ContributionsContentProvider.CONTRIBUTION_AUTHORITY;
 
 public abstract class NavigationBaseActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -46,6 +50,13 @@ public abstract class NavigationBaseActivity extends BaseActivity
 
     private ActionBarDrawerToggle toggle;
     private TextView uploads;
+    private ContributionDao contributionDao;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        contributionDao = new ContributionDao(() -> getContentResolver().acquireContentProviderClient(CONTRIBUTION_AUTHORITY));
+    }
 
     public void initDrawer() {
         navigationView.setNavigationItemSelectedListener(this);
@@ -55,6 +66,13 @@ public abstract class NavigationBaseActivity extends BaseActivity
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
+        drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                int incompleteUploads = contributionDao.getIncompleteUploadsCount();
+                uploads.setText((incompleteUploads > 0) ? String.valueOf(incompleteUploads) : null);
+            }
+        });
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
         setDrawerPaneWidth();
@@ -66,9 +84,6 @@ public abstract class NavigationBaseActivity extends BaseActivity
         uploads.setTextColor(getResources().getColor(R.color.secondaryDarkColor));
     }
 
-    protected void displayUploadCount(int count) {
-        uploads.setText((count > 0) ? String.valueOf(count) : null);
-    }
     /**
      * Set the username in navigationHeader.
      */

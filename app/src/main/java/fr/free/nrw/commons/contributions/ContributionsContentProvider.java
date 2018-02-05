@@ -23,14 +23,18 @@ public class ContributionsContentProvider extends CommonsDaggerContentProvider {
 
     private static final int CONTRIBUTIONS = 1;
     private static final int CONTRIBUTIONS_ID = 2;
+    private static final int CONTRIBUTIONS_COUNT = 3;
     private static final String BASE_PATH = "contributions";
+    private static final String CONTRIBUTIONS_COUNT_PATH = "count";
     private static final UriMatcher uriMatcher = new UriMatcher(NO_MATCH);
     public static final String CONTRIBUTION_AUTHORITY = "fr.free.nrw.commons.contributions.contentprovider";
 
     public static final Uri BASE_URI = Uri.parse("content://" + CONTRIBUTION_AUTHORITY + "/" + BASE_PATH);
+    public static final Uri INCOMPLETE_URI = Uri.parse("content://" + CONTRIBUTION_AUTHORITY + "/" + BASE_PATH + "/" + CONTRIBUTIONS_COUNT_PATH);
 
     static {
         uriMatcher.addURI(CONTRIBUTION_AUTHORITY, BASE_PATH, CONTRIBUTIONS);
+        uriMatcher.addURI(CONTRIBUTION_AUTHORITY, BASE_PATH + "/" + CONTRIBUTIONS_COUNT_PATH, CONTRIBUTIONS_COUNT);
         uriMatcher.addURI(CONTRIBUTION_AUTHORITY, BASE_PATH + "/#", CONTRIBUTIONS_ID);
     }
 
@@ -56,6 +60,9 @@ public class ContributionsContentProvider extends CommonsDaggerContentProvider {
             case CONTRIBUTIONS:
                 cursor = queryBuilder.query(db, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                break;
+            case CONTRIBUTIONS_COUNT:
+                cursor = db.rawQuery(ContributionDao.Table.INCOMPLETE_COUNT_QUERY, null);
                 break;
             case CONTRIBUTIONS_ID:
                 cursor = queryBuilder.query(db,
