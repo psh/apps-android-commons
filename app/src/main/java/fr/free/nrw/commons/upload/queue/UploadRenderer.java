@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.upload.queue;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,5 +47,7 @@ public class UploadRenderer extends Renderer<Contribution> {
         subTitle.setText(String.valueOf(content.getDateCreated()));
         statusIcon.setVisibility(content.getState() == Contribution.STATE_FAILED ? View.VISIBLE : View.INVISIBLE);
         previewImage.setImageURI(content.getLocalUri());
+
+        Log.e("Commons", "@@@ Uri = "+content.getLocalUri());
     }
 }
