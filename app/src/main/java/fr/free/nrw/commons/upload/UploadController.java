@@ -82,25 +82,15 @@ public class UploadController {
     /**
      * Starts a new upload task.
      * @param title the title of the contribution
-     * @param mediaUri the media URI of the contribution
      * @param description the description of the contribution
-     * @param mimeType the MIME type of the contribution
-     * @param source the source of the contribution
      * @param decimalCoords the coordinates in decimal. (e.g. "37.51136|-77.602615")
      * @param onComplete the progress tracker
      */
-    public void startUpload(String title, Uri mediaUri, String description, String mimeType, String source, String decimalCoords, ContributionUploadProgress onComplete) {
-        Contribution contribution;
-
-        //TODO: Modify this to include coords
-        contribution = new Contribution(mediaUri, null, title, description, -1,
-                null, null, sessionManager.getCurrentAccount().name,
-                CommonsApplication.DEFAULT_EDIT_SUMMARY, decimalCoords);
-
-        contribution.setTag("mimeType", mimeType);
-        contribution.setSource(source);
-
-        //Calls the next overloaded method
+    public void startUpload(Contribution contribution, String title, String description, String decimalCoords, ContributionUploadProgress onComplete) {
+        contribution.setDecimalCoords(decimalCoords);
+        contribution.setFilename(title);
+        contribution.setDescription(description);
+        contribution.setEditSummary(CommonsApplication.DEFAULT_EDIT_SUMMARY);
         startUpload(contribution, onComplete);
     }
 

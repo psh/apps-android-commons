@@ -91,6 +91,18 @@ public class Contribution extends Media {
         parcel.writeInt(isMultiple ? 1 : 0);
     }
 
+    public String getDecimalCoords() {
+        return decimalCoords;
+    }
+
+    public void setDecimalCoords(String decimalCoords) {
+        this.decimalCoords = decimalCoords;
+    }
+
+    public void setEditSummary(String editSummary) {
+        this.editSummary = editSummary;
+    }
+
     public boolean getMultiple() {
         return isMultiple;
     }

@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import butterknife.ButterKnife;
+import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.auth.AuthenticatedActivity;
 import fr.free.nrw.commons.auth.SessionManager;
@@ -78,11 +78,9 @@ public  class      ShareActivity
     @Inject UploadController uploadController;
     @Inject ModifierSequenceDao modifierSequenceDao;
     @Inject @Named("default_preferences") SharedPreferences prefs;
+    @Inject
+    ShareModel viewModel;
 
-    private String source;
-    private String mimeType;
-
-    private Uri mediaUri;
     private Contribution contribution;
     private SimpleDraweeView backgroundImageView;
 
@@ -93,7 +91,7 @@ public  class      ShareActivity
 
     private boolean useNewPermissions = false;
     private boolean storagePermitted = false;
-    private boolean locationPermitted = false;
+    //private boolean locationPermitted = false;
 
     private String title;
     private String description;
@@ -128,7 +126,7 @@ public  class      ShareActivity
         // We need to ask storage permission when
         // the file is not owned by this application, (e.g. shared from the Gallery)
         // and permission is not obtained.
-        return !FileUtils.isSelfOwned(getApplicationContext(), mediaUri)
+        return !FileUtils.isSelfOwned(getApplicationContext(), viewModel.getAt(0).getContentUri())
                 && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED);
     }
@@ -145,7 +143,12 @@ public  class      ShareActivity
             Timber.d("Cache the categories found");
         }
 
-        uploadController.startUpload(title, mediaUri, description, mimeType, source, decimalCoords, c -> {
+        viewModel.getAt(0).setDecimalCoords(decimalCoords);
+        viewModel.getAt(0).setFilename(title);
+        viewModel.getAt(0).setDescription(description);
+        viewModel.getAt(0).setEditSummary(CommonsApplication.DEFAULT_EDIT_SUMMARY);
+
+        uploadController.startUpload(viewModel.getAt(0), c -> {
             ShareActivity.this.contribution = c;
             showPostUpload();
         });
@@ -204,7 +207,7 @@ public  class      ShareActivity
         setContentView(R.layout.activity_share);
         ButterKnife.bind(this);
         initBack();
-        backgroundImageView = (SimpleDraweeView) findViewById(R.id.backgroundImage);
+        backgroundImageView = findViewById(R.id.backgroundImage);
         backgroundImageView.setHierarchy(GenericDraweeHierarchyBuilder
                 .newInstance(getResources())
                 .setPlaceholderImage(VectorDrawableCompat.create(getResources(),
@@ -216,18 +219,11 @@ public  class      ShareActivity
         //Receive intent from ContributionController.java when user selects picture to upload
         Intent intent = getIntent();
 
-        if (intent.getAction().equals(Intent.ACTION_SEND)) {
-            mediaUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (intent.hasExtra(UploadService.EXTRA_SOURCE)) {
-                source = intent.getStringExtra(UploadService.EXTRA_SOURCE);
-            } else {
-                source = Contribution.SOURCE_EXTERNAL;
-            }
-            mimeType = intent.getType();
-        }
+        viewModel.initFromIntent(intent);
 
-        if (mediaUri != null) {
-            backgroundImageView.setImageURI(mediaUri);
+
+        if (viewModel.getAt(0).getContentUri() != null) {
+            backgroundImageView.setImageURI(viewModel.getAt(0).getContentUri());
         }
 
         if (savedInstanceState != null) {
@@ -236,7 +232,7 @@ public  class      ShareActivity
 
         requestAuthToken();
 
-        Timber.d("Uri: %s", mediaUri.toString());
+        Timber.d("Uri: %s", viewModel.getAt(0).toString());
         Timber.d("Ext storage dir: %s", Environment.getExternalStorageDirectory());
 
         useNewPermissions = false;
@@ -300,7 +296,7 @@ public  class      ShareActivity
             case REQUEST_PERM_ON_CREATE_STORAGE: {
                 if (grantResults.length >= 1
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    backgroundImageView.setImageURI(mediaUri);
+                    backgroundImageView.setImageURI(viewModel.getAt(0).getContentUri());
                     storagePermitted = true;
                     performPreuploadProcessingOfFile();
                 }
@@ -317,7 +313,7 @@ public  class      ShareActivity
             case REQUEST_PERM_ON_CREATE_STORAGE_AND_LOCATION: {
                 if (grantResults.length >= 2
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    backgroundImageView.setImageURI(mediaUri);
+                    backgroundImageView.setImageURI(viewModel.getAt(0).getContentUri());
                     storagePermitted = true;
                     performPreuploadProcessingOfFile();
                 }
@@ -351,14 +347,14 @@ public  class      ShareActivity
             if (!duplicateCheckPassed) {
                 //Test SHA1 of image to see if it matches SHA1 of a file on Commons
                 try {
-                    InputStream inputStream = getContentResolver().openInputStream(mediaUri);
-                    Timber.d("Input stream created from %s", mediaUri.toString());
+                    InputStream inputStream = getContentResolver().openInputStream(viewModel.getAt(0).getContentUri());
+                    Timber.d("Input stream created from %s", viewModel.getAt(0).getContentUri().toString());
                     String fileSHA1 = getSHA1(inputStream);
                     Timber.d("File SHA1 is: %s", fileSHA1);
 
                     ExistingFileAsync fileAsyncTask =
                             new ExistingFileAsync(fileSHA1, this, result -> {
-                                Timber.d("%s duplicate check: %s", mediaUri.toString(), result);
+                                Timber.d("%s duplicate check: %s", viewModel.getAt(0).getContentUri().toString(), result);
                                 duplicateCheckPassed = (result == DUPLICATE_PROCEED
                                         || result == NO_DUPLICATE);
                             }, mwApi);
@@ -387,7 +383,7 @@ public  class      ShareActivity
 
     @Nullable
     private String getPathOfMediaOrCopy() {
-        String filePath = FileUtils.getPath(getApplicationContext(), mediaUri);
+        String filePath = FileUtils.getPath(getApplicationContext(), viewModel.getAt(0).getContentUri());
         Timber.d("Filepath: " + filePath);
         if (filePath == null) {
             // in older devices getPath() may fail depending on the source URI
@@ -396,7 +392,7 @@ public  class      ShareActivity
             String copyPath = null;
             try {
                 ParcelFileDescriptor descriptor
-                        = getContentResolver().openFileDescriptor(mediaUri, "r");
+                        = getContentResolver().openFileDescriptor(viewModel.getAt(0).getContentUri(), "r");
                 if (descriptor != null) {
                     boolean useExtStorage = prefs.getBoolean("useExternalStorage", true);
                     if (useExtStorage) {
@@ -436,7 +432,7 @@ public  class      ShareActivity
         try {
             if (imageObj == null) {
                 ParcelFileDescriptor descriptor
-                        = getContentResolver().openFileDescriptor(mediaUri, "r");
+                        = getContentResolver().openFileDescriptor(viewModel.getAt(0).getContentUri(), "r");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     if (descriptor != null) {
                         imageObj = new GPSExtractor(descriptor.getFileDescriptor(), this, prefs);
@@ -455,7 +451,7 @@ public  class      ShareActivity
                 useImageCoords();
             }
         } catch (FileNotFoundException e) {
-            Timber.w("File not found: " + mediaUri, e);
+            Timber.w("File not found: " + viewModel.getAt(0).getContentUri(), e);
         }
     }
 

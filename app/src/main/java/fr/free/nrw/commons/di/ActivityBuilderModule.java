@@ -12,6 +12,7 @@ import fr.free.nrw.commons.notification.NotificationActivity;
 import fr.free.nrw.commons.settings.SettingsActivity;
 import fr.free.nrw.commons.upload.MultipleShareActivity;
 import fr.free.nrw.commons.upload.ShareActivity;
+import fr.free.nrw.commons.upload.ShareModule;
 
 @Module
 @SuppressWarnings({"WeakerAccess", "unused"})
@@ -23,7 +24,7 @@ public abstract class ActivityBuilderModule {
     @ContributesAndroidInjector
     abstract WelcomeActivity bindWelcomeActivity();
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = ShareModule.class)
     abstract ShareActivity bindShareActivity();
 
     @ContributesAndroidInjector
