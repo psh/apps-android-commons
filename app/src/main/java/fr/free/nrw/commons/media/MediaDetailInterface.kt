@@ -1,32 +1,32 @@
-package fr.free.nrw.commons.media;
+package fr.free.nrw.commons.media
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import org.wikipedia.wikidata.Entities;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+import io.reactivex.Observable
+import io.reactivex.Single
+import org.wikipedia.wikidata.Entities
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 /**
  * Interface for interacting with Commons Structured Data related APIs
  */
-public interface MediaDetailInterface {
-
+interface MediaDetailInterface {
     /**
      * Fetches entity using file name
      *
      * @param filename name of the file to be used for fetching captions
      */
     @GET("w/api.php?action=wbgetentities&props=labels&format=json&languagefallback=1&sites=commonswiki")
-    Observable<Entities> fetchEntitiesByFileName(@Query("languages") String language, @Query("titles") String filename);
+    fun fetchEntitiesByFileName(
+        @Query("languages") language: String?,
+        @Query("titles") filename: String?
+    ): Observable<Entities>
 
     /**
      * Gets labels for Depictions using Entity Id from MediaWikiAPI
-     *  @param entityId  EntityId (Ex: Q81566) of the depict entity
-     *
+     * @param entityId  EntityId (Ex: Q81566) of the depict entity
      */
     @GET("/w/api.php?format=json&action=wbgetentities&props=labels&languagefallback=1")
-    Single<Entities> getEntity(@Query("ids") String entityId);
+    fun getEntity(@Query("ids") entityId: String?): Single<Entities>
 
     /**
      * Fetches caption using wikibaseIdentifier
@@ -34,5 +34,8 @@ public interface MediaDetailInterface {
      * @param wikibaseIdentifier pageId for the media
      */
     @GET("/w/api.php?action=wbgetentities&props=labels&format=json&languagefallback=1&sites=commonswiki")
-    Observable<Entities> getEntityForImage(@Query("languages") String language, @Query("ids") String wikibaseIdentifier);
+    fun getEntityForImage(
+        @Query("languages") language: String?,
+        @Query("ids") wikibaseIdentifier: String?
+    ): Observable<Entities>
 }
