@@ -3,54 +3,51 @@ package fr.free.nrw.commons.explore.paging
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import fr.free.nrw.commons.R
-import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.list_item_load_more.*
+import fr.free.nrw.commons.databinding.ListItemLoadMoreBinding
+import fr.free.nrw.commons.databinding.ListItemProgressBinding
 
 class FooterAdapter(private val onRefreshClicked: () -> Unit) :
-    ListAdapter<FooterItem, FooterViewHolder>(object :
-        DiffUtil.ItemCallback<FooterItem>() {
-        override fun areItemsTheSame(oldItem: FooterItem, newItem: FooterItem) = oldItem == newItem
+    ListAdapter<FooterItem, FooterViewHolder>(FooterDiffItemCallback) {
 
-        override fun areContentsTheSame(oldItem: FooterItem, newItem: FooterItem) =
-            oldItem == newItem
-    }) {
+    override fun getItemViewType(position: Int): Int = getItem(position).ordinal
 
-    override fun getItemViewType(position: Int): Int {
-        return getItem(position).ordinal
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FooterViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (FooterItem.values()[viewType]) {
+            FooterItem.LoadingItem ->
+                LoadingViewHolder(ListItemProgressBinding.inflate(inflater, parent, false))
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        when (FooterItem.values()[viewType]) {
-            FooterItem.LoadingItem -> LoadingViewHolder(
-                parent.inflate(R.layout.list_item_progress)
-            )
-            FooterItem.RefreshItem -> RefreshViewHolder(
-                parent.inflate(R.layout.list_item_load_more),
-                onRefreshClicked
-            )
+            FooterItem.RefreshItem ->
+                RefreshViewHolder(
+                    ListItemLoadMoreBinding.inflate(inflater, parent, false),
+                    onRefreshClicked
+                )
         }
-
-    override fun onBindViewHolder(holder: FooterViewHolder, position: Int) {}
-}
-
-open class FooterViewHolder(override val containerView: View) :
-    RecyclerView.ViewHolder(containerView),
-    LayoutContainer
-
-class LoadingViewHolder(containerView: View) : FooterViewHolder(containerView)
-class RefreshViewHolder(containerView: View, onRefreshClicked: () -> Unit) :
-    FooterViewHolder(containerView) {
-    init {
-        listItemLoadMoreButton.setOnClickListener { onRefreshClicked() }
     }
+
+    override fun onBindViewHolder(holder: FooterViewHolder, position: Int) = Unit
 }
 
 enum class FooterItem { LoadingItem, RefreshItem }
 
-fun ViewGroup.inflate(@LayoutRes layoutId: Int, attachToRoot: Boolean = false): View =
-    LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
+abstract class FooterViewHolder(containerView: View) : RecyclerView.ViewHolder(containerView)
+
+class LoadingViewHolder(binding: ListItemProgressBinding) : FooterViewHolder(binding.root)
+
+class RefreshViewHolder(binding: ListItemLoadMoreBinding, onRefreshClicked: () -> Unit) :
+    FooterViewHolder(binding.root) {
+    init {
+        binding.root.setOnClickListener { onRefreshClicked() }
+    }
+}
+
+private object FooterDiffItemCallback : DiffUtil.ItemCallback<FooterItem>() {
+    override fun areItemsTheSame(oldItem: FooterItem, newItem: FooterItem) =
+        oldItem == newItem
+
+    override fun areContentsTheSame(oldItem: FooterItem, newItem: FooterItem) =
+        oldItem == newItem
+}
