@@ -3,13 +3,13 @@ package fr.free.nrw.commons.explore.paging
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.databinding.ListItemLoadMoreBinding
+import fr.free.nrw.commons.databinding.ListItemProgressBinding
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.list_item_load_more.*
 
 class FooterAdapter(private val onRefreshClicked: () -> Unit) :
     ListAdapter<FooterItem, FooterViewHolder>(object :
@@ -24,16 +24,18 @@ class FooterAdapter(private val onRefreshClicked: () -> Unit) :
         return getItem(position).ordinal
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        when (FooterItem.values()[viewType]) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FooterViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (FooterItem.values()[viewType]) {
             FooterItem.LoadingItem -> LoadingViewHolder(
-                parent.inflate(R.layout.list_item_progress)
+                ListItemProgressBinding.inflate(inflater).root
             )
             FooterItem.RefreshItem -> RefreshViewHolder(
-                parent.inflate(R.layout.list_item_load_more),
+                ListItemLoadMoreBinding.inflate(inflater).root,
                 onRefreshClicked
             )
         }
+    }
 
     override fun onBindViewHolder(holder: FooterViewHolder, position: Int) {}
 }
@@ -43,14 +45,13 @@ open class FooterViewHolder(override val containerView: View) :
     LayoutContainer
 
 class LoadingViewHolder(containerView: View) : FooterViewHolder(containerView)
+
 class RefreshViewHolder(containerView: View, onRefreshClicked: () -> Unit) :
     FooterViewHolder(containerView) {
     init {
-        listItemLoadMoreButton.setOnClickListener { onRefreshClicked() }
+        containerView.findViewById<View>(R.id.listItemLoadMoreButton)
+            ?.setOnClickListener { onRefreshClicked() }
     }
 }
 
 enum class FooterItem { LoadingItem, RefreshItem }
-
-fun ViewGroup.inflate(@LayoutRes layoutId: Int, attachToRoot: Boolean = false): View =
-    LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
