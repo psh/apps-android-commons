@@ -1,13 +1,14 @@
 package fr.free.nrw.commons.explore.media
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.databinding.LayoutCategoriesItemBinding
 import fr.free.nrw.commons.explore.paging.BaseViewHolder
-import fr.free.nrw.commons.explore.paging.inflate
 import kotlinx.android.synthetic.main.layout_category_images.*
 
 class PagedMediaAdapter(private val onImageClicked: (Int) -> Unit) :
@@ -21,7 +22,7 @@ class PagedMediaAdapter(private val onImageClicked: (Int) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         SearchImagesViewHolder(
-            parent.inflate(R.layout.layout_category_images),
+            LayoutCategoriesItemBinding.inflate(LayoutInflater.from(parent.context)).root,
             onImageClicked
         )
 
