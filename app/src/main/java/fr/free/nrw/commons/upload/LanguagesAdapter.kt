@@ -8,13 +8,11 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import androidx.core.os.ConfigurationCompat
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.databinding.RowItemLanguagesSpinnerBinding
 import fr.free.nrw.commons.utils.LangCodeUtils
-import kotlinx.android.synthetic.main.row_item_languages_spinner.view.*
 import org.apache.commons.lang3.StringUtils
 import org.wikipedia.language.AppLanguageLookUpTable
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
 
 /**
  * This class handles the display of language dialog and their views for UploadMediaDetailFragment
@@ -48,26 +46,24 @@ class LanguagesAdapter constructor(
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var rowView: View
-        if(convertView != null) {
-            rowView =  convertView
-        }else {
-            rowView = LayoutInflater.from(context).inflate(R.layout.row_item_languages_spinner, parent, false)
+        val rowView: RowItemLanguagesSpinnerBinding = if (convertView != null) {
+            RowItemLanguagesSpinnerBinding.bind(convertView)
+        } else {
+            RowItemLanguagesSpinnerBinding.inflate(LayoutInflater.from(context), parent, false)
         }
         val languageCode = languageCodesList[position]
         val languageName = languageNamesList[position]
-        rowView.tv_language.let {
+        rowView.tvLanguage.let {
             it.isEnabled = isEnabled(position)
             if (languageCode.isEmpty()) {
                 it.text = StringUtils.capitalize(languageName)
                 it.textAlignment = View.TEXT_ALIGNMENT_CENTER
             } else {
-                it.text =
-                    "${StringUtils.capitalize(languageName)}" +
+                it.text = "${StringUtils.capitalize(languageName)}" +
                             " [${LangCodeUtils.fixLanguageCode(languageCode)}]"
             }
         }
-        return rowView
+        return rowView.root
     }
 
     fun getLanguageCode(position: Int): String {
