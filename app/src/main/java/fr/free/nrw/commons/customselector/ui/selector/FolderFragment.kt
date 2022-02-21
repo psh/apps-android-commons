@@ -4,23 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import fr.free.nrw.commons.R
 import fr.free.nrw.commons.customselector.helper.ImageHelper
-import fr.free.nrw.commons.customselector.model.Result
 import fr.free.nrw.commons.customselector.listeners.FolderClickListener
 import fr.free.nrw.commons.customselector.model.CallbackStatus
 import fr.free.nrw.commons.customselector.model.Folder
+import fr.free.nrw.commons.customselector.model.Result
 import fr.free.nrw.commons.customselector.ui.adapter.FolderAdapter
+import fr.free.nrw.commons.databinding.FragmentCustomSelectorBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.media.MediaClient
 import fr.free.nrw.commons.upload.FileProcessor
 import kotlinx.android.synthetic.main.fragment_custom_selector.*
-import kotlinx.android.synthetic.main.fragment_custom_selector.view.*
 import javax.inject.Inject
 
 /**
@@ -36,8 +32,7 @@ class FolderFragment : CommonsDaggerSupportFragment() {
     /**
      * View Elements
      */
-    private var selectorRV: RecyclerView? = null
-    private var loader: ProgressBar? = null
+    private var binding: FragmentCustomSelectorBinding? = null
 
     /**
      * View Model Factory.
@@ -80,29 +75,37 @@ class FolderFragment : CommonsDaggerSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity(),customSelectorViewModelFactory!!).get(CustomSelectorViewModel::class.java)
-
+        viewModel = ViewModelProvider(requireActivity(),
+            customSelectorViewModelFactory!!).get(CustomSelectorViewModel::class.java)
     }
 
     /**
      * OnCreateView.
-     * Inflate Layout, init adapter, init gridLayoutManager, setUp recycler view, observe the view model for result.
+     * Inflate Layout, init adapter, init gridLayoutManager, setUp recycler view,
+     * observe the view model for result.
      */
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_custom_selector, container, false)
-        folderAdapter = FolderAdapter(activity!!, activity as FolderClickListener)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentCustomSelectorBinding.inflate(inflater, container, false)
+        folderAdapter = FolderAdapter(requireActivity(), activity as FolderClickListener)
         gridLayoutManager = GridLayoutManager(context, columnCount())
-        selectorRV = root.selector_rv
-        loader = root.loader
-        with(root.selector_rv){
+        with(binding?.selectorRv!!) {
             this.layoutManager = gridLayoutManager
             setHasFixedSize(true)
             this.adapter = folderAdapter
         }
-        viewModel?.result?.observe(viewLifecycleOwner, Observer {
+        viewModel?.result?.observe(viewLifecycleOwner) {
             handleResult(it)
-        })
-        return root
+        }
+        return binding?.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
     }
 
     /**
@@ -122,12 +125,13 @@ class FolderFragment : CommonsDaggerSupportFragment() {
             folders = ImageHelper.folderListFromImages(result.images)
             folderAdapter.init(folders)
             folderAdapter.notifyDataSetChanged()
-            selectorRV?.let {
+            binding?.selectorRv?.let {
                 it.visibility = View.VISIBLE
             }
         }
-        loader?.let {
-            it.visibility = if (result.status is CallbackStatus.FETCHING) View.VISIBLE else View.GONE
+        binding?.loader?.let {
+            it.visibility =
+                if (result.status is CallbackStatus.FETCHING) View.VISIBLE else View.GONE
         }
     }
 
