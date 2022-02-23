@@ -10,7 +10,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.Fragment
 import fr.free.nrw.commons.R
-import kotlinx.android.synthetic.main.fragment_advance_query.*
 
 class AdvanceQueryFragment : Fragment() {
 

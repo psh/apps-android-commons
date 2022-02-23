@@ -3,13 +3,12 @@ package fr.free.nrw.commons.explore.media
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.category.CategoryImagesCallback
 import fr.free.nrw.commons.explore.paging.BasePagingFragment
 import fr.free.nrw.commons.media.MediaDetailPagerFragment.MediaDetailProvider
-import kotlinx.android.synthetic.main.fragment_search_paginated.*
-
 
 abstract class PageableMediaFragment : BasePagingFragment<Media>(), MediaDetailProvider {
 
@@ -25,10 +24,10 @@ abstract class PageableMediaFragment : BasePagingFragment<Media>(), MediaDetailP
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (parentFragment != null) {
-            categoryImagesCallback = (parentFragment as CategoryImagesCallback)
+        categoryImagesCallback = if (parentFragment != null) {
+            (parentFragment as CategoryImagesCallback)
         } else {
-            categoryImagesCallback = (activity as CategoryImagesCallback)
+            (activity as CategoryImagesCallback)
         }
     }
 
@@ -49,8 +48,11 @@ abstract class PageableMediaFragment : BasePagingFragment<Media>(), MediaDetailP
         pagedListAdapter.currentList?.get(position)?.takeIf { it.filename != null }
             .also {
                 pagedListAdapter.currentList?.loadAround(position)
-                paginatedSearchResultsList.scrollToPosition(position)
+                searchResultsList()?.scrollToPosition(position)
             }
+
+    private fun searchResultsList() =
+        view?.findViewById<RecyclerView>(R.id.paginatedSearchResultsList)
 
     override fun getTotalMediaCount(): Int = pagedListAdapter.itemCount
 
