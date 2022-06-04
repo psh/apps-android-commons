@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.utils.LangCodeUtils
-import kotlinx.android.synthetic.main.row_item_languages_spinner.view.*
 import org.apache.commons.lang3.StringUtils
 import java.util.HashMap
 
@@ -38,7 +38,7 @@ class RecentLanguagesAdapter constructor(
                 .inflate(R.layout.row_item_languages_spinner, parent, false)
         val languageCode = recentLanguages[position].languageCode
         val languageName = recentLanguages[position].languageName
-        rowView.tv_language.let {
+        rowView.findViewById<TextView>(R.id.tv_language)?.let {
             it.isEnabled = isEnabled(position)
             if (languageCode.isEmpty()) {
                 it.text = StringUtils.capitalize(languageName)
