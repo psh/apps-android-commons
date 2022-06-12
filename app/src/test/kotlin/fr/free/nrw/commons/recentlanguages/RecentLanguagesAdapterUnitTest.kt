@@ -1,13 +1,13 @@
 package fr.free.nrw.commons.recentlanguages
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
-import com.nhaarman.mockitokotlin2.whenever
+import androidx.test.core.app.ApplicationProvider
+import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
-import kotlinx.android.synthetic.main.row_item_languages_spinner.view.*
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,18 +16,19 @@ import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
-import java.lang.reflect.Field
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [21], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class RecentLanguagesAdapterUnitTest {
 
-    private lateinit var adapter: RecentLanguagesAdapter
-    private lateinit var languages: List<Language>
-
-    @Mock
-    private lateinit var context: Context
+    private val languages: List<Language> = listOf(
+        Language("English", "en"),
+        Language("Bengali", "bn")
+    )
+    private val adapter = RecentLanguagesAdapter(
+        ApplicationProvider.getApplicationContext(), languages, hashMapOf(1 to "en")
+    )
 
     @Mock
     private lateinit var viewGroup: ViewGroup
@@ -35,80 +36,43 @@ class RecentLanguagesAdapterUnitTest {
     @Mock
     private lateinit var convertView: View
 
-    @Mock
-    private lateinit var textView: TextView
-
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        languages = listOf(
-            Language("English", "en"),
-            Language("Bengali", "bn")
-        )
-        adapter = RecentLanguagesAdapter(context, languages, hashMapOf(1 to "en"))
     }
 
     @Test
-    @Throws(Exception::class)
-    fun checkAdapterNotNull() {
-        Assert.assertNotNull(adapter)
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun testIsEnabled() {
-        val list = languages
-        val recentLanguagesAdapter: Field =
-            RecentLanguagesAdapter::class.java.getDeclaredField("recentLanguages")
-        recentLanguagesAdapter.isAccessible = true
-        recentLanguagesAdapter.set(adapter, list)
-        Assert.assertEquals(adapter.isEnabled(0), false)
+        adapter.selectedLangCode = "es"
+        assertEquals(adapter.isEnabled(0), false)
     }
 
     @Test
-    @Throws(Exception::class)
     fun testGetCount() {
-        val list = languages
-        val recentLanguagesAdapter: Field =
-            RecentLanguagesAdapter::class.java.getDeclaredField("recentLanguages")
-        recentLanguagesAdapter.isAccessible = true
-        recentLanguagesAdapter.set(adapter, list)
-        Assert.assertEquals(adapter.count, list.size)
+        assertEquals(adapter.count, languages.size)
     }
 
     @Test
-    @Throws(Exception::class)
     fun testGetLanguageName() {
-        val list = languages
-        val recentLanguagesAdapter: Field =
-            RecentLanguagesAdapter::class.java.getDeclaredField("recentLanguages")
-        recentLanguagesAdapter.isAccessible = true
-        recentLanguagesAdapter.set(adapter, list)
-        val languageName = list[0].languageName
-        Assert.assertEquals(adapter.getLanguageName(0), languageName)
+        assertEquals(adapter.getLanguageName(0), languages[0].languageName)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testGetView() {
-        val list = languages
-        whenever(convertView.tv_language).thenReturn(textView)
-        val recentLanguagesAdapter: Field =
-            RecentLanguagesAdapter::class.java.getDeclaredField("recentLanguages")
-        recentLanguagesAdapter.isAccessible = true
-        recentLanguagesAdapter.set(adapter, list)
-        Assert.assertEquals(adapter.getView(0, convertView, viewGroup), convertView)
+    fun testGetViewCorrectlyRecyclesWhenNeeded() {
+        val view = adapter.getView(0, convertView, viewGroup)
+        assertEquals(view, convertView)
     }
 
     @Test
-    @Throws(Exception::class)
+    fun testGetViewConfigresNewViews() {
+        val parent = LinearLayout(ApplicationProvider.getApplicationContext())
+        val view = adapter.getView(0, null, parent)
+        assertEquals("English [en]", view.findViewById<TextView>(R.id.tv_language).text)
+    }
+
+    @Test
     fun testGetLanguageCode() {
-        val list = languages
-        val recentLanguagesAdapter: Field =
-            RecentLanguagesAdapter::class.java.getDeclaredField("recentLanguages")
-        recentLanguagesAdapter.isAccessible = true
-        recentLanguagesAdapter.set(adapter, list)
-        val languageCode = list[0].languageCode
-        Assert.assertEquals(adapter.getLanguageCode(0), languageCode)
+        val languageCode = languages[0].languageCode
+        assertEquals(languageCode, adapter.getLanguageCode(0))
     }
 }
