@@ -138,6 +138,7 @@ class ImageLoader @Inject constructor(
                             is Result.TRUE -> {
                                 mapResult[imageSHA1] = Result.TRUE
                             }
+                            else -> {}
                         }
                     }
                     else -> {
@@ -160,6 +161,7 @@ class ImageLoader @Inject constructor(
                                 is Result.TRUE -> {
                                     mapResult[sha1] = Result.TRUE
                                 }
+                                else -> {}
                             }
                         }
                         else -> {

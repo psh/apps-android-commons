@@ -1,2 +1,0 @@
-include ':app', ':wikimedia-data-client'
-project(':wikimedia-data-client').projectDir = new File('data-client')
