@@ -34,16 +34,17 @@ class SearchImagesViewHolder(containerView: View, val onImageClicked: (Int) -> U
     BaseViewHolder<Pair<Media, Int>>(containerView) {
     override fun bind(item: Pair<Media, Int>) {
         val media = item.first
-        categoryImageView.setOnClickListener { onImageClicked(item.second) }
-        categoryImageTitle.text = media.mostRelevantCaption
-        categoryImageView.setImageURI(media.thumbUrl)
-        if (media.author?.isNotEmpty() == true) {
-            categoryImageAuthor.visibility = View.VISIBLE
-            categoryImageAuthor.text =
-                containerView.context.getString(R.string.image_uploaded_by, media.user)
-        } else {
-            categoryImageAuthor.visibility = View.GONE
-        }
+        // TODO - fix
+//        categoryImageView.setOnClickListener { onImageClicked(item.second) }
+//        categoryImageTitle.text = media.mostRelevantCaption
+//        categoryImageView.setImageURI(media.thumbUrl)
+//        if (media.author?.isNotEmpty() == true) {
+//            categoryImageAuthor.visibility = View.VISIBLE
+//            categoryImageAuthor.text =
+//                containerView.context.getString(R.string.image_uploaded_by, media.user)
+//        } else {
+//            categoryImageAuthor.visibility = View.GONE
+//        }
     }
 
 }

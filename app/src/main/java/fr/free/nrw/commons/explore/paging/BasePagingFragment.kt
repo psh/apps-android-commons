@@ -13,7 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.MergeAdapter
+import androidx.recyclerview.widget.ConcatAdapter
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.utils.ViewUtil
@@ -27,7 +27,7 @@ abstract class BasePagingFragment<T> : CommonsDaggerSupportFragment(),
     abstract val injectedPresenter: PagingContract.Presenter<T>
     abstract val errorTextId: Int
     private val loadingAdapter by lazy { FooterAdapter { injectedPresenter.retryFailedRequest() } }
-    private val mergeAdapter by lazy { MergeAdapter(pagedListAdapter, loadingAdapter) }
+    private val mergeAdapter by lazy { ConcatAdapter(pagedListAdapter, loadingAdapter) }
     private var searchResults: LiveData<PagedList<T>>? = null
 
     override fun onCreateView(

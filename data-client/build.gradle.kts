@@ -24,19 +24,21 @@ android {
     }
 }
 
+val OKHTTP_VERSION: String by project
+
 dependencies {
     implementation("androidx.collection:collection-ktx:1.2.0")
-    implementation("androidx.annotation:annotation:1.0.0")
-    implementation("com.squareup.retrofit2:retrofit:2.4.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.4.0")
+    implementation("androidx.annotation:annotation:1.5.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.4.0")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.3")
-    implementation("io.reactivex.rxjava2:rxandroid:2.1.0")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.3")     // Too big to change right now
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.0")  // Too big to change right now
     implementation("org.apache.commons:commons-lang3:3.8.1")
 
-    testImplementation("junit:junit:4.12")
-    testImplementation("org.mockito:mockito-core:2.8.9")
-    testImplementation("org.robolectric:robolectric:3.8")
-    testImplementation("com.squareup.okhttp3:mockwebserver:3.12.1")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:2.25.1")
+    testImplementation("org.robolectric:robolectric:4.9")
+    testImplementation("com.squareup.okhttp3:mockwebserver:$OKHTTP_VERSION")
     testImplementation("commons-io:commons-io:2.6")
 }

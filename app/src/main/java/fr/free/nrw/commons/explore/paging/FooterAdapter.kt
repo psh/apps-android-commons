@@ -46,7 +46,8 @@ class LoadingViewHolder(containerView: View) : FooterViewHolder(containerView)
 class RefreshViewHolder(containerView: View, onRefreshClicked: () -> Unit) :
     FooterViewHolder(containerView) {
     init {
-        listItemLoadMoreButton.setOnClickListener { onRefreshClicked() }
+        // TODO - fix
+        // listItemLoadMoreButton.setOnClickListener { onRefreshClicked() }
     }
 }
 

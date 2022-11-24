@@ -79,7 +79,7 @@ class LanguagesAdapterTest {
     @Test
     fun testGetIndexOfUserDefaultLocale() {
         languagesAdapter = LanguagesAdapter(context, selectedLanguages)
-        Assertions.assertEquals(languageCodesList.indexOf(ConfigurationCompat.getLocales(context.resources.configuration)[0].language), languagesAdapter.getIndexOfUserDefaultLocale(context))
+        Assertions.assertEquals(languageCodesList.indexOf(ConfigurationCompat.getLocales(context.resources.configuration)[0]?.language), languagesAdapter.getIndexOfUserDefaultLocale(context))
     }
 
     @Test
@@ -105,7 +105,7 @@ class LanguagesAdapterTest {
         val constraint = "spa"
         languagesAdapter.filter.filter(constraint)
         val length: Int = languageNamesList.size
-        val defaultlanguagecode = languageCodesList.indexOf(ConfigurationCompat.getLocales(context.resources.configuration)[0].language)
+        val defaultlanguagecode = languageCodesList.indexOf(ConfigurationCompat.getLocales(context.resources.configuration)[0]?.language)
         var i = 0
         var s = 0
         while (i < length) {

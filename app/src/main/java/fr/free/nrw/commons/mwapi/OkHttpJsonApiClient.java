@@ -163,7 +163,7 @@ public class OkHttpJsonApiClient {
     public Single<Integer> getUploadCount(String userName) {
         HttpUrl.Builder urlBuilder = wikiMediaToolforgeUrl.newBuilder();
         urlBuilder
-            .addPathSegments("uploadsbyuser.py")
+            .addPathSegment("uploadsbyuser.py")
             .addQueryParameter("user", userName);
 
         if (ConfigUtils.isBetaFlavour()) {
@@ -197,7 +197,7 @@ public class OkHttpJsonApiClient {
     public Single<Integer> getWikidataEdits(String userName) {
         HttpUrl.Builder urlBuilder = wikiMediaToolforgeUrl.newBuilder();
         urlBuilder
-            .addPathSegments("wikidataedits.py")
+            .addPathSegment("wikidataedits.py")
             .addQueryParameter("user", userName);
 
         if (ConfigUtils.isBetaFlavour()) {

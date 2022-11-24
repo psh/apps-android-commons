@@ -21,7 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.MergeAdapter;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -295,7 +295,7 @@ public class LeaderboardFragment extends CommonsDaggerSupportFragment {
         viewModel.setParams(duration, category, limit, offset);
         LeaderboardListAdapter leaderboardListAdapter = new LeaderboardListAdapter();
         UserDetailAdapter userDetailAdapter= new UserDetailAdapter(response);
-        MergeAdapter mergeAdapter = new MergeAdapter(userDetailAdapter, leaderboardListAdapter);
+        ConcatAdapter mergeAdapter = new ConcatAdapter(userDetailAdapter, leaderboardListAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         leaderboardListRecyclerView.setLayoutManager(linearLayoutManager);
         leaderboardListRecyclerView.setAdapter(mergeAdapter);

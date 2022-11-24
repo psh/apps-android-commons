@@ -135,4 +135,4 @@ class LanguagesAdapter constructor(
 }
 
 private val Context.locale: Locale
-    get() = ConfigurationCompat.getLocales(resources.configuration)[0]
+    get() = ConfigurationCompat.getLocales(resources.configuration)[0]!!

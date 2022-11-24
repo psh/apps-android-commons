@@ -3,9 +3,11 @@ plugins {
     id "kotlin-android"
     id "kotlin-kapt"
     id "kotlin-android-extensions"
+    id "jacoco"
 }
 apply from: "gitutils.gradle"
 apply from: "$rootDir/jacoco.gradle"
+apply from: "$rootDir/jacoco2.gradle.kts"
 
 def isRunningOnTravisAndIsNotPRBuild = System.getenv("CI") == "true" && file("../play.p12").exists()
 if (isRunningOnTravisAndIsNotPRBuild) {
@@ -252,34 +254,34 @@ android {
 
             applicationId "fr.free.nrw.commons"
 
-            buildConfigField "String", "WIKIMEDIA_API_POTD", "\"https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en\""
-            buildConfigField "String", "WIKIMEDIA_API_HOST", "\"https://commons.wikimedia.org/w/api.php\""
-            buildConfigField "String", "WIKIDATA_API_HOST", "\"https://www.wikidata.org/w/api.php\""
-            buildConfigField "String", "WIKIDATA_URL", "\"https://www.wikidata.org\""
-            buildConfigField "String", "WIKIMEDIA_FORGE_API_HOST", "\"https://tools.wmflabs.org/\""
-            buildConfigField "String", "WIKIMEDIA_CAMPAIGNS_URL", "\"https://raw.githubusercontent.com/commons-app/campaigns/master/campaigns.json\""
-            buildConfigField "String", "IMAGE_URL_BASE", "\"https://upload.wikimedia.org/wikipedia/commons\""
-            buildConfigField "String", "HOME_URL", "\"https://commons.wikimedia.org/wiki/\""
-            buildConfigField "String", "COMMONS_URL", "\"https://commons.wikimedia.org\""
-            buildConfigField "String", "WIKIDATA_URL", "\"https://www.wikidata.org\""
-            buildConfigField "String", "MOBILE_HOME_URL", "\"https://commons.m.wikimedia.org/wiki/\""
-            buildConfigField "String", "SIGNUP_LANDING_URL", "\"https://commons.m.wikimedia.org/w/index.php?title=Special:CreateAccount&returnto=Main+Page&returntoquery=welcome%3Dyes\""
-            buildConfigField "String", "SIGNUP_SUCCESS_REDIRECTION_URL", "\"https://commons.m.wikimedia.org/w/index.php?title=Main_Page&welcome=yes\""
-            buildConfigField "String", "FORGOT_PASSWORD_URL", "\"https://commons.wikimedia.org/wiki/Special:PasswordReset\""
-            buildConfigField "String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\""
-            buildConfigField "String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons\""
-            buildConfigField "String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.contributions.contentprovider\""
-            buildConfigField "String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.modifications.contentprovider\""
-            buildConfigField "String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.categories.contentprovider\""
-            buildConfigField "String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.explore.recentsearches.contentprovider\""
-            buildConfigField "String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.recentlanguages.contentprovider\""
-            buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.contentprovider\""
-            buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.locations.contentprovider\""
-            buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.items.contentprovider\""
-            buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
-            buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
-            buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""
-            buildConfigField "String", "DEPICTS_PROPERTY", "\"P180\""
+            buildConfigField ("String", "WIKIMEDIA_API_POTD", "\"https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en\"")
+            buildConfigField ("String", "WIKIMEDIA_API_HOST", "\"https://commons.wikimedia.org/w/api.php\"")
+            buildConfigField ("String", "WIKIDATA_API_HOST", "\"https://www.wikidata.org/w/api.php\"")
+            buildConfigField ("String", "WIKIDATA_URL", "\"https://www.wikidata.org\"")
+            buildConfigField ("String", "WIKIMEDIA_FORGE_API_HOST", "\"https://tools.wmflabs.org/\"")
+            buildConfigField ("String", "WIKIMEDIA_CAMPAIGNS_URL", "\"https://raw.githubusercontent.com/commons-app/campaigns/master/campaigns.json\"")
+            buildConfigField ("String", "IMAGE_URL_BASE", "\"https://upload.wikimedia.org/wikipedia/commons\"")
+            buildConfigField ("String", "HOME_URL", "\"https://commons.wikimedia.org/wiki/\"")
+            buildConfigField ("String", "COMMONS_URL", "\"https://commons.wikimedia.org\"")
+            buildConfigField ("String", "WIKIDATA_URL", "\"https://www.wikidata.org\"")
+            buildConfigField ("String", "MOBILE_HOME_URL", "\"https://commons.m.wikimedia.org/wiki/\"")
+            buildConfigField ("String", "SIGNUP_LANDING_URL", "\"https://commons.m.wikimedia.org/w/index.php?title=Special:CreateAccount&returnto=Main+Page&returntoquery=welcome%3Dyes\"")
+            buildConfigField ("String", "SIGNUP_SUCCESS_REDIRECTION_URL", "\"https://commons.m.wikimedia.org/w/index.php?title=Main_Page&welcome=yes\"")
+            buildConfigField ("String", "FORGOT_PASSWORD_URL", "\"https://commons.wikimedia.org/wiki/Special:PasswordReset\"")
+            buildConfigField ("String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\"")
+            buildConfigField ("String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons\"")
+            buildConfigField ("String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.contributions.contentprovider\"")
+            buildConfigField ("String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.modifications.contentprovider\"")
+            buildConfigField ("String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.categories.contentprovider\"")
+            buildConfigField ("String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.explore.recentsearches.contentprovider\"")
+            buildConfigField ("String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.recentlanguages.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.locations.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.items.contentprovider\"")
+            buildConfigField ("String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\"")
+            buildConfigField ("String", "TEST_USERNAME", "\"" + getTestUserName() + "\"")
+            buildConfigField ("String", "TEST_PASSWORD", "\"" + getTestPassword() + "\"")
+            buildConfigField ("String", "DEPICTS_PROPERTY", "\"P180\"")
 
             dimension "tier"
         }
@@ -288,34 +290,34 @@ android {
             applicationId "fr.free.nrw.commons.beta"
 
             // What values do we need to hit the BETA versions of the site / api ?
-            buildConfigField "String", "WIKIMEDIA_API_POTD", "\"https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en\""
-            buildConfigField "String", "WIKIMEDIA_API_HOST", "\"https://commons.wikimedia.beta.wmflabs.org/w/api.php\""
-            buildConfigField "String", "WIKIDATA_API_HOST", "\"https://www.wikidata.org/w/api.php\""
-            buildConfigField "String", "WIKIDATA_URL", "\"https://www.wikidata.org\""
-            buildConfigField "String", "WIKIMEDIA_FORGE_API_HOST", "\"https://tools.wmflabs.org/\""
-            buildConfigField "String", "WIKIMEDIA_CAMPAIGNS_URL", "\"https://raw.githubusercontent.com/commons-app/campaigns/master/campaigns_beta_active.json\""
-            buildConfigField "String", "IMAGE_URL_BASE", "\"https://upload.beta.wmflabs.org/wikipedia/commons\""
-            buildConfigField "String", "HOME_URL", "\"https://commons.wikimedia.beta.wmflabs.org/wiki/\""
-            buildConfigField "String", "COMMONS_URL", "\"https://commons.wikimedia.beta.wmflabs.org\""
-            buildConfigField "String", "WIKIDATA_URL", "\"https://www.wikidata.org\""
-            buildConfigField "String", "MOBILE_HOME_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/wiki/\""
-            buildConfigField "String", "SIGNUP_LANDING_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/w/index.php?title=Special:CreateAccount&returnto=Main+Page&returntoquery=welcome%3Dyes\""
-            buildConfigField "String", "SIGNUP_SUCCESS_REDIRECTION_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/w/index.php?title=Main_Page&welcome=yes\""
-            buildConfigField "String", "FORGOT_PASSWORD_URL", "\"https://commons.wikimedia.beta.wmflabs.org/wiki/Special:PasswordReset\""
-            buildConfigField "String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\""
-            buildConfigField "String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons.beta\""
-            buildConfigField "String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.beta.contributions.contentprovider\""
-            buildConfigField "String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.beta.modifications.contentprovider\""
-            buildConfigField "String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.beta.categories.contentprovider\""
-            buildConfigField "String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.beta.explore.recentsearches.contentprovider\""
-            buildConfigField "String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.beta.recentlanguages.contentprovider\""
-            buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.contentprovider\""
-            buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.locations.contentprovider\""
-            buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.items.contentprovider\""
-            buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
-            buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
-            buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""
-            buildConfigField "String", "DEPICTS_PROPERTY", "\"P245962\""
+            buildConfigField ("String", "WIKIMEDIA_API_POTD", "\"https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en\"")
+            buildConfigField ("String", "WIKIMEDIA_API_HOST", "\"https://commons.wikimedia.beta.wmflabs.org/w/api.php\"")
+            buildConfigField ("String", "WIKIDATA_API_HOST", "\"https://www.wikidata.org/w/api.php\"")
+            buildConfigField ("String", "WIKIDATA_URL", "\"https://www.wikidata.org\"")
+            buildConfigField ("String", "WIKIMEDIA_FORGE_API_HOST", "\"https://tools.wmflabs.org/\"")
+            buildConfigField ("String", "WIKIMEDIA_CAMPAIGNS_URL", "\"https://raw.githubusercontent.com/commons-app/campaigns/master/campaigns_beta_active.json\"")
+            buildConfigField ("String", "IMAGE_URL_BASE", "\"https://upload.beta.wmflabs.org/wikipedia/commons\"")
+            buildConfigField ("String", "HOME_URL", "\"https://commons.wikimedia.beta.wmflabs.org/wiki/\"")
+            buildConfigField ("String", "COMMONS_URL", "\"https://commons.wikimedia.beta.wmflabs.org\"")
+            buildConfigField ("String", "WIKIDATA_URL", "\"https://www.wikidata.org\"")
+            buildConfigField ("String", "MOBILE_HOME_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/wiki/\"")
+            buildConfigField ("String", "SIGNUP_LANDING_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/w/index.php?title=Special:CreateAccount&returnto=Main+Page&returntoquery=welcome%3Dyes\"")
+            buildConfigField ("String", "SIGNUP_SUCCESS_REDIRECTION_URL", "\"https://commons.m.wikimedia.beta.wmflabs.org/w/index.php?title=Main_Page&welcome=yes\"")
+            buildConfigField ("String", "FORGOT_PASSWORD_URL", "\"https://commons.wikimedia.beta.wmflabs.org/wiki/Special:PasswordReset\"")
+            buildConfigField ("String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\"")
+            buildConfigField ("String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons.beta\"")
+            buildConfigField ("String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.beta.contributions.contentprovider\"")
+            buildConfigField ("String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.beta.modifications.contentprovider\"")
+            buildConfigField ("String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.beta.categories.contentprovider\"")
+            buildConfigField ("String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.beta.explore.recentsearches.contentprovider\"")
+            buildConfigField ("String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.beta.recentlanguages.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.locations.contentprovider\"")
+            buildConfigField ("String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.items.contentprovider\"")
+            buildConfigField ("String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\"")
+            buildConfigField ("String", "TEST_USERNAME", "\"" + getTestUserName() + "\"")
+            buildConfigField ("String", "TEST_PASSWORD", "\"" + getTestPassword() + "\"")
+            buildConfigField ("String", "DEPICTS_PROPERTY", "\"P245962\"")
 
             dimension "tier"
         }
@@ -370,4 +372,8 @@ if (isRunningOnTravisAndIsNotPRBuild) {
 
 androidExtensions {
     experimental = true
+}
+
+jacoco {
+    toolVersion = "0.8.7"
 }

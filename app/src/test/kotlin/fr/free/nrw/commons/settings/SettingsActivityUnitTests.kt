@@ -7,6 +7,7 @@ import android.view.MenuItem
 import fr.free.nrw.commons.TestCommonsApplication
 import org.junit.Assert
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -67,6 +68,7 @@ class SettingsActivityUnitTests {
 
     @Test
     @Throws(Exception::class)
+    @Ignore("Doesnt assert anything")
     fun testSetTotalUploadCount() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
         val method: Method = SettingsActivity::class.java.getDeclaredMethod(

@@ -149,9 +149,9 @@ class CustomOkHttpNetworkFetcherUnitTest {
     @Test
     @Throws(Exception::class)
     fun testOnFetchResponseCaseReturn() {
-        whenever(response.body()).thenReturn(body)
+        whenever(response.body).thenReturn(body)
         whenever(response.isSuccessful).thenReturn(false)
-        whenever(call.isCanceled).thenReturn(true)
+        whenever(call.isCanceled()).thenReturn(true)
         val method: Method = CustomOkHttpNetworkFetcher::class.java.getDeclaredMethod(
             "onFetchResponse",
             CustomOkHttpNetworkFetcher.OkHttpNetworkFetchState::class.java,
@@ -167,10 +167,10 @@ class CustomOkHttpNetworkFetcherUnitTest {
     @Test
     @Throws(Exception::class)
     fun testOnFetchResponse() {
-        whenever(response.body()).thenReturn(body)
+        whenever(response.body).thenReturn(body)
         whenever(response.isSuccessful).thenReturn(true)
         whenever(response.header("Content-Range")).thenReturn("bytes 200-1000/67589")
-        whenever(call.isCanceled).thenReturn(true)
+        whenever(call.isCanceled()).thenReturn(true)
         whenever(body.contentLength()).thenReturn(-1)
         val method: Method = CustomOkHttpNetworkFetcher::class.java.getDeclaredMethod(
             "onFetchResponse",
@@ -187,10 +187,10 @@ class CustomOkHttpNetworkFetcherUnitTest {
     @Test
     @Throws(Exception::class)
     fun testOnFetchResponseCaseException() {
-        whenever(response.body()).thenReturn(body)
-        whenever(response.isSuccessful).thenReturn(true)
+        whenever(response.body).thenReturn(body)
+        whenever(response.isSuccessful).thenReturn(false)
         whenever(response.header("Content-Range")).thenReturn("test")
-        whenever(call.isCanceled).thenReturn(false)
+        whenever(call.isCanceled()).thenReturn(false)
         whenever(body.contentLength()).thenReturn(-1)
         val method: Method = CustomOkHttpNetworkFetcher::class.java.getDeclaredMethod(
             "onFetchResponse",
