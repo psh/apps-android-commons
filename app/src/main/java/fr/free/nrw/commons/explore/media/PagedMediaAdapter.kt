@@ -2,13 +2,14 @@ package fr.free.nrw.commons.explore.media
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
+import com.facebook.drawee.view.SimpleDraweeView
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.explore.paging.BaseViewHolder
 import fr.free.nrw.commons.explore.paging.inflate
-import kotlinx.android.synthetic.main.layout_category_images.*
 
 class PagedMediaAdapter(private val onImageClicked: (Int) -> Unit) :
     PagedListAdapter<Media, SearchImagesViewHolder>(object : DiffUtil.ItemCallback<Media>() {
@@ -32,17 +33,20 @@ class PagedMediaAdapter(private val onImageClicked: (Int) -> Unit) :
 
 class SearchImagesViewHolder(containerView: View, val onImageClicked: (Int) -> Unit) :
     BaseViewHolder<Pair<Media, Int>>(containerView) {
+    private val imageView = containerView.findViewById<SimpleDraweeView>(R.id.categoryImageView)
+    private val title = containerView.findViewById<TextView>(R.id.categoryImageTitle)
+    private val author = containerView.findViewById<TextView>(R.id.categoryImageAuthor)
+
     override fun bind(item: Pair<Media, Int>) {
         val media = item.first
-        categoryImageView.setOnClickListener { onImageClicked(item.second) }
-        categoryImageTitle.text = media.mostRelevantCaption
-        categoryImageView.setImageURI(media.thumbUrl)
+        imageView.setOnClickListener { onImageClicked(item.second) }
+        title.text = media.mostRelevantCaption
+        imageView.setImageURI(media.thumbUrl)
         if (media.author?.isNotEmpty() == true) {
-            categoryImageAuthor.visibility = View.VISIBLE
-            categoryImageAuthor.text =
-                containerView.context.getString(R.string.image_uploaded_by, media.user)
+            author.visibility = View.VISIBLE
+            author.text = title.context.getString(R.string.image_uploaded_by, media.user)
         } else {
-            categoryImageAuthor.visibility = View.GONE
+            author.visibility = View.GONE
         }
     }
 
