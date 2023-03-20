@@ -45,11 +45,11 @@ class MainActivityTest {
     fun setup() {
         device.setOrientationNatural()
         device.freezeRotation()
-        UITestHelper.loginUser()
-        UITestHelper.skipWelcome()
         Intents.init()
         Intents.intending(CoreMatchers.not(IntentMatchers.isInternal()))
             .respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        UITestHelper.loginUser()
+        UITestHelper.skipWelcome()
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val storeName = context.packageName + "_preferences"
         defaultKvStore = JsonKvStore(context, storeName, Gson())
