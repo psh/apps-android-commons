@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.free.nrw.commons.R
 import kotlinx.android.extensions.LayoutContainer
-import kotlinx.android.synthetic.main.list_item_load_more.*
 
 class FooterAdapter(private val onRefreshClicked: () -> Unit) :
     ListAdapter<FooterItem, FooterViewHolder>(object :
@@ -46,7 +45,8 @@ class LoadingViewHolder(containerView: View) : FooterViewHolder(containerView)
 class RefreshViewHolder(containerView: View, onRefreshClicked: () -> Unit) :
     FooterViewHolder(containerView) {
     init {
-        listItemLoadMoreButton.setOnClickListener { onRefreshClicked() }
+        containerView.findViewById<View>(R.id.listItemLoadMoreButton)
+            .setOnClickListener { onRefreshClicked() }
     }
 }
 
