@@ -1,12 +1,11 @@
 package fr.free.nrw.commons.db;
 
+import static org.wikipedia.json.GsonUtil.getDefaultGson;
+
 import android.net.Uri;
 import androidx.room.TypeConverter;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.contributions.ChunkInfo;
-import fr.free.nrw.commons.di.ApplicationlessInjection;
 import fr.free.nrw.commons.location.LatLng;
 import fr.free.nrw.commons.upload.WikidataPlace;
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem;
@@ -18,10 +17,6 @@ import java.util.Map;
  * This class supplies converters to write/read types to/from the database.
  */
 public class Converters {
-
-    public static Gson getGson() {
-        return ApplicationlessInjection.getInstance(CommonsApplication.getInstance()).getCommonsApplicationComponent().gson();
-    }
 
     /**
      * convert DepictedItem object to string
@@ -135,14 +130,16 @@ public class Converters {
     }
 
     private static String writeObjectToString(Object object) {
-        return object == null ? null : getGson().toJson(object);
+        return object == null ? null : getDefaultGson().toJson(object);
     }
 
     private static<T> T readObjectFromString(String objectAsString, Class<T> clazz) {
-        return objectAsString == null ? null : getGson().fromJson(objectAsString, clazz);
+        return objectAsString == null ? null
+            : getDefaultGson().fromJson(objectAsString, clazz);
     }
 
     private static <T> T readObjectWithTypeToken(String objectList, TypeToken<T> typeToken) {
-        return objectList == null ? null : getGson().fromJson(objectList, typeToken.getType());
+        return objectList == null ? null
+            : getDefaultGson().fromJson(objectList, typeToken.getType());
     }
 }

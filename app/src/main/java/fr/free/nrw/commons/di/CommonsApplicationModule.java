@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.os.Build;
 import android.view.inputmethod.InputMethodManager;
 import androidx.collection.LruCache;
 import androidx.room.Room;
@@ -29,6 +30,7 @@ import fr.free.nrw.commons.settings.Prefs;
 import fr.free.nrw.commons.upload.UploadController;
 import fr.free.nrw.commons.upload.depicts.DepictsDao;
 import fr.free.nrw.commons.utils.ConfigUtils;
+import fr.free.nrw.commons.utils.UserAgentProvider;
 import fr.free.nrw.commons.wikidata.WikidataEditListener;
 import fr.free.nrw.commons.wikidata.WikidataEditListenerImpl;
 import io.reactivex.Scheduler;
@@ -41,6 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import org.jetbrains.annotations.NotNull;
 import org.wikipedia.AppAdapter;
 
 /**
@@ -311,5 +314,11 @@ public class CommonsApplicationModule {
     @Provides
     public ContentResolver providesContentResolver(Context context){
         return context.getContentResolver();
+    }
+
+    @Provides
+    public UserAgentProvider provideUserAgent(Context context) {
+        return () -> "Commons/" + ConfigUtils.getVersionNameWithSha(context)
+            + " (https://mediawiki.org/wiki/Apps/Commons) Android/" + Build.VERSION.RELEASE;
     }
 }

@@ -18,6 +18,7 @@ import fr.free.nrw.commons.utils.ConfigUtils;
 import fr.free.nrw.commons.utils.DialogUtil;
 import java.util.Collections;
 import java.util.List;
+import org.wikipedia.language.AppLanguageLookUpTable;
 
 /**
  * Represents about screen of this app
@@ -159,7 +160,8 @@ public class AboutActivity extends BaseActivity {
     }
 
     public void launchTranslate(View view) {
-        @NonNull List<String> sortedLocalizedNamesRef = CommonsApplication.getInstance().getLanguageLookUpTable().getCanonicalNames();
+        final AppLanguageLookUpTable lookUpTable = new AppLanguageLookUpTable(getApplicationContext());
+        @NonNull List<String> sortedLocalizedNamesRef = lookUpTable.getCanonicalNames();
         Collections.sort(sortedLocalizedNamesRef);
         final ArrayAdapter<String> languageAdapter = new ArrayAdapter<>(AboutActivity.this,
                 android.R.layout.simple_spinner_dropdown_item, sortedLocalizedNamesRef);
@@ -170,7 +172,7 @@ public class AboutActivity extends BaseActivity {
         spinner.setPadding(50,0,0,0);
 
         Runnable positiveButtonRunnable = () -> {
-            String langCode = CommonsApplication.getInstance().getLanguageLookUpTable().getCodes().get(spinner.getSelectedItemPosition());
+            final String langCode = lookUpTable.getCodes().get(spinner.getSelectedItemPosition());
             Utils.handleWebUrl(AboutActivity.this, Uri.parse(Urls.TRANSLATE_WIKI_URL + langCode));
         };
         DialogUtil.showAlertDialog(this,

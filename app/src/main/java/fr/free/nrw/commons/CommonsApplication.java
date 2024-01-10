@@ -41,6 +41,7 @@ import fr.free.nrw.commons.media.CustomOkHttpNetworkFetcher;
 import fr.free.nrw.commons.settings.Prefs;
 import fr.free.nrw.commons.upload.FileUtils;
 import fr.free.nrw.commons.utils.ConfigUtils;
+import fr.free.nrw.commons.utils.UserAgentProvider;
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.internal.functions.Functions;
@@ -59,7 +60,6 @@ import org.acra.annotation.AcraDialog;
 import org.acra.annotation.AcraMailSender;
 import org.acra.data.StringFormat;
 import org.wikipedia.AppAdapter;
-import org.wikipedia.language.AppLanguageLookUpTable;
 import timber.log.Timber;
 
 @AcraCore(
@@ -87,6 +87,8 @@ public class CommonsApplication extends MultiDexApplication {
     public static final String IS_LIMITED_CONNECTION_MODE_ENABLED = "is_limited_connection_mode_enabled";
     @Inject
     SessionManager sessionManager;
+    @Inject
+    UserAgentProvider userAgentProvider;
     @Inject
     DBOpenHelper dbOpenHelper;
 
@@ -120,18 +122,6 @@ public class CommonsApplication extends MultiDexApplication {
      * Constants End
      */
 
-    private static CommonsApplication INSTANCE;
-
-    public static CommonsApplication getInstance() {
-        return INSTANCE;
-    }
-
-    private AppLanguageLookUpTable languageLookUpTable;
-
-    public AppLanguageLookUpTable getLanguageLookUpTable() {
-        return languageLookUpTable;
-    }
-
     @Inject
     ContributionDao contributionDao;
 
@@ -152,7 +142,6 @@ public class CommonsApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        INSTANCE = this;
         ACRA.init(this);
         Mapbox.getInstance(this, BuildConfig.MapboxAccessToken, WellKnownTileServer.Mapbox);
 
@@ -161,7 +150,9 @@ public class CommonsApplication extends MultiDexApplication {
             .getCommonsApplicationComponent()
             .inject(this);
 
-        AppAdapter.set(new CommonsAppAdapter(sessionManager, defaultPrefs));
+        AppAdapter.set(new CommonsAppAdapter(
+            sessionManager, defaultPrefs, userAgentProvider, getCacheDir()
+        ));
 
         initTimber();
 
@@ -187,8 +178,6 @@ public class CommonsApplication extends MultiDexApplication {
         }
 
         createNotificationChannel(this);
-
-        languageLookUpTable = new AppLanguageLookUpTable(this);
 
         // This handler will catch exceptions thrown from Observables after they are disposed,
         // or from Observables that are (deliberately or not) missing an onError handler.
@@ -263,11 +252,6 @@ public class CommonsApplication extends MultiDexApplication {
                 manager.createNotificationChannel(channel);
             }
         }
-    }
-
-    public String getUserAgent() {
-        return "Commons/" + ConfigUtils.getVersionNameWithSha(this)
-            + " (https://mediawiki.org/wiki/Apps/Commons) Android/" + Build.VERSION.RELEASE;
     }
 
     /**

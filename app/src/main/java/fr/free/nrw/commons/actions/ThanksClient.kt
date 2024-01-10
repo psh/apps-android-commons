@@ -2,10 +2,10 @@ package fr.free.nrw.commons.actions
 
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.di.NetworkingModule.NAMED_COMMONS_CSRF
+import fr.free.nrw.commons.utils.UserAgentProvider
 import io.reactivex.Observable
 import org.wikipedia.csrf.CsrfTokenClient
 import org.wikipedia.dataclient.Service
-import org.wikipedia.dataclient.mwapi.MwPostResponse
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -17,7 +17,8 @@ import javax.inject.Singleton
 @Singleton
 class ThanksClient @Inject constructor(
     @param:Named(NAMED_COMMONS_CSRF) private val csrfTokenClient: CsrfTokenClient,
-    @param:Named("commons-service") private val service: Service
+    @param:Named("commons-service") private val service: Service,
+    private val userAgentProvider : UserAgentProvider
 ) {
     /**
      * Thanks a user for a particular revision
@@ -26,7 +27,7 @@ class ThanksClient @Inject constructor(
      */
     fun thank(revisionId: Long): Observable<Boolean> {
         return try {
-            service.thank(revisionId.toString(), null, csrfTokenClient.tokenBlocking, CommonsApplication.getInstance().userAgent)
+            service.thank(revisionId.toString(), null, csrfTokenClient.tokenBlocking, userAgentProvider.get())
                 .map { mwThankPostResponse -> mwThankPostResponse.result.success== 1 }
         } catch (throwable: Throwable) {
             Observable.just(false)

@@ -1,9 +1,9 @@
 package fr.free.nrw.commons;
 
 import androidx.annotation.NonNull;
+import fr.free.nrw.commons.utils.UserAgentProvider;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,27 +22,29 @@ import timber.log.Timber;
 public final class OkHttpConnectionFactory {
     private static final String CACHE_DIR_NAME = "okhttp-cache";
     private static final long NET_CACHE_SIZE = 64 * 1024 * 1024;
-    @NonNull private static final Cache NET_CACHE = new Cache(new File(CommonsApplication.getInstance().getCacheDir(),
-            CACHE_DIR_NAME), NET_CACHE_SIZE);
+
+    private static OkHttpClient CLIENT;
 
     @NonNull
-    private static final OkHttpClient CLIENT = createClient();
-
-    @NonNull public static OkHttpClient getClient() {
+    public static OkHttpClient getClient(final UserAgentProvider provider, final File cacheDir) {
+        if (CLIENT == null) {
+            CLIENT = createClient(provider, cacheDir);
+        }
         return CLIENT;
     }
 
     @NonNull
-    private static OkHttpClient createClient() {
+    private static OkHttpClient createClient(final UserAgentProvider provider, final File cacheDir) {
+        final Cache cache = new Cache(new File(cacheDir, CACHE_DIR_NAME), NET_CACHE_SIZE);
         return new OkHttpClient.Builder()
                 .cookieJar(SharedPreferenceCookieManager.getInstance())
-                .cache(NET_CACHE)
+                .cache(cache)
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(120, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
                 .addInterceptor(getLoggingInterceptor())
                 .addInterceptor(new UnsuccessfulResponseInterceptor())
-                .addInterceptor(new CommonHeaderRequestInterceptor())
+                .addInterceptor(new CommonHeaderRequestInterceptor(provider))
                 .build();
     }
 
@@ -56,13 +58,18 @@ public final class OkHttpConnectionFactory {
         return httpLoggingInterceptor;
     }
 
-    private static class CommonHeaderRequestInterceptor implements Interceptor {
+    private static final class CommonHeaderRequestInterceptor implements Interceptor {
+        private final UserAgentProvider userAgentProvider;
+
+        private CommonHeaderRequestInterceptor(final UserAgentProvider userAgentProvider) {
+            this.userAgentProvider = userAgentProvider;
+        }
 
         @Override
         @NonNull
         public Response intercept(@NonNull final Chain chain) throws IOException {
             final Request request = chain.request().newBuilder()
-                    .header("User-Agent", CommonsApplication.getInstance().getUserAgent())
+                    .header("User-Agent", userAgentProvider.get())
                     .build();
             return chain.proceed(request);
         }

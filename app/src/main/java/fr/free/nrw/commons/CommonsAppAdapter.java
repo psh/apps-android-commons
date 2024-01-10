@@ -1,7 +1,11 @@
 package fr.free.nrw.commons;
 
 import androidx.annotation.NonNull;
-
+import fr.free.nrw.commons.auth.SessionManager;
+import fr.free.nrw.commons.kvstore.JsonKvStore;
+import fr.free.nrw.commons.utils.UserAgentProvider;
+import java.io.File;
+import okhttp3.OkHttpClient;
 import org.wikipedia.AppAdapter;
 import org.wikipedia.dataclient.SharedPreferenceCookieManager;
 import org.wikipedia.dataclient.WikiSite;
@@ -9,20 +13,21 @@ import org.wikipedia.json.GsonMarshaller;
 import org.wikipedia.json.GsonUnmarshaller;
 import org.wikipedia.login.LoginResult;
 
-import fr.free.nrw.commons.auth.SessionManager;
-import fr.free.nrw.commons.kvstore.JsonKvStore;
-import okhttp3.OkHttpClient;
-
 public class CommonsAppAdapter extends AppAdapter {
     private final int DEFAULT_THUMB_SIZE = 640;
     private final String COOKIE_STORE_NAME = "cookie_store";
 
     private final SessionManager sessionManager;
     private final JsonKvStore preferences;
+    private final UserAgentProvider userAgentProvider;
+    private final File cacheDir;
 
-    CommonsAppAdapter(@NonNull SessionManager sessionManager, @NonNull JsonKvStore preferences) {
+    CommonsAppAdapter(@NonNull SessionManager sessionManager, @NonNull JsonKvStore preferences,
+        @NonNull UserAgentProvider userAgentProvider, File cacheDir) {
         this.sessionManager = sessionManager;
         this.preferences = preferences;
+        this.userAgentProvider = userAgentProvider;
+        this.cacheDir = cacheDir;
     }
 
     @Override
@@ -37,7 +42,7 @@ public class CommonsAppAdapter extends AppAdapter {
 
     @Override
     public OkHttpClient getOkHttpClient(@NonNull WikiSite wikiSite) {
-        return OkHttpConnectionFactory.getClient();
+        return OkHttpConnectionFactory.getClient(userAgentProvider, cacheDir);
     }
 
     @Override

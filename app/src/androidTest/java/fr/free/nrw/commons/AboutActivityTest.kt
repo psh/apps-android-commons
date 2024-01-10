@@ -22,6 +22,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.wikipedia.language.AppLanguageLookUpTable
 
 @RunWith(AndroidJUnit4::class)
 class AboutActivityTest {
@@ -104,7 +105,8 @@ class AboutActivityTest {
     fun testLaunchTranslate() {
         Espresso.onView(ViewMatchers.withId(R.id.about_translate)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(android.R.id.button1)).perform(ViewActions.click())
-        val langCode = CommonsApplication.getInstance().languageLookUpTable.codes[0]
+        val lookUpTable = AppLanguageLookUpTable(getApplicationContext<CommonsApplication>())
+        val langCode = lookUpTable.codes[0]
         Intents.intended(
             CoreMatchers.allOf(
                 IntentMatchers.hasAction(Intent.ACTION_VIEW),

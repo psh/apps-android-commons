@@ -4,6 +4,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.UserAgentProvider
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -12,6 +13,7 @@ import org.mockito.MockitoAnnotations
 import org.wikipedia.dataclient.SharedPreferenceCookieManager
 import org.wikipedia.json.GsonMarshaller
 import org.wikipedia.login.LoginResult
+import java.io.File
 
 class CommonsAppAdapterUnitTest {
 
@@ -32,7 +34,12 @@ class CommonsAppAdapterUnitTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        adapter = CommonsAppAdapter(sessionManager, preferences)
+        adapter = CommonsAppAdapter(
+            sessionManager,
+            preferences,
+            object : UserAgentProvider { override fun get(): String = "test" },
+            File(".")
+        )
     }
 
     @Test
