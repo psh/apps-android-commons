@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.review;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
@@ -7,21 +8,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+import androidx.annotation.Nullable;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
+import fr.free.nrw.commons.databinding.FragmentReviewImageBinding;
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ReviewImageFragment extends CommonsDaggerSupportFragment {
 
@@ -34,14 +29,7 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
 
     public ProgressBar progressBar;
 
-    @BindView(R.id.tv_review_question)
-    TextView textViewQuestion;
-    @BindView(R.id.tv_review_question_context)
-    TextView textViewQuestionContext;
-    @BindView(R.id.button_yes)
-    Button yesButton;
-    @BindView(R.id.button_no)
-    Button noButton;
+    private FragmentReviewImageBinding binding;
 
     // Constant variable used to store user's key name for onSaveInstanceState method
     private final String SAVED_USER = "saved_user";
@@ -49,12 +37,14 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
     // Variable that stores the value of user
     private String user;
 
+    ReviewImageFragmentCallback callback;
+
     public void update(int position) {
         this.position = position;
     }
 
     private String updateCategoriesQuestion() {
-        Media media = getReviewActivity().getMedia();
+        Media media = callback.getMedia();
         if (media != null && media.getCategoriesHiddenStatus() != null && isAdded()) {
             // Filter category name attribute from all categories
             List<String> categories = new ArrayList<>();
@@ -69,7 +59,7 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 categories.add(value);
             }
             String catString = TextUtils.join(", ", categories);
-            if (catString != null && !catString.equals("") && textViewQuestionContext != null) {
+            if (catString != null && !catString.equals("") && binding != null) {
                 catString = "<b>" + catString + "</b>";
                 String stringToConvertHtml = String.format(getResources().getString(R.string.review_category_explanation), catString);
                 return Html.fromHtml(stringToConvertHtml).toString();
@@ -79,17 +69,24 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        if (requireActivity() instanceof ReviewImageFragmentCallback) {
+            callback = (ReviewImageFragmentCallback) requireActivity();
+        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        position = getArguments().getInt("position");
-        View layoutView = inflater.inflate(R.layout.fragment_review_image, container,
-                false);
-        ButterKnife.bind(this, layoutView);
+    public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        position = requireArguments().getInt("position");
+        binding = FragmentReviewImageBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View layoutView, @Nullable final Bundle savedInstanceState) {
+        binding.buttonYes.setOnClickListener(v -> onYesButtonClicked());
 
         String question, explanation=null, yesButtonText, noButtonText;
 
@@ -99,8 +96,8 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 explanation = getString(R.string.review_spam_explanation);
                 yesButtonText = getString(R.string.yes);
                 noButtonText = getString(R.string.no);
-                noButton.setOnClickListener(view -> getReviewActivity()
-                        .reviewController.reportSpam(requireActivity(), getReviewCallback()));
+                binding.buttonNo.setOnClickListener(view -> callback.getReviewController()
+                    .reportSpam(requireActivity(), getReviewCallback()));
                 break;
             case COPYRIGHT:
                 enableButtons();
@@ -108,9 +105,8 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 explanation = getString(R.string.review_copyright_explanation);
                 yesButtonText = getString(R.string.yes);
                 noButtonText = getString(R.string.no);
-                noButton.setOnClickListener(view -> getReviewActivity()
-                        .reviewController
-                        .reportPossibleCopyRightViolation(requireActivity(), getReviewCallback()));
+                binding.buttonNo.setOnClickListener(view -> callback.getReviewController()
+                    .reportPossibleCopyRightViolation(requireActivity(), getReviewCallback()));
                 break;
             case CATEGORY:
                 enableButtons();
@@ -118,19 +114,18 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 explanation = updateCategoriesQuestion();
                 yesButtonText = getString(R.string.yes);
                 noButtonText = getString(R.string.no);
-                noButton.setOnClickListener(view -> {
-                    getReviewActivity()
-                            .reviewController
-                            .reportWrongCategory(requireActivity(), getReviewCallback());
-                    getReviewActivity().swipeToNext();
+                binding.buttonNo.setOnClickListener(view -> {
+                    callback.getReviewController()
+                        .reportWrongCategory(requireActivity(), getReviewCallback());
+                    callback.swipeToNext();
                 });
                 break;
             case THANKS:
                 enableButtons();
                 question = getString(R.string.review_thanks);
 
-                if (getReviewActivity().reviewController.firstRevision != null) {
-                    user = getReviewActivity().reviewController.firstRevision.getUser();
+                if (callback.getReviewController().firstRevision != null) {
+                    user = callback.getReviewController().firstRevision.getUser();
                 } else {
                     if(savedInstanceState != null) {
                         user = savedInstanceState.getString(SAVED_USER);
@@ -145,11 +140,11 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 // Note that the yes and no buttons are swapped in this section
                 yesButtonText = getString(R.string.review_thanks_yes_button_text);
                 noButtonText = getString(R.string.review_thanks_no_button_text);
-                yesButton.setTextColor(Color.parseColor("#116aaa"));
-                noButton.setTextColor(Color.parseColor("#228b22"));
-                noButton.setOnClickListener(view -> {
-                    getReviewActivity().reviewController.sendThanks(getReviewActivity());
-                    getReviewActivity().swipeToNext();
+                binding.buttonYes.setTextColor(Color.parseColor("#116aaa"));
+                binding.buttonNo.setTextColor(Color.parseColor("#228b22"));
+                binding.buttonNo.setOnClickListener(view -> {
+                    callback.getReviewController().sendThanks(requireActivity());
+                    callback.swipeToNext();
                 });
                 break;
             default:
@@ -160,13 +155,17 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
                 noButtonText = "no";
         }
 
-        textViewQuestion.setText(question);
-        textViewQuestionContext.setText(explanation);
-        yesButton.setText(yesButtonText);
-        noButton.setText(noButtonText);
-        return layoutView;
+        binding.tvReviewQuestion.setText(question);
+        binding.tvReviewQuestionContext.setText(explanation);
+        binding.buttonYes.setText(yesButtonText);
+        binding.buttonNo.setText(noButtonText);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 
     /**
      * This method will be called when configuration changes happen
@@ -182,11 +181,10 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
     }
 
     private ReviewController.ReviewCallback getReviewCallback() {
-        return new ReviewController
-                .ReviewCallback() {
+        return new ReviewController.ReviewCallback() {
             @Override
             public void onSuccess() {
-                getReviewActivity().runRandomizer();
+                callback.runRandomizer();
             }
 
             @Override
@@ -201,10 +199,10 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
      * been loaded to enable the review buttons.
      */
     public void enableButtons() {
-        yesButton.setEnabled(true);
-        yesButton.setAlpha(1);
-        noButton.setEnabled(true);
-        noButton.setAlpha(1);
+        binding.buttonYes.setEnabled(true);
+        binding.buttonYes.setAlpha(1);
+        binding.buttonNo.setEnabled(true);
+        binding.buttonNo.setAlpha(1);
     }
 
     /**
@@ -212,18 +210,23 @@ public class ReviewImageFragment extends CommonsDaggerSupportFragment {
      * to disable the review buttons
      */
     public void disableButtons() {
-        yesButton.setEnabled(false);
-        yesButton.setAlpha(0.5f);
-        noButton.setEnabled(false);
-        noButton.setAlpha(0.5f);
+        binding.buttonYes.setEnabled(false);
+        binding.buttonYes.setAlpha(0.5f);
+        binding.buttonNo.setEnabled(false);
+        binding.buttonNo.setAlpha(0.5f);
     }
 
-    @OnClick(R.id.button_yes)
     void onYesButtonClicked() {
-        getReviewActivity().swipeToNext();
+        callback.swipeToNext();
     }
 
-    private ReviewActivity getReviewActivity() {
-        return (ReviewActivity) requireActivity();
+    interface ReviewImageFragmentCallback {
+        Media getMedia();
+
+        void swipeToNext();
+
+        boolean runRandomizer();
+
+        ReviewController getReviewController();
     }
 }

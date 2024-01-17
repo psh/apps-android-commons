@@ -30,6 +30,7 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.auth.AccountUtil;
 import fr.free.nrw.commons.delete.DeleteHelper;
 import fr.free.nrw.commons.media.MediaDetailFragment;
+import fr.free.nrw.commons.review.ReviewImageFragment.ReviewImageFragmentCallback;
 import fr.free.nrw.commons.theme.BaseActivity;
 import fr.free.nrw.commons.utils.DialogUtil;
 import fr.free.nrw.commons.utils.ViewUtil;
@@ -38,7 +39,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import javax.inject.Inject;
 
-public class ReviewActivity extends BaseActivity {
+public class ReviewActivity extends BaseActivity implements ReviewImageFragmentCallback {
 
     @BindView(R.id.pager_indicator_review)
     public CirclePageIndicator pagerIndicator;
@@ -104,6 +105,7 @@ public class ReviewActivity extends BaseActivity {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    @Override
     public Media getMedia() {
         return media;
     }
@@ -158,7 +160,12 @@ public class ReviewActivity extends BaseActivity {
         return true;
     }
 
-    @SuppressLint("CheckResult")
+    @Override
+    public ReviewController getReviewController() {
+        return reviewController;
+    }
+
+    @Override
     public boolean runRandomizer() {
         hasNonHiddenCategories = false;
         progressBar.setVisibility(View.VISIBLE);
@@ -242,6 +249,7 @@ public class ReviewActivity extends BaseActivity {
         reviewPager.setCurrentItem(0);
     }
 
+    @Override
     public void swipeToNext() {
         int nextPos = reviewPager.getCurrentItem() + 1;
         // If currently at category fragment, then check whether the media has any non-hidden category
