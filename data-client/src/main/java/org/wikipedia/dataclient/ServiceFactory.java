@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LruCache;
 
+import okhttp3.OkHttpClient;
 import org.wikipedia.AppAdapter;
 import org.wikipedia.json.GsonUtil;
 
@@ -24,7 +25,7 @@ public final class ServiceFactory {
             return SERVICE_CACHE.get(hashCode);
         }
 
-        Retrofit r = createRetrofit(wiki, wiki.url() + "/");
+        Retrofit r = createRetrofit(wiki.url() + "/", AppAdapter.get().getOkHttpClient(wiki));
 
         Service s = r.create(Service.class);
         SERVICE_CACHE.put(hashCode, s);
@@ -33,8 +34,8 @@ public final class ServiceFactory {
 
     public static <T> T get(@NonNull WikiSite wiki, @Nullable String baseUrl, Class<T> service) {
         return createRetrofit(
-            wiki,
-            TextUtils.isEmpty(baseUrl) ? wiki.url() + "/" : baseUrl
+            TextUtils.isEmpty(baseUrl) ? wiki.url() + "/" : baseUrl,
+            AppAdapter.get().getOkHttpClient(wiki)
         ).create(service);
     }
 
@@ -44,18 +45,19 @@ public final class ServiceFactory {
             return REST_SERVICE_CACHE.get(hashCode);
         }
 
-        Retrofit r = createRetrofit(wiki, TextUtils.isEmpty(AppAdapter.get().getRestbaseUriFormat())
+        Retrofit r = createRetrofit(TextUtils.isEmpty(AppAdapter.get().getRestbaseUriFormat())
                         ? wiki.url() + "/" + RestService.REST_API_PREFIX
-                        : String.format(AppAdapter.get().getRestbaseUriFormat(), "https", wiki.authority()));
+                        : String.format(AppAdapter.get().getRestbaseUriFormat(), "https", wiki.authority()),
+            AppAdapter.get().getOkHttpClient(wiki));
 
         RestService s = r.create(RestService.class);
         REST_SERVICE_CACHE.put(hashCode, s);
         return s;
     }
 
-    private static Retrofit createRetrofit(@NonNull WikiSite wiki, @NonNull String baseUrl) {
+    public static Retrofit createRetrofit(@NonNull String baseUrl, OkHttpClient httpClient) {
         return new Retrofit.Builder()
-                .client(AppAdapter.get().getOkHttpClient(wiki))
+                .client(httpClient)
                 .baseUrl(baseUrl)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(GsonUtil.getDefaultGson()))

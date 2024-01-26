@@ -1,8 +1,7 @@
 package fr.free.nrw.commons.upload;
 
-import static org.wikipedia.dataclient.Service.MW_API_PREFIX;
-
 import androidx.annotation.NonNull;
+import fr.free.nrw.commons.wikidata.WikidataConstants;
 import io.reactivex.Observable;
 import org.wikipedia.dataclient.mwapi.MwPostResponse;
 import org.wikipedia.dataclient.mwapi.MwQueryResponse;
@@ -21,7 +20,7 @@ public interface WikiBaseInterface {
 
     @Headers("Cache-Control: no-cache")
     @FormUrlEncoded
-    @POST(MW_API_PREFIX + "action=wbeditentity")
+    @POST(WikidataConstants.MW_API_PREFIX + "action=wbeditentity")
     Observable<MwPostResponse> postEditEntity(@NonNull @Field("id") String fileEntityId,
                                               @NonNull @Field("token") String editToken,
                                               @NonNull @Field("data") String data);
@@ -36,12 +35,12 @@ public interface WikiBaseInterface {
      */
     @Headers("Cache-Control: no-cache")
     @FormUrlEncoded
-    @POST(MW_API_PREFIX + "action=wbeditentity&site=commonswiki&clear=1")
+    @POST(WikidataConstants.MW_API_PREFIX + "action=wbeditentity&site=commonswiki&clear=1")
     Observable<MwPostResponse> postEditEntityByFilename(@NonNull @Field("title") String filename,
         @NonNull @Field("token") String editToken,
         @NonNull @Field("data") String data);
 
-    @GET(MW_API_PREFIX + "action=query&prop=info")
+    @GET(WikidataConstants.MW_API_PREFIX + "action=query&prop=info")
     Observable<MwQueryResponse> getFileEntityId(@Query("titles") String fileName);
 
     /**
@@ -52,7 +51,7 @@ public interface WikiBaseInterface {
      * @param captionValue value of the caption to be uploaded
      */
     @FormUrlEncoded
-    @POST(MW_API_PREFIX + "action=wbsetlabel")
+    @POST(WikidataConstants.MW_API_PREFIX + "action=wbsetlabel")
     Observable<MwPostResponse> addLabelstoWikidata(@Field("id") String fileEntityId,
         @Field("token") String editToken,
         @Field("language") String language,

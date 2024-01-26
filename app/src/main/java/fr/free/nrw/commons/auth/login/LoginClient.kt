@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.text.TextUtils
 import fr.free.nrw.commons.auth.login.LoginResult.OAuthResult
 import fr.free.nrw.commons.auth.login.LoginResult.ResetPasswordResult
+import fr.free.nrw.commons.wikidata.WikidataConstants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.wikipedia.dataclient.Service
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -71,7 +71,7 @@ class LoginClient(private val service: LoginInterface) {
 
         loginCall = if (twoFactorCode.isNullOrEmpty() && retypedPassword.isNullOrEmpty()) {
             service.postLogIn(
-                userName, password, loginToken, userLanguage, Service.WIKIPEDIA_URL
+                userName, password, loginToken, userLanguage, WikidataConstants.WIKIPEDIA_URL
             )
         } else {
             service.postLogIn(
@@ -132,7 +132,7 @@ class LoginClient(private val service: LoginInterface) {
         val loginToken = tokenResponse.body()?.query()?.loginToken()
         val tempLoginCall = if (twoFactorCode.isNullOrEmpty()) {
             service.postLogIn(
-                userName, password, loginToken, userLanguage, Service.WIKIPEDIA_URL
+                userName, password, loginToken, userLanguage, WikidataConstants.WIKIPEDIA_URL
             )
         } else {
             service.postLogIn(

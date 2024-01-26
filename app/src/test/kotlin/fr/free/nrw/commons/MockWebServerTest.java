@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.wikipedia.AppAdapter;
-import org.wikipedia.dataclient.Service;
-import org.wikipedia.dataclient.WikiSite;
+import org.wikipedia.dataclient.okhttp.TestStubInterceptor;
+import org.wikipedia.dataclient.okhttp.UnsuccessfulResponseInterceptor;
 import org.wikipedia.json.GsonUtil;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -26,9 +26,14 @@ public abstract class MockWebServerTest {
 
     @Before public void setUp() throws Throwable {
         AppAdapter.set(new TestAppAdapter());
-        OkHttpClient.Builder builder = AppAdapter.get().getOkHttpClient(new WikiSite(Service.WIKIPEDIA_URL)).newBuilder();
-        okHttpClient = builder.dispatcher(new Dispatcher(new ImmediateExecutorService())).build();
+        okHttpClient = createClient().dispatcher(new Dispatcher(new ImmediateExecutorService())).build();
         server.setUp();
+    }
+
+    OkHttpClient.Builder createClient() {
+        return new OkHttpClient.Builder()
+            .addInterceptor(new UnsuccessfulResponseInterceptor())
+            .addInterceptor(new TestStubInterceptor());
     }
 
     @After public void tearDown() throws Throwable {
