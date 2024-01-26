@@ -7,7 +7,6 @@ import fr.free.nrw.commons.auth.login.LoginResult.ResetPasswordResult
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.wikipedia.dataclient.Service
-import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +34,6 @@ class LoginClient(private val service: LoginInterface) {
     private var userLanguage = ""
 
     fun request(
-        wiki: WikiSite,
         userName: String,
         password: String,
         cb: LoginCallback
@@ -46,7 +44,7 @@ class LoginClient(private val service: LoginInterface) {
         tokenCall!!.enqueue(object : Callback<MwQueryResponse?> {
             override fun onResponse(call: Call<MwQueryResponse?>, response: Response<MwQueryResponse?>) {
                 login(
-                    wiki, userName, password, null, null,
+                    userName, password, null, null,
                     response.body()!!.query()!!.loginToken(), userLanguage, cb
                 )
             }
@@ -61,7 +59,6 @@ class LoginClient(private val service: LoginInterface) {
     }
 
     fun login(
-        wiki: WikiSite,
         userName: String,
         password: String,
         retypedPassword: String?,
@@ -87,7 +84,7 @@ class LoginClient(private val service: LoginInterface) {
                 call: Call<LoginResponse?>,
                 response: Response<LoginResponse?>
             ) {
-                val loginResult = response.body()?.toLoginResult(wiki, password)
+                val loginResult = response.body()?.toLoginResult(password)
                 if (loginResult != null) {
                     if (loginResult.pass && !loginResult.userName.isNullOrEmpty()) {
                         // The server could do some transformations on user names, e.g. on some
@@ -125,7 +122,7 @@ class LoginClient(private val service: LoginInterface) {
 
     @Throws(Throwable::class)
     fun loginBlocking(
-        wiki: WikiSite, userName: String, password: String, twoFactorCode: String?
+        userName: String, password: String, twoFactorCode: String?
     ) {
         val tokenResponse = service.getLoginToken().execute()
         if (tokenResponse.body()?.query()?.loginToken().isNullOrEmpty()) {
@@ -145,7 +142,7 @@ class LoginClient(private val service: LoginInterface) {
 
         val response = tempLoginCall.execute()
         val loginResponse = response.body() ?: throw IOException("Unexpected response when logging in.")
-        val loginResult = loginResponse.toLoginResult(wiki, password) ?: throw IOException("Unexpected response when logging in.")
+        val loginResult = loginResponse.toLoginResult(password) ?: throw IOException("Unexpected response when logging in.")
 
         if ("UI" == loginResult.status) {
             if (loginResult is OAuthResult) {

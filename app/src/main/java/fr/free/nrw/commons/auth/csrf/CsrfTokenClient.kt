@@ -8,7 +8,6 @@ import fr.free.nrw.commons.auth.login.LoginFailedException
 import fr.free.nrw.commons.auth.login.LoginResult
 import org.wikipedia.AppAdapter
 import org.wikipedia.dataclient.SharedPreferenceCookieManager
-import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
 import retrofit2.Call
 import retrofit2.Response
@@ -18,7 +17,6 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors.newSingleThreadExecutor
 
 class CsrfTokenClient(
-    private val csrfWikiSite: WikiSite,
     private val service: CsrfTokenInterface,
     private val sessionManager: SessionManager,
     private val loginClient: LoginClient
@@ -37,7 +35,6 @@ class CsrfTokenClient(
                 if (retry > 0) {
                     // Log in explicitly
                     loginClient.loginBlocking(
-                        csrfWikiSite,
                         userName,
                         password,
                         ""
@@ -131,7 +128,7 @@ class CsrfTokenClient(
         password: String,
         callback: Callback,
         retryCallback: () -> Unit
-    ) = loginClient.request(csrfWikiSite, username, password, object : LoginCallback {
+    ) = loginClient.request(username, password, object : LoginCallback {
         override fun success(loginResult: LoginResult) {
             if (loginResult.pass) {
                 sessionManager.updateAccount(loginResult)

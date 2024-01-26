@@ -13,12 +13,10 @@ import org.mockito.ArgumentMatchers.isA
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
-import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.mwapi.MwException
 import org.wikipedia.dataclient.okhttp.HttpStatusException
 
 class CsrfTokenClientTest : MockWebServerTest() {
-    private val wikiSite = WikiSite("test.wikipedia.org")
     private val cb = mock(CsrfTokenClient.Callback::class.java)
     private val sessionManager = mock(SessionManager::class.java)
     private lateinit var loginInterface: LoginInterface
@@ -31,7 +29,7 @@ class CsrfTokenClientTest : MockWebServerTest() {
         super.setUp()
         loginInterface = service(LoginInterface::class.java)
         tokenInterface = service(CsrfTokenInterface::class.java)
-        subject = CsrfTokenClient(wikiSite, tokenInterface, sessionManager, LoginClient(loginInterface))
+        subject = CsrfTokenClient(tokenInterface, sessionManager, LoginClient(loginInterface))
     }
 
 
