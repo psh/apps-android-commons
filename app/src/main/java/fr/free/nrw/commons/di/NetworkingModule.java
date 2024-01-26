@@ -11,6 +11,7 @@ import fr.free.nrw.commons.actions.PageEditClient;
 import fr.free.nrw.commons.actions.PageEditInterface;
 import fr.free.nrw.commons.actions.ThanksInterface;
 import fr.free.nrw.commons.auth.SessionManager;
+import fr.free.nrw.commons.auth.csrf.CsrfTokenInterface;
 import fr.free.nrw.commons.category.CategoryInterface;
 import fr.free.nrw.commons.explore.depictions.DepictsClient;
 import fr.free.nrw.commons.kvstore.JsonKvStore;
@@ -60,8 +61,6 @@ public class NetworkingModule {
 
     public static final String NAMED_LANGUAGE_WIKI_PEDIA_WIKI_SITE = "language-wikipedia-wikisite";
 
-    public static final String NAMED_COMMONS_CSRF = "commons-csrf";
-
     @Provides
     @Singleton
     public OkHttpClient provideOkHttpClient(Context context,
@@ -103,12 +102,13 @@ public class NetworkingModule {
             gson);
     }
 
-    @Named(NAMED_COMMONS_CSRF)
     @Provides
     @Singleton
     public CsrfTokenClient provideCommonsCsrfTokenClient(
         @Named(NAMED_COMMONS_WIKI_SITE) WikiSite commonsWikiSite, SessionManager sessionManager) {
-        return new CsrfTokenClient(commonsWikiSite, sessionManager);
+        final CsrfTokenInterface csrfTokenInterface = ServiceFactory.get(commonsWikiSite,
+            BuildConfig.COMMONS_URL, CsrfTokenInterface.class);
+        return new CsrfTokenClient(commonsWikiSite, csrfTokenInterface, sessionManager);
     }
 
     @Provides
@@ -221,7 +221,7 @@ public class NetworkingModule {
     @Named("commons-page-edit")
     @Provides
     @Singleton
-    public PageEditClient provideCommonsPageEditClient(@Named(NAMED_COMMONS_CSRF) CsrfTokenClient csrfTokenClient,
+    public PageEditClient provideCommonsPageEditClient(CsrfTokenClient csrfTokenClient,
                                                        @Named("commons-page-edit-service") PageEditInterface pageEditInterface) {
         return new PageEditClient(csrfTokenClient, pageEditInterface);
     }

@@ -31,13 +31,11 @@ public final class ServiceFactory {
         return s;
     }
 
-    public static <T> T get(@NonNull WikiSite wiki, Class<T> service) {
-        return get(wiki, wiki.url() + "/", service);
-    }
-
     public static <T> T get(@NonNull WikiSite wiki, @Nullable String baseUrl, Class<T> service) {
-        Retrofit r = createRetrofit(wiki, TextUtils.isEmpty(baseUrl) ? wiki.url() + "/" : baseUrl);
-        return r.create(service);
+        return createRetrofit(
+            wiki,
+            TextUtils.isEmpty(baseUrl) ? wiki.url() + "/" : baseUrl
+        ).create(service);
     }
 
     public static RestService getRest(@NonNull WikiSite wiki) {

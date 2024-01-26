@@ -1,21 +1,19 @@
 package fr.free.nrw.commons.notification
 
-import fr.free.nrw.commons.di.NetworkingModule
+import fr.free.nrw.commons.auth.csrf.CsrfTokenClient
 import fr.free.nrw.commons.notification.models.Notification
 import fr.free.nrw.commons.notification.models.NotificationType
 import io.reactivex.Observable
 import io.reactivex.Single
-import fr.free.nrw.commons.auth.csrf.CsrfTokenClient
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
 import org.wikipedia.util.DateUtil
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 import org.wikipedia.notifications.Notification as WikimediaNotification
 
 @Singleton
 class NotificationClient @Inject constructor(
-    @param:Named(NetworkingModule.NAMED_COMMONS_CSRF) private val csrfTokenClient: CsrfTokenClient,
+    private val csrfTokenClient: CsrfTokenClient,
     private val service: NotificationInterface
 ) {
     fun getNotifications(archived: Boolean): Single<List<Notification>> =

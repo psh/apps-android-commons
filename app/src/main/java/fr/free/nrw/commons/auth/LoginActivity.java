@@ -231,7 +231,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
     private void doLogin(String username, String password, String twoFactorCode) {
         progressDialog.show();
-        loginToken = ServiceFactory.get(commonsWikiSite, LoginInterface.class).getLoginToken();
+        loginToken = ServiceFactory.get(commonsWikiSite, commonsWikiSite.url() + "/",
+            LoginInterface.class).getLoginToken();
         loginToken.enqueue(
                 new Callback<MwQueryResponse>() {
                     @Override

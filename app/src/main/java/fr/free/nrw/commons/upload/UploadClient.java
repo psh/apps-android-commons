@@ -1,7 +1,5 @@
 package fr.free.nrw.commons.upload;
 
-import static fr.free.nrw.commons.di.NetworkingModule.NAMED_COMMONS_CSRF;
-
 import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
@@ -49,7 +47,7 @@ public class UploadClient {
 
     @Inject
     public UploadClient(final UploadInterface uploadInterface,
-        @Named(NAMED_COMMONS_CSRF) final CsrfTokenClient csrfTokenClient,
+        final CsrfTokenClient csrfTokenClient,
         final PageContentsCreator pageContentsCreator,
         final FileUtilsWrapper fileUtilsWrapper, final Gson gson) {
         this.uploadInterface = uploadInterface;

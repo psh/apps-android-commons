@@ -3,7 +3,6 @@ package fr.free.nrw.commons.auth.csrf
 import androidx.annotation.VisibleForTesting
 import fr.free.nrw.commons.auth.SessionManager
 import org.wikipedia.AppAdapter
-import org.wikipedia.dataclient.ServiceFactory
 import org.wikipedia.dataclient.SharedPreferenceCookieManager
 import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
@@ -20,6 +19,7 @@ import java.util.concurrent.Executors.newSingleThreadExecutor
 
 class CsrfTokenClient(
     private val csrfWikiSite: WikiSite,
+    private val service: CsrfTokenInterface,
     private val sessionManager: SessionManager
 ) {
     private var retries = 0
@@ -29,7 +29,6 @@ class CsrfTokenClient(
     @Throws(Throwable::class)
     fun getTokenBlocking(): String {
         var token = ""
-        val service = ServiceFactory.get(csrfWikiSite, CsrfTokenInterface::class.java)
         val userName = AppAdapter.get().getUserName()
         val password = AppAdapter.get().getPassword()
 
@@ -67,25 +66,24 @@ class CsrfTokenClient(
     }
 
     @VisibleForTesting
-    fun request(service: CsrfTokenInterface, cb: Callback): Call<MwQueryResponse?> =
-        requestToken(service, object : Callback {
-            override fun success(token: String?) {
-                if (AppAdapter.get().isLoggedIn() && token == ANON_TOKEN) {
-                    retryWithLogin(cb) {
-                        RuntimeException("App believes we're logged in, but got anonymous token.")
-                    }
-                } else {
-                    cb.success(token)
+    fun request(cb: Callback): Call<MwQueryResponse?> = requestToken(object : Callback {
+        override fun success(token: String?) {
+            if (AppAdapter.get().isLoggedIn() && token == ANON_TOKEN) {
+                retryWithLogin(cb) {
+                    RuntimeException("App believes we're logged in, but got anonymous token.")
                 }
+            } else {
+                cb.success(token)
             }
+        }
 
-            override fun failure(caught: Throwable?) = retryWithLogin(cb) { caught }
+        override fun failure(caught: Throwable?) = retryWithLogin(cb) { caught }
 
-            override fun twoFactorPrompt() = cb.twoFactorPrompt()
-        })
+        override fun twoFactorPrompt() = cb.twoFactorPrompt()
+    })
 
     @VisibleForTesting
-    fun requestToken(service: CsrfTokenInterface, cb: Callback): Call<MwQueryResponse?> {
+    fun requestToken(cb: Callback): Call<MwQueryResponse?> {
         val call = service.getCsrfTokenCall()
         call.enqueue(object : retrofit2.Callback<MwQueryResponse?> {
             override fun onResponse(call: Call<MwQueryResponse?>, response: Response<MwQueryResponse?>) {
@@ -114,7 +112,7 @@ class CsrfTokenClient(
             login(userName, password, callback) {
                 Timber.i("retrying...")
                 cancel()
-                csrfTokenCall = request(ServiceFactory.get(csrfWikiSite, CsrfTokenInterface::class.java), callback)
+                csrfTokenCall = request(callback)
             }
         } else {
             callback.failure(caught())
