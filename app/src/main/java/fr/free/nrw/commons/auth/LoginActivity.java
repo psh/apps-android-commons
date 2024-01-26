@@ -26,12 +26,10 @@ import androidx.core.app.NavUtils;
 import androidx.core.content.ContextCompat;
 
 import fr.free.nrw.commons.auth.login.LoginClient;
-import fr.free.nrw.commons.auth.login.LoginInterface;
 import fr.free.nrw.commons.auth.login.LoginResult;
 import fr.free.nrw.commons.databinding.ActivityLoginBinding;
 import fr.free.nrw.commons.utils.ActivityUtils;
 import java.util.Locale;
-import org.wikipedia.dataclient.ServiceFactory;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.dataclient.mwapi.MwQueryResponse;
 import fr.free.nrw.commons.auth.login.LoginCallback;
@@ -83,7 +81,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     private AppCompatDelegate delegate;
     private LoginTextWatcher textWatcher = new LoginTextWatcher();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private Call<MwQueryResponse> loginToken;
+    private Call<MwQueryResponse> loginTokenCall;
     final  String saveProgressDailog="ProgressDailog_state";
     final String saveErrorMessage ="errorMessage";
     final String saveUsername="username";
@@ -231,9 +229,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
     private void doLogin(String username, String password, String twoFactorCode) {
         progressDialog.show();
-        loginToken = ServiceFactory.get(commonsWikiSite, commonsWikiSite.url() + "/",
-            LoginInterface.class).getLoginToken();
-        loginToken.enqueue(
+        loginTokenCall = loginClient.getLoginToken();
+        loginTokenCall.enqueue(
                 new Callback<MwQueryResponse>() {
                     @Override
                     public void onResponse(Call<MwQueryResponse> call,

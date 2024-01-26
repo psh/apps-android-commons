@@ -12,6 +12,7 @@ import fr.free.nrw.commons.actions.PageEditInterface;
 import fr.free.nrw.commons.actions.ThanksInterface;
 import fr.free.nrw.commons.auth.SessionManager;
 import fr.free.nrw.commons.auth.csrf.CsrfTokenInterface;
+import fr.free.nrw.commons.auth.login.LoginInterface;
 import fr.free.nrw.commons.category.CategoryInterface;
 import fr.free.nrw.commons.explore.depictions.DepictsClient;
 import fr.free.nrw.commons.kvstore.JsonKvStore;
@@ -104,17 +105,19 @@ public class NetworkingModule {
 
     @Provides
     @Singleton
-    public CsrfTokenClient provideCommonsCsrfTokenClient(
-        @Named(NAMED_COMMONS_WIKI_SITE) WikiSite commonsWikiSite, SessionManager sessionManager) {
-        final CsrfTokenInterface csrfTokenInterface = ServiceFactory.get(commonsWikiSite,
-            BuildConfig.COMMONS_URL, CsrfTokenInterface.class);
-        return new CsrfTokenClient(commonsWikiSite, csrfTokenInterface, sessionManager);
+    public LoginClient provideLoginClient(@Named(NAMED_COMMONS_WIKI_SITE) WikiSite commonsWikiSite) {
+        return new LoginClient(ServiceFactory.get(commonsWikiSite, commonsWikiSite.url() + "/",
+            LoginInterface.class));
     }
 
     @Provides
     @Singleton
-    public LoginClient provideLoginClient() {
-        return new LoginClient();
+    public CsrfTokenClient provideCommonsCsrfTokenClient(
+        @Named(NAMED_COMMONS_WIKI_SITE) WikiSite commonsWikiSite, SessionManager sessionManager,
+        LoginClient loginClient) {
+        return new CsrfTokenClient(commonsWikiSite,
+            ServiceFactory.get(commonsWikiSite, BuildConfig.COMMONS_URL, CsrfTokenInterface.class),
+            sessionManager, loginClient);
     }
 
     @Provides
@@ -164,13 +167,6 @@ public class NetworkingModule {
     @Singleton
     public Gson provideGson() {
         return GsonUtil.getDefaultGson();
-    }
-
-    @Provides
-    @Singleton
-    @Named("commons-service")
-    public Service provideCommonsService(@Named(NAMED_COMMONS_WIKI_SITE) WikiSite commonsWikiSite) {
-        return ServiceFactory.get(commonsWikiSite);
     }
 
     @Provides

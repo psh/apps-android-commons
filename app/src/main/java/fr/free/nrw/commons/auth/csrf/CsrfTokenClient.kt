@@ -2,14 +2,14 @@ package fr.free.nrw.commons.auth.csrf
 
 import androidx.annotation.VisibleForTesting
 import fr.free.nrw.commons.auth.SessionManager
+import fr.free.nrw.commons.auth.login.LoginCallback
+import fr.free.nrw.commons.auth.login.LoginClient
+import fr.free.nrw.commons.auth.login.LoginFailedException
+import fr.free.nrw.commons.auth.login.LoginResult
 import org.wikipedia.AppAdapter
 import org.wikipedia.dataclient.SharedPreferenceCookieManager
 import org.wikipedia.dataclient.WikiSite
 import org.wikipedia.dataclient.mwapi.MwQueryResponse
-import fr.free.nrw.commons.auth.login.LoginClient
-import fr.free.nrw.commons.auth.login.LoginCallback
-import fr.free.nrw.commons.auth.login.LoginFailedException
-import fr.free.nrw.commons.auth.login.LoginResult
 import retrofit2.Call
 import retrofit2.Response
 import timber.log.Timber
@@ -20,11 +20,11 @@ import java.util.concurrent.Executors.newSingleThreadExecutor
 class CsrfTokenClient(
     private val csrfWikiSite: WikiSite,
     private val service: CsrfTokenInterface,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val loginClient: LoginClient
 ) {
     private var retries = 0
     private var csrfTokenCall: Call<MwQueryResponse?>? = null
-    private val loginClient = LoginClient()
 
     @Throws(Throwable::class)
     fun getTokenBlocking(): String {
@@ -36,8 +36,12 @@ class CsrfTokenClient(
             try {
                 if (retry > 0) {
                     // Log in explicitly
-                    LoginClient()
-                        .loginBlocking(csrfWikiSite, userName, password, "")
+                    loginClient.loginBlocking(
+                        csrfWikiSite,
+                        userName,
+                        password,
+                        ""
+                    )
                 }
 
                 // Get CSRFToken response off the main thread.
@@ -86,7 +90,10 @@ class CsrfTokenClient(
     fun requestToken(cb: Callback): Call<MwQueryResponse?> {
         val call = service.getCsrfTokenCall()
         call.enqueue(object : retrofit2.Callback<MwQueryResponse?> {
-            override fun onResponse(call: Call<MwQueryResponse?>, response: Response<MwQueryResponse?>) {
+            override fun onResponse(
+                call: Call<MwQueryResponse?>,
+                response: Response<MwQueryResponse?>
+            ) {
                 if (call.isCanceled) {
                     return
                 }
@@ -124,8 +131,7 @@ class CsrfTokenClient(
         password: String,
         callback: Callback,
         retryCallback: () -> Unit
-    ) = LoginClient()
-        .request(csrfWikiSite, username, password, object : LoginCallback {
+    ) = loginClient.request(csrfWikiSite, username, password, object : LoginCallback {
         override fun success(loginResult: LoginResult) {
             if (loginResult.pass) {
                 sessionManager.updateAccount(loginResult)

@@ -3,6 +3,8 @@ package fr.free.nrw.commons.auth.csrf
 import com.google.gson.stream.MalformedJsonException
 import fr.free.nrw.commons.MockWebServerTest
 import fr.free.nrw.commons.auth.SessionManager
+import fr.free.nrw.commons.auth.login.LoginClient
+import fr.free.nrw.commons.auth.login.LoginInterface
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentMatchers.any
@@ -19,6 +21,7 @@ class CsrfTokenClientTest : MockWebServerTest() {
     private val wikiSite = WikiSite("test.wikipedia.org")
     private val cb = mock(CsrfTokenClient.Callback::class.java)
     private val sessionManager = mock(SessionManager::class.java)
+    private lateinit var loginInterface: LoginInterface
     private lateinit var tokenInterface: CsrfTokenInterface
     private lateinit var subject: CsrfTokenClient
 
@@ -26,8 +29,9 @@ class CsrfTokenClientTest : MockWebServerTest() {
     @Before
     override fun setUp() {
         super.setUp()
+        loginInterface = service(LoginInterface::class.java)
         tokenInterface = service(CsrfTokenInterface::class.java)
-        subject = CsrfTokenClient(wikiSite, tokenInterface, sessionManager)
+        subject = CsrfTokenClient(wikiSite, tokenInterface, sessionManager, LoginClient(loginInterface))
     }
 
 
