@@ -67,20 +67,34 @@ public final class OkHttpConnectionFactory {
     }
 
     public static class UnsuccessfulResponseInterceptor implements Interceptor {
+
         private static final List<String> DO_NOT_INTERCEPT = Collections.singletonList(
             "api.php?format=json&formatversion=2&errorformat=plaintext&action=upload&ignorewarnings=1");
 
         private static final String ERRORS_PREFIX = "{\"error";
 
+        private static final String SUPPRESS_ERROR_LOG = "x-commons-suppress-error-log";
+        public static final String SUPPRESS_ERROR_LOG_HEADER = SUPPRESS_ERROR_LOG+": true";
+
         @Override
         @NonNull
         public Response intercept(@NonNull final Chain chain) throws IOException {
-            final Response rsp = chain.proceed(chain.request());
+            final Request rq = chain.request();
+
+            // If the request contains our special "suppress errors" header, dont pass that
+            // on to the server.
+            final boolean suppressErrors = rq.headers().names().contains(SUPPRESS_ERROR_LOG);
+            final Request request = rq.newBuilder()
+                .removeHeader(SUPPRESS_ERROR_LOG)
+                .build();
+
+            final Response rsp = chain.proceed(request);
 
             // Do not intercept certain requests and let the caller handle the errors
-            if(isExcludedUrl(chain.request())) {
+            if(isExcludedUrl(request)) {
                 return rsp;
             }
+
             if (rsp.isSuccessful()) {
                 try (final ResponseBody responseBody = rsp.peekBody(ERRORS_PREFIX.length())) {
                     if (ERRORS_PREFIX.equals(responseBody.string())) {
@@ -89,7 +103,13 @@ public final class OkHttpConnectionFactory {
                         }
                     }
                 } catch (final IOException e) {
-                    Timber.e(e);
+                    // Depending on the annotated interface, log the error as debug
+                    //  (and therefore, "expected") or at error level.
+                    if (suppressErrors) {
+                        Timber.d(e, "Suppressed (known / expected) error");
+                    } else {
+                        Timber.e(e);
+                    }
                 }
                 return rsp;
             }

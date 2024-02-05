@@ -39,11 +39,13 @@ class MediaDataExtractor @Inject constructor(private val mediaClient: MediaClien
                 ""
             }
 
+    // Note: both of these API calls may produce errors which are suppressed, since we expect
+    // one of the 2 to succeed.  Logging of these errors is also suppressed.
     fun refresh(media: Media): Single<Media> {
         return Single.ambArray(
             mediaClient.getMediaById(PAGE_ID_PREFIX + media.pageId)
                 .onErrorResumeNext { Single.never() },
-            mediaClient.getMedia(media.filename)
+            mediaClient.getMediaSuppressingErrors(media.filename)
                 .onErrorResumeNext { Single.never() }
         )
 
