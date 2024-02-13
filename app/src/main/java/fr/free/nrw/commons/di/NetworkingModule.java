@@ -62,8 +62,6 @@ public class NetworkingModule {
 
     public static final String NAMED_LANGUAGE_WIKI_PEDIA_WIKI_SITE = "language-wikipedia-wikisite";
 
-    public static final String NAMED_COMMONS_CSRF = "commons-csrf";
-
     @Provides
     @Singleton
     public OkHttpClient provideOkHttpClient(Context context,
@@ -124,7 +122,6 @@ public class NetworkingModule {
         return new CommonsCookieJar(storage);
     }
 
-    @Named(NAMED_COMMONS_CSRF)
     @Provides
     @Singleton
     public CsrfTokenClient provideCommonsCsrfTokenClient(SessionManager sessionManager,
@@ -225,7 +222,7 @@ public class NetworkingModule {
     @Named("commons-page-edit")
     @Provides
     @Singleton
-    public PageEditClient provideCommonsPageEditClient(@Named(NAMED_COMMONS_CSRF) CsrfTokenClient csrfTokenClient,
+    public PageEditClient provideCommonsPageEditClient(CsrfTokenClient csrfTokenClient,
                                                        @Named("commons-page-edit-service") PageEditInterface pageEditInterface) {
         return new PageEditClient(csrfTokenClient, pageEditInterface);
     }

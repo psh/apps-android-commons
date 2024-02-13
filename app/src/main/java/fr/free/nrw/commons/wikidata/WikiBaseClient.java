@@ -1,16 +1,14 @@
 package fr.free.nrw.commons.wikidata;
 
-import static fr.free.nrw.commons.di.NetworkingModule.NAMED_COMMONS_CSRF;
 import static fr.free.nrw.commons.media.MediaClientKt.PAGE_ID_PREFIX;
 
+import fr.free.nrw.commons.auth.csrf.CsrfTokenClient;
 import fr.free.nrw.commons.upload.UploadResult;
 import fr.free.nrw.commons.upload.WikiBaseInterface;
+import fr.free.nrw.commons.wikidata.mwapi.MwPostResponse;
 import io.reactivex.Observable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
-import fr.free.nrw.commons.auth.csrf.CsrfTokenClient;
-import fr.free.nrw.commons.wikidata.mwapi.MwPostResponse;
 import timber.log.Timber;
 
 /**
@@ -24,7 +22,7 @@ public class WikiBaseClient {
 
     @Inject
     public WikiBaseClient(WikiBaseInterface wikiBaseInterface,
-        @Named(NAMED_COMMONS_CSRF) CsrfTokenClient csrfTokenClient) {
+        CsrfTokenClient csrfTokenClient) {
         this.wikiBaseInterface = wikiBaseInterface;
         this.csrfTokenClient = csrfTokenClient;
     }

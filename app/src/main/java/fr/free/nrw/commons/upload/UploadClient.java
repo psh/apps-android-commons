@@ -1,15 +1,15 @@
 package fr.free.nrw.commons.upload;
 
-import static fr.free.nrw.commons.di.NetworkingModule.NAMED_COMMONS_CSRF;
-
 import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import fr.free.nrw.commons.CommonsApplication;
+import fr.free.nrw.commons.auth.csrf.CsrfTokenClient;
 import fr.free.nrw.commons.contributions.ChunkInfo;
 import fr.free.nrw.commons.contributions.Contribution;
 import fr.free.nrw.commons.upload.worker.UploadWorker.NotificationUpdateProgressListener;
+import fr.free.nrw.commons.wikidata.mwapi.MwException;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import java.io.File;
@@ -21,13 +21,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import fr.free.nrw.commons.auth.csrf.CsrfTokenClient;
-import fr.free.nrw.commons.wikidata.mwapi.MwException;
 import timber.log.Timber;
 
 @Singleton
@@ -49,7 +46,7 @@ public class UploadClient {
 
     @Inject
     public UploadClient(final UploadInterface uploadInterface,
-        @Named(NAMED_COMMONS_CSRF) final CsrfTokenClient csrfTokenClient,
+        final CsrfTokenClient csrfTokenClient,
         final PageContentsCreator pageContentsCreator,
         final FileUtilsWrapper fileUtilsWrapper, final Gson gson) {
         this.uploadInterface = uploadInterface;
