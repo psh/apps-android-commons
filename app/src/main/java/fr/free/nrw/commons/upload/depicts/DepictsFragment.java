@@ -15,8 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
 import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
@@ -29,16 +27,13 @@ import fr.free.nrw.commons.nearby.Place;
 import fr.free.nrw.commons.upload.UploadActivity;
 import fr.free.nrw.commons.upload.UploadBaseFragment;
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem;
+import fr.free.nrw.commons.utils.AbstractTextWatcher;
 import fr.free.nrw.commons.utils.DialogUtil;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import kotlin.Unit;
-import timber.log.Timber;
 
 
 /**
@@ -54,7 +49,6 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
     @Inject
     DepictsContract.UserActionListener presenter;
     private UploadDepictsAdapter adapter;
-    private Disposable subscribe;
     private Media media;
     private ProgressDialog progressDialog;
     /**
@@ -121,7 +115,8 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
             presenter.onAttachViewWithMedia(this, media);
         }
         initRecyclerView();
-        addTextChangeListenerToSearchBox();
+        binding.depictsSearch.addTextChangedListener(new AbstractTextWatcher(
+            this::searchForDepictions));
 
         binding.depictsNext.setOnClickListener(v->onNextButtonClicked());
         binding.depictsPrevious.setOnClickListener(v->onPreviousButtonClicked());
@@ -206,7 +201,6 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
         super.onDestroyView();
         media = null;
         presenter.onDetachView();
-        subscribe.dispose();
     }
 
     @Override
@@ -357,18 +351,6 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
     }
 
     /**
-     * Text change listener for the edit text view of depicts
-     */
-    private void addTextChangeListenerToSearchBox() {
-        subscribe = RxTextView.textChanges(binding.depictsSearch)
-                .doOnEach(v -> binding.depictsSearchContainer.setError(null))
-                .takeUntil(RxView.detaches(binding.depictsSearch))
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(filter -> searchForDepictions(filter.toString()), Timber::e);
-    }
-
-    /**
      * Search for depictions for the following query
      *
      * @param query query string
@@ -398,7 +380,7 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
                 return false;
             });
 
-            Objects.requireNonNull(getView()).setFocusableInTouchMode(true);
+            requireView().setFocusableInTouchMode(true);
             getView().requestFocus();
             getView().setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
@@ -411,7 +393,7 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
             });
 
             Objects.requireNonNull(
-                ((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                ((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .hide();
 
             if (getParentFragment().getParentFragment().getParentFragment()
@@ -431,7 +413,7 @@ public class DepictsFragment extends UploadBaseFragment implements DepictsContra
         super.onStop();
         if (media != null) {
             Objects.requireNonNull(
-                ((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar())
+                ((AppCompatActivity) requireActivity()).getSupportActionBar())
                 .show();
         }
     }

@@ -12,13 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxTextView;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
@@ -27,11 +27,12 @@ import fr.free.nrw.commons.category.CategoryItem;
 import fr.free.nrw.commons.contributions.ContributionsFragment;
 import fr.free.nrw.commons.databinding.UploadCategoriesFragmentBinding;
 import fr.free.nrw.commons.media.MediaDetailFragment;
+import fr.free.nrw.commons.ui.PasteSensitiveTextInputEditText;
 import fr.free.nrw.commons.upload.UploadActivity;
 import fr.free.nrw.commons.upload.UploadBaseFragment;
+import fr.free.nrw.commons.utils.AbstractTextWatcher;
 import fr.free.nrw.commons.utils.DialogUtil;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,6 @@ public class UploadCategoriesFragment extends UploadBaseFragment implements Cate
     @Inject
     SessionManager sessionManager;
     private UploadCategoryAdapter adapter;
-    private Disposable subscribe;
     /**
      * Current media
      */
@@ -124,12 +124,7 @@ public class UploadCategoriesFragment extends UploadBaseFragment implements Cate
         if (binding == null) {
             return;
         }
-        subscribe = RxTextView.textChanges(binding.etSearch)
-                .doOnEach(v -> binding.tilContainerSearch.setError(null))
-                .takeUntil(RxView.detaches(binding.etSearch))
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(filter -> searchForCategory(filter.toString()), Timber::e);
+        binding.etSearch.addTextChangedListener(new AbstractTextWatcher(this::searchForCategory));
     }
 
     /**
@@ -166,7 +161,6 @@ public class UploadCategoriesFragment extends UploadBaseFragment implements Cate
     public void onDestroyView() {
         super.onDestroyView();
         presenter.onDetachView();
-        subscribe.dispose();
     }
 
     @Override

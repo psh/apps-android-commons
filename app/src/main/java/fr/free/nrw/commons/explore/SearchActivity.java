@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxSearchView;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.ViewPagerAdapter;
@@ -21,16 +19,14 @@ import fr.free.nrw.commons.explore.models.RecentSearch;
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesDao;
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesFragment;
 import fr.free.nrw.commons.media.MediaDetailPagerFragment;
+import fr.free.nrw.commons.utils.SearchListener;
 import fr.free.nrw.commons.theme.BaseActivity;
 import fr.free.nrw.commons.utils.FragmentUtils;
 import fr.free.nrw.commons.utils.ViewUtil;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Represents search screen of this app
@@ -103,12 +99,13 @@ public class SearchActivity extends BaseActivity
 
         viewPagerAdapter.setTabData(fragmentList, titleList);
         viewPagerAdapter.notifyDataSetChanged();
-        compositeDisposable.add(RxSearchView.queryTextChanges(binding.searchBox)
-                .takeUntil(RxView.detaches(binding.searchBox))
-                .debounce(500, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleSearch, Timber::e
-                ));
+        binding.searchBox.setOnQueryTextListener(new SearchListener() {
+            @Override
+            public boolean onQueryTextChange(final String newText) {
+                handleSearch(newText);
+                return false;
+            }
+        });
     }
 
     private void handleSearch(final CharSequence query) {

@@ -52,8 +52,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding3.appcompat.RxSearchView;
 import fr.free.nrw.commons.BaseMarker;
 import fr.free.nrw.commons.CommonsApplication;
 import fr.free.nrw.commons.CommonsApplication.BaseLogoutListener;
@@ -67,7 +65,6 @@ import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment;
 import fr.free.nrw.commons.databinding.FragmentNearbyParentBinding;
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment;
 import fr.free.nrw.commons.kvstore.JsonKvStore;
-import fr.free.nrw.commons.location.LatLng;
 import fr.free.nrw.commons.location.LocationServiceManager;
 import fr.free.nrw.commons.location.LocationUpdateListener;
 import fr.free.nrw.commons.nearby.CheckBoxTriStates;
@@ -87,6 +84,7 @@ import fr.free.nrw.commons.utils.LayoutUtils;
 import fr.free.nrw.commons.utils.NearbyFABUtils;
 import fr.free.nrw.commons.utils.NetworkUtils;
 import fr.free.nrw.commons.utils.PermissionUtils;
+import fr.free.nrw.commons.utils.SearchListener;
 import fr.free.nrw.commons.utils.SystemThemeUtils;
 import fr.free.nrw.commons.utils.ViewUtil;
 import fr.free.nrw.commons.wikidata.WikidataEditListener;
@@ -103,7 +101,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import kotlin.Unit;
@@ -712,14 +709,16 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
             0.75);
           binding.nearbyFilterList.searchListView.setAdapter(nearbyFilterSearchRecyclerViewAdapter);
         LayoutUtils.setLayoutHeightAllignedToWidth(1.25, binding.nearbyFilterList.getRoot());
-        compositeDisposable.add(RxSearchView.queryTextChanges(  binding.nearbyFilter.searchViewLayout.searchView)
-            .takeUntil(RxView.detaches(binding.nearbyFilter.searchViewLayout.searchView))
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(query -> {
-                ((NearbyFilterSearchRecyclerViewAdapter)   binding.nearbyFilterList.searchListView.getAdapter()).getFilter()
-                    .filter(query.toString());
-            }));
+
+        binding.nearbyFilter.searchViewLayout.searchView.setOnQueryTextListener(
+            new SearchListener() {
+                @Override
+                public boolean onQueryTextChange(final String newText) {
+                    ((NearbyFilterSearchRecyclerViewAdapter) binding.nearbyFilterList.searchListView.getAdapter()).getFilter()
+                        .filter(newText);
+                    return false;
+                }
+            });
         initFilterChips();
     }
 
