@@ -76,7 +76,7 @@ public class BookmarkLocationsFragment extends DaggerFragment {
         super.onViewCreated(view, savedInstanceState);
         binding.loadingImagesProgressBar.setVisibility(View.VISIBLE);
         binding.listView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PlaceAdapter(bookmarkLocationDao,
+        adapter = new PlaceAdapter(requireActivity(), bookmarkLocationDao,
             place -> Unit.INSTANCE,
             (place, isBookmarked) -> {
                 adapter.remove(place);

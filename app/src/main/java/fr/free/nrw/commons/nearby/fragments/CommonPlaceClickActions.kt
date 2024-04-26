@@ -24,13 +24,12 @@ import javax.inject.Named
 
 class CommonPlaceClickActions @Inject constructor(
     @Named("default_preferences") private val applicationKvStore: JsonKvStore,
-    private val activity: Activity,
     private val contributionController: ContributionController
 ) {
 
-    fun onCameraClicked(): (Place, ActivityResultLauncher<Array<String>>) -> Unit = { place, launcher ->
+    fun onCameraClicked(activity: Activity): (Place, ActivityResultLauncher<Array<String>>) -> Unit = { place, launcher ->
         if (applicationKvStore.getBoolean("login_skipped", false)) {
-            showLoginDialog()
+            showLoginDialog(activity)
         } else {
             Timber.d("Camera button tapped. Image title: ${place.getName()}Image desc: ${place.longDescription}")
             storeSharedPrefs(place)
@@ -41,30 +40,30 @@ class CommonPlaceClickActions @Inject constructor(
     /**
     * Shows the Label for the Icon when it's long pressed
      **/
-    fun onCameraLongPressed(): () -> Boolean = {
+    fun onCameraLongPressed(activity: Activity): () -> Boolean = {
         Toast.makeText(activity, R.string.menu_from_camera, Toast.LENGTH_SHORT).show()
         true
     }
-    fun onGalleryLongPressed(): () -> Boolean = {
+    fun onGalleryLongPressed(activity: Activity): () -> Boolean = {
         Toast.makeText(activity, R.string.menu_from_gallery, Toast.LENGTH_SHORT).show()
         true
     }
-    fun onBookmarkLongPressed(): () -> Boolean = {
+    fun onBookmarkLongPressed(activity: Activity): () -> Boolean = {
         Toast.makeText(activity, R.string.menu_bookmark, Toast.LENGTH_SHORT).show()
         true
     }
-    fun onDirectionsLongPressed(): () -> Boolean = {
+    fun onDirectionsLongPressed(activity: Activity): () -> Boolean = {
         Toast.makeText(activity, R.string.nearby_directions, Toast.LENGTH_SHORT).show()
         true
     }
-    fun onOverflowLongPressed(): () -> Boolean = {
+    fun onOverflowLongPressed(activity: Activity): () -> Boolean = {
         Toast.makeText(activity, R.string.more, Toast.LENGTH_SHORT).show()
         true
     }
 
-    fun onGalleryClicked(): (Place) -> Unit = {
+    fun onGalleryClicked(activity: Activity): (Place) -> Unit = {
         if (applicationKvStore.getBoolean("login_skipped", false)) {
-            showLoginDialog()
+            showLoginDialog(activity)
         } else {
             Timber.d("Gallery button tapped. Image title: ${it.getName()}Image desc: ${it.getLongDescription()}")
             storeSharedPrefs(it)
@@ -72,7 +71,7 @@ class CommonPlaceClickActions @Inject constructor(
         }
     }
 
-    fun onOverflowClicked(): (Place, View) -> Unit = { place, view ->
+    fun onOverflowClicked(activity: Activity): (Place, View) -> Unit = { place, view ->
         PopupMenu(view.context, view).apply {
             inflate(R.menu.nearby_info_dialog_options)
             enableBy(R.id.nearby_info_menu_commons_article, place.hasCommonsLink())
@@ -80,16 +79,16 @@ class CommonPlaceClickActions @Inject constructor(
             enableBy(R.id.nearby_info_menu_wikipedia_article, place.hasWikipediaLink())
             setOnMenuItemClickListener { item: MenuItem ->
                 when (item.itemId) {
-                    R.id.nearby_info_menu_commons_article -> openWebView(place.siteLinks.commonsLink)
-                    R.id.nearby_info_menu_wikidata_article -> openWebView(place.siteLinks.wikidataLink)
-                    R.id.nearby_info_menu_wikipedia_article -> openWebView(place.siteLinks.wikipediaLink)
+                    R.id.nearby_info_menu_commons_article -> openWebView(place.siteLinks.commonsLink, activity)
+                    R.id.nearby_info_menu_wikidata_article -> openWebView(place.siteLinks.wikidataLink, activity)
+                    R.id.nearby_info_menu_wikipedia_article -> openWebView(place.siteLinks.wikipediaLink, activity)
                     else -> false
                 }
             }
         }.show()
     }
 
-    fun onDirectionsClicked(): (Place) -> Unit = {
+    fun onDirectionsClicked(activity: Activity): (Place) -> Unit = {
         Utils.handleGeoCoordinates(activity, it.getLocation())
     }
 
@@ -98,7 +97,7 @@ class CommonPlaceClickActions @Inject constructor(
         applicationKvStore.putJson(WikidataConstants.PLACE_OBJECT, selectedPlace)
     }
 
-    private fun openWebView(link: Uri): Boolean {
+    private fun openWebView(link: Uri, activity: Activity): Boolean {
         Utils.handleWebUrl(activity, link)
         return true
     }
@@ -107,16 +106,16 @@ class CommonPlaceClickActions @Inject constructor(
         menu.findItem(menuId).isEnabled = hasLink
     }
 
-    private fun showLoginDialog() {
+    private fun showLoginDialog(activity: Activity) {
         AlertDialog.Builder(activity)
             .setMessage(R.string.login_alert_message)
             .setPositiveButton(R.string.login) { dialog, which ->
-                setPositiveButton()
+                setPositiveButton(activity)
             }
             .show()
     }
 
-    private fun setPositiveButton() {
+    private fun setPositiveButton(activity: Activity) {
         ActivityUtils.startActivityWithFlags(
             activity,
             LoginActivity::class.java,

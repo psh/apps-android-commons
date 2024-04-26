@@ -512,7 +512,7 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
 
     private void initRvNearbyList() {
         binding.bottomSheetNearby.rvNearbyList.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new PlaceAdapter(bookmarkLocationDao,
+        adapter = new PlaceAdapter(requireActivity(), bookmarkLocationDao,
             place -> {
                 moveCameraToPosition(
                     new GeoPoint(place.location.getLatitude(), place.location.getLongitude()));
