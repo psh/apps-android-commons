@@ -1,7 +1,9 @@
+import static fr.free.nrw.commons.gradle.BuildUtilsKt.currentBranch
+import static fr.free.nrw.commons.gradle.BuildUtilsKt.currentSha
+
 plugins {
     id 'com.github.triplet.play' version '2.7.2' apply false
 }
-apply from: '../gitutils.gradle'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -13,6 +15,9 @@ def isRunningOnTravisAndIsNotPRBuild = System.getenv("CI") == "true" && file('..
 if (isRunningOnTravisAndIsNotPRBuild) {
     apply plugin: 'com.github.triplet.play'
 }
+
+def currentBranchName = currentBranch(rootDir)
+def currentSha = currentSha(rootDir)
 
 dependencies {
 
@@ -193,7 +198,7 @@ android {
 
         versionCode 1036
         versionName '4.2.1'
-        setProperty("archivesBaseName", "app-commons-v$versionName-" + getBranchName())
+        setProperty("archivesBaseName", "app-commons-v$versionName-$currentBranchName")
 
         minSdkVersion 21
         targetSdkVersion 33
@@ -257,7 +262,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             testProguardFile 'test-proguard-rules.txt'
-            versionNameSuffix "-debug-" + getBranchName()
+            versionNameSuffix "-debug-$currentBranchName"
         }
     }
 
@@ -305,7 +310,7 @@ android {
             buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.contentprovider\""
             buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.locations.contentprovider\""
             buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.items.contentprovider\""
-            buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
+            buildConfigField "String", "COMMIT_SHA", "\"$currentSha\""
             buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
             buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""
             buildConfigField "String", "DEPICTS_PROPERTY", "\"P180\""
@@ -340,7 +345,7 @@ android {
             buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.contentprovider\""
             buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.locations.contentprovider\""
             buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.items.contentprovider\""
-            buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
+            buildConfigField "String", "COMMIT_SHA", "\"$currentSha\""
             buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
             buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""
             buildConfigField "String", "DEPICTS_PROPERTY", "\"P245962\""
