@@ -3,6 +3,7 @@ import static fr.free.nrw.commons.gradle.BuildUtilsKt.currentSha
 
 plugins {
     id 'com.github.triplet.play' version '2.7.2' apply false
+    id 'jacoco'
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -400,4 +401,9 @@ if (isRunningOnTravisAndIsNotPRBuild) {
             versionNameOverride = "$versionNameOverride.$versionCode"
         }
     }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReportDir')
 }
