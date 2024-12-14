@@ -2,6 +2,7 @@ package fr.free.nrw.commons.upload
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.category.CategoriesModel
 import fr.free.nrw.commons.category.CategoryItem
@@ -17,6 +18,7 @@ import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -179,26 +181,31 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testPreProcessImage() {
+        val result = Observable.just(uploadItem)
+        whenever(
+            uploadModel.preProcessImage(
+                uploadableFile, place, similarImageInterface, location
+            )
+        ).thenReturn(result)
+
         assertEquals(
-            repository.preProcessImage(uploadableFile, place, similarImageInterface, location),
-            uploadModel.preProcessImage(uploadableFile, place, similarImageInterface, location),
+            result,
+            repository.preProcessImage(uploadableFile, place, similarImageInterface, location)
         )
     }
 
     @Test
     fun testGetImageQuality() {
-        assertEquals(
-            repository.getImageQuality(uploadItem, location),
-            uploadModel.getImageQuality(uploadItem, location),
-        )
+        val result = Single.just(1234)
+        whenever(uploadModel.getImageQuality(uploadItem, location)).thenReturn(result)
+        assertSame(result, repository.getImageQuality(uploadItem, location))
     }
 
     @Test
     fun testGetCaptionQuality() {
-        assertEquals(
-            repository.getCaptionQuality(uploadItem),
-            uploadModel.getCaptionQuality(uploadItem)
-        )
+        val result = Single.just(1234)
+        whenever(uploadModel.getCaptionQuality(uploadItem)).thenReturn(result)
+        assertSame(result, repository.getCaptionQuality(uploadItem))
     }
 
     @Test

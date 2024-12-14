@@ -84,6 +84,7 @@ public class UploadModel {
     /**
      * pre process a one item at a time
      */
+    @NotNull
     public Observable<UploadItem> preProcessImage(final UploadableFile uploadableFile,
         final Place place,
         final SimilarImageInterface similarImageInterface,

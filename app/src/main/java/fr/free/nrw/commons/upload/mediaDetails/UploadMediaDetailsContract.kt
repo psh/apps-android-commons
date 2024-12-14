@@ -73,8 +73,8 @@ interface UploadMediaDetailsContract {
          */
         fun getImageQuality(
             uploadItemIndex: Int,
-            inAppPictureLocation: LatLng?,
-            activity: Activity?
+            inAppPictureLocation: LatLng,
+            activity: Activity
         ): Boolean
 
         /**
@@ -97,7 +97,7 @@ interface UploadMediaDetailsContract {
          * @param uploadItem UploadItem whose quality is to be checked
          * @param index Index of the UploadItem whose quality is to be checked
          */
-        fun checkImageQuality(uploadItem: UploadItem?, index: Int)
+        fun checkImageQuality(uploadItem: UploadItem, index: Int)
 
         /**
          * Updates the image qualities stored in JSON, whenever an image is deleted
@@ -111,12 +111,12 @@ interface UploadMediaDetailsContract {
 
         fun fetchTitleAndDescription(indexInViewFlipper: Int)
 
-        fun useSimilarPictureCoordinates(imageCoordinates: ImageCoordinates?, uploadItemIndex: Int)
+        fun useSimilarPictureCoordinates(imageCoordinates: ImageCoordinates, uploadItemIndex: Int)
 
         fun onMapIconClicked(indexInViewFlipper: Int)
 
         fun onEditButtonClicked(indexInViewFlipper: Int)
 
-        fun onUserConfirmedUploadIsOfPlace(place: Place?)
+        fun onUserConfirmedUploadIsOfPlace(place: Place)
     }
 }

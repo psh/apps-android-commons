@@ -55,7 +55,7 @@ class UploadMediaPresenterTest {
     private lateinit var place: Place
 
     @Mock
-    private var location: LatLng? = null
+    private lateinit var location: LatLng
 
     @Mock
     private lateinit var uploadItem: UploadItem
