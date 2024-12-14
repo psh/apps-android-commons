@@ -59,7 +59,7 @@ interface UploadMediaDetailsContract {
         )
 
         fun setUploadMediaDetails(
-            uploadMediaDetails: List<UploadMediaDetail?>?,
+            uploadMediaDetails: MutableList<UploadMediaDetail>,
             uploadItemIndex: Int
         )
 

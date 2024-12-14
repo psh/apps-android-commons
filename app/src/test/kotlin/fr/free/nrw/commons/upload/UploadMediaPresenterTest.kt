@@ -134,10 +134,10 @@ class UploadMediaPresenterTest {
         whenever(repository.getUploads()).thenReturn(listOf(uploadItem))
         whenever(repository.getImageQuality(uploadItem, location))
             .thenReturn(testSingleImageResult)
-        whenever(uploadItem.imageQuality).thenReturn(0)
-        whenever(uploadItem.gpsCoords)
+        whenever(uploadItem.getImageQuality()).thenReturn(0)
+        whenever(uploadItem.getGpsCoords())
             .thenReturn(imageCoordinates)
-        whenever(uploadItem.gpsCoords.decimalCoords)
+        whenever(uploadItem.getGpsCoords().decimalCoords)
             .thenReturn("imageCoordinates")
         uploadMediaPresenter.getImageQuality(0, location, mockActivity)
         verify(view).showProgress(true)
@@ -152,10 +152,10 @@ class UploadMediaPresenterTest {
         whenever(repository.getUploads()).thenReturn(listOf(uploadItem))
         whenever(repository.getImageQuality(uploadItem, location))
             .thenReturn(testSingleImageResult)
-        whenever(uploadItem.imageQuality).thenReturn(0)
-        whenever(uploadItem.gpsCoords)
+        whenever(uploadItem.getImageQuality()).thenReturn(0)
+        whenever(uploadItem.getGpsCoords())
             .thenReturn(imageCoordinates)
-        whenever(uploadItem.gpsCoords.decimalCoords)
+        whenever(uploadItem.getGpsCoords().decimalCoords)
             .thenReturn(null)
         uploadMediaPresenter.getImageQuality(0, location, mockActivity)
         testScheduler.triggerActions()
@@ -228,7 +228,7 @@ class UploadMediaPresenterTest {
         whenever(repository.getUploads()).thenReturn(listOf(uploadItem))
         whenever(repository.getUploadItem(ArgumentMatchers.anyInt()))
             .thenReturn(uploadItem)
-        whenever(uploadItem.uploadMediaDetails).thenReturn(listOf())
+        whenever(uploadItem.getUploadMediaDetails()).thenReturn(mutableListOf())
 
         uploadMediaPresenter.fetchTitleAndDescription(0)
         verify(view).updateMediaDetails(ArgumentMatchers.any())
@@ -258,7 +258,7 @@ class UploadMediaPresenterTest {
         ).thenReturn("Germany")
 
         val item: Observable<UploadItem> =
-            Observable.just(UploadItem(Uri.EMPTY, null, null, germanyAsPlace, 0, null, null, null))
+            Observable.just(UploadItem(Uri.EMPTY, "", imageCoordinates, germanyAsPlace, 0, "", Uri.EMPTY, ""))
 
         whenever(
             repository.preProcessImage(
@@ -279,6 +279,6 @@ class UploadMediaPresenterTest {
             ArgumentMatchers.any(Place::class.java),
         )
 
-        assertEquals("Exptected contry code", "de", captor.value.countryCode)
+        assertEquals("Exptected contry code", "de", captor.value.getCountryCode())
     }
 }

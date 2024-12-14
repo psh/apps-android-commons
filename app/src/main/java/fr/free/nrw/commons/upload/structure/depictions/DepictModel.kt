@@ -40,11 +40,11 @@ class DepictModel
                         place.wikiDataEntityId?.let { qids.add(it) }
                     }
                     repository.getUploads().forEach { item ->
-                        if (item.gpsCoords != null && item.gpsCoords.imageCoordsExists) {
+                        if (item.getGpsCoords() != null && item.getGpsCoords().imageCoordsExists) {
                             Coordinates2Country
                                 .countryQID(
-                                    item.gpsCoords.decLatitude,
-                                    item.gpsCoords.decLongitude,
+                                    item.getGpsCoords().decLatitude,
+                                    item.getGpsCoords().decLongitude,
                                 )?.let { qids.add("Q$it") }
                         }
                     }

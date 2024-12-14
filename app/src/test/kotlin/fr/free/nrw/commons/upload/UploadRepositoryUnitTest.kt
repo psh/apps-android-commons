@@ -269,7 +269,7 @@ class UploadRepositoryUnitTest {
     @Test
     fun testGetPlaceDepictions() {
         `when`(uploadModel.uploads).thenReturn(listOf(uploadItem))
-        `when`(uploadItem.place).thenReturn(place)
+        `when`(uploadItem.getPlace()).thenReturn(place)
         `when`(place.wikiDataEntityId).thenReturn("1")
         assertEquals(
             repository.getPlaceDepictions(),
@@ -332,7 +332,7 @@ class UploadRepositoryUnitTest {
     @Test
     fun testIsWMLSupportedForThisPlace() {
         `when`(uploadModel.items).thenReturn(listOf(uploadItem))
-        `when`(uploadItem.isWLMUpload).thenReturn(true)
+        `when`(uploadItem.isWLMUpload()).thenReturn(true)
         assertEquals(
             repository.isWMLSupportedForThisPlace(),
             true,

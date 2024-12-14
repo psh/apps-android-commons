@@ -61,20 +61,20 @@ data class Contribution constructor(
         imageSHA1: String,
     ) : this(
         Media(
-            formatCaptions(item.uploadMediaDetails),
+            formatCaptions(item.getUploadMediaDetails()),
             categories,
-            item.fileName,
-            formatDescriptions(item.uploadMediaDetails),
+            item.getFileName(),
+            formatDescriptions(item.getUploadMediaDetails()),
             sessionManager.userName,
             sessionManager.userName,
         ),
-        localUri = item.mediaUri,
-        decimalCoords = item.gpsCoords.decimalCoords,
+        localUri = item.getMediaUri(),
+        decimalCoords = item.getGpsCoords().decimalCoords,
         dateCreatedSource = "",
         depictedItems = depictedItems,
-        wikidataPlace = from(item.place),
-        contentUri = item.contentUri,
-        dateCreatedString = item.fileCreatedDateString,
+        wikidataPlace = from(item.getPlace()),
+        contentUri = item.getContentUri(),
+        dateCreatedString = item.getFileCreatedDateString(),
         imageSHA1 = imageSHA1,
     )
 

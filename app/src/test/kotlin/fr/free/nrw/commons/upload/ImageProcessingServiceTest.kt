@@ -58,13 +58,13 @@ class ImageProcessingServiceTest {
         /*`when`(mockTitle.isEmpty).thenReturn(false)
         `when`(mockTitle.isSet).thenReturn(true)*/
 
-        `when`(uploadItem.mediaUri).thenReturn(mediaUri)
-        `when`(uploadItem.imageQuality).thenReturn(ImageUtils.IMAGE_WAIT)
+        `when`(uploadItem.getMediaUri()).thenReturn(mediaUri)
+        `when`(uploadItem.getImageQuality()).thenReturn(ImageUtils.IMAGE_WAIT)
 
-        `when`(uploadItem.uploadMediaDetails).thenReturn(mockTitle as MutableList<UploadMediaDetail>?)
+        `when`(uploadItem.getUploadMediaDetails()).thenReturn(mockTitle as MutableList<UploadMediaDetail>?)
 
-        `when`(uploadItem.place).thenReturn(mockPlace)
-        `when`(uploadItem.fileName).thenReturn("File:jpg")
+        `when`(uploadItem.getPlace()).thenReturn(mockPlace)
+        `when`(uploadItem.getFileName()).thenReturn("File:jpg")
 
         `when`(fileUtilsWrapper!!.getFileInputStream(ArgumentMatchers.anyString()))
             .thenReturn(mock(FileInputStream::class.java))
@@ -96,7 +96,7 @@ class ImageProcessingServiceTest {
 
     @Test
     fun validateImageForKeepImage() {
-        `when`(uploadItem.imageQuality).thenReturn(ImageUtils.IMAGE_KEEP)
+        `when`(uploadItem.getImageQuality()).thenReturn(ImageUtils.IMAGE_KEEP)
         val validateImage = imageProcessingService!!.validateImage(uploadItem, location)
         assertEquals(ImageUtils.IMAGE_OK, validateImage.blockingGet())
     }

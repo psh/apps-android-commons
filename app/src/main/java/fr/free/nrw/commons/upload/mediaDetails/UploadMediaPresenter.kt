@@ -93,7 +93,7 @@ class UploadMediaPresenter @Inject constructor(
      * Sets the Upload Media Details for the corresponding upload item
      */
     override fun setUploadMediaDetails(
-        uploadMediaDetails: List<UploadMediaDetail?>?,
+        uploadMediaDetails: MutableList<UploadMediaDetail>,
         uploadItemIndex: Int
     ) = repository.getUploads()[uploadItemIndex].setMediaDetails(uploadMediaDetails)
 
@@ -114,8 +114,8 @@ class UploadMediaPresenter @Inject constructor(
                             if (countryCode != null && WLM_SUPPORTED_COUNTRIES
                                     .contains(countryCode.lowercase())
                             ) {
-                                uploadItem.isWLMUpload = true
-                                uploadItem.countryCode = countryCode.lowercase()
+                                uploadItem.setWLMUpload(true)
+                                uploadItem.setCountryCode(countryCode.lowercase())
                             }
                         }
                     }
@@ -126,9 +126,9 @@ class UploadMediaPresenter @Inject constructor(
                 .subscribe(
                     { uploadItem: UploadItem ->
                         view.onImageProcessed(uploadItem, place)
-                        view.updateMediaDetails(uploadItem.uploadMediaDetails)
+                        view.updateMediaDetails(uploadItem.getUploadMediaDetails())
                         view.showProgress(false)
-                        val gpsCoords = uploadItem.gpsCoords
+                        val gpsCoords = uploadItem.getGpsCoords()
                         val hasImageCoordinates =
                             gpsCoords != null && gpsCoords.imageCoordsExists
                         if (hasImageCoordinates && place == null) {
@@ -181,8 +181,8 @@ class UploadMediaPresenter @Inject constructor(
         val checkNearbyPlaces = Maybe.fromCallable {
             repository
                 .checkNearbyPlaces(
-                    uploadItem.gpsCoords.decLatitude,
-                    uploadItem.gpsCoords.decLongitude
+                    uploadItem.getGpsCoords().decLatitude,
+                    uploadItem.getGpsCoords().decLongitude
                 )
         }
             .subscribeOn(ioScheduler)
@@ -217,7 +217,7 @@ class UploadMediaPresenter @Inject constructor(
     ) {
         val uploadItems = repository.getUploads()
         val uploadItem = uploadItems[uploadItemIndex]
-        if (uploadItem.gpsCoords.decimalCoords == null && inAppPictureLocation == null && !hasUserRemovedLocation) {
+        if (uploadItem.getGpsCoords().decimalCoords == null && inAppPictureLocation == null && !hasUserRemovedLocation) {
             val onSkipClicked = Runnable {
                 verifyCaptionQuality(uploadItem)
             }
@@ -291,7 +291,7 @@ class UploadMediaPresenter @Inject constructor(
     override fun copyTitleAndDescriptionToSubsequentMedia(indexInViewFlipper: Int) {
         for (i in indexInViewFlipper + 1 until repository.getCount()) {
             val subsequentUploadItem = repository.getUploads()[i]
-            subsequentUploadItem.setMediaDetails(deepCopy(repository.getUploads()[indexInViewFlipper].uploadMediaDetails))
+            subsequentUploadItem.setMediaDetails(deepCopy(repository.getUploads()[indexInViewFlipper].getUploadMediaDetails()).toMutableList())
         }
     }
 
@@ -300,7 +300,7 @@ class UploadMediaPresenter @Inject constructor(
      */
     override fun fetchTitleAndDescription(indexInViewFlipper: Int) {
         val currentUploadItem = repository.getUploads()[indexInViewFlipper]
-        view.updateMediaDetails(currentUploadItem.uploadMediaDetails)
+        view.updateMediaDetails(currentUploadItem.getUploadMediaDetails())
     }
 
     private fun deepCopy(uploadMediaDetails: List<UploadMediaDetail>): List<UploadMediaDetail> {
@@ -335,14 +335,14 @@ class UploadMediaPresenter @Inject constructor(
     override fun onUserConfirmedUploadIsOfPlace(place: Place) {
         val uploads = repository.getUploads()
         for (uploadItem in uploads) {
-            uploadItem.place = place
-            val uploadMediaDetails = uploadItem.uploadMediaDetails
+            uploadItem.setPlace(place)
+            val uploadMediaDetails = uploadItem.getUploadMediaDetails()
             // Update UploadMediaDetail object for this UploadItem
             uploadMediaDetails[0] = UploadMediaDetail(place)
         }
         // Now that all UploadItems and their associated UploadMediaDetail objects have been updated,
         // update the view with the modified media details of the first upload item
-        view.updateMediaDetails(uploads[0].uploadMediaDetails)
+        view.updateMediaDetails(uploads[0].getUploadMediaDetails())
         UploadActivity.setUploadIsOfAPlace(true)
     }
 
@@ -443,7 +443,8 @@ class UploadMediaPresenter @Inject constructor(
      * @param index      Index of the UploadItem whose quality is to be checked
      */
     override fun checkImageQuality(uploadItem: UploadItem, index: Int) {
-        if ((uploadItem.imageQuality != IMAGE_OK) && (uploadItem.imageQuality != IMAGE_KEEP)) {
+        if ((uploadItem.getImageQuality() != IMAGE_OK) && (uploadItem.getImageQuality() != IMAGE_KEEP)
+        ) {
             val store = BasicKvStore(
                 UploadMediaDetailFragment.activity,
                 UploadActivity.storeNameForCurrentUploadImagesSize
@@ -460,7 +461,7 @@ class UploadMediaPresenter @Inject constructor(
                 view.showProgress(false)
                 if (imageQuality == IMAGE_OK) {
                     uploadItem.setHasInvalidLocation(false)
-                    uploadItem.imageQuality = imageQuality
+                    uploadItem.setImageQuality(imageQuality)
                 } else {
                     handleBadImage(imageQuality, uploadItem, index)
                 }
@@ -542,7 +543,7 @@ class UploadMediaPresenter @Inject constructor(
                 activity.getString(R.string.cancel),
                 {
                     view.showProgress(false)
-                    uploadItem.imageQuality = IMAGE_OK
+                    uploadItem.setImageQuality(IMAGE_OK)
                 },
                 {
                     presenterCallback!!.deletePictureAtIndex(index)

@@ -83,11 +83,11 @@ class CategoriesPresenterTest {
             ),
         )
         val nonEmptyCaptionUploadItem = mock<UploadItem>()
-        whenever(nonEmptyCaptionUploadItem.uploadMediaDetails)
-            .thenReturn(listOf(UploadMediaDetail(captionText = "nonEmpty")))
+        whenever(nonEmptyCaptionUploadItem.getUploadMediaDetails())
+            .thenReturn(mutableListOf(UploadMediaDetail(captionText = "nonEmpty")))
         val emptyCaptionUploadItem = mock<UploadItem>()
-        whenever(emptyCaptionUploadItem.uploadMediaDetails)
-            .thenReturn(listOf(UploadMediaDetail(captionText = "")))
+        whenever(emptyCaptionUploadItem.getUploadMediaDetails())
+            .thenReturn(mutableListOf(UploadMediaDetail(captionText = "")))
         whenever(repository.getUploads()).thenReturn(
             listOf(
                 nonEmptyCaptionUploadItem,

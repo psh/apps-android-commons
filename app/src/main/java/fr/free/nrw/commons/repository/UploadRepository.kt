@@ -297,7 +297,7 @@ class UploadRepository @Inject constructor(
     fun getPlaceDepictions(): Single<List<DepictedItem>> {
         val qids = mutableSetOf<String>()
         getUploads().forEach { item ->
-            item.place?.let {
+            item.getPlace()?.let {
                 it.wikiDataEntityId?.let { it1 ->
                     qids.add(it1)
                 }
@@ -315,7 +315,7 @@ class UploadRepository @Inject constructor(
     fun getPlaceCategories(): Single<List<CategoryItem>> {
         val qids = mutableSetOf<String>()
         getUploads().forEach { item ->
-            item.place?.category?.let { qids.add(it) }
+            item.getPlace()?.category?.let { qids.add(it) }
         }
         return Single.fromObservable(categoriesModel.getCategoriesByName(qids.toList()))
     }
@@ -374,7 +374,7 @@ class UploadRepository @Inject constructor(
     }
 
     fun isWMLSupportedForThisPlace(): Boolean {
-        return uploadModel.items.firstOrNull()?.isWLMUpload == true
+        return uploadModel.items.firstOrNull()?.isWLMUpload() == true
     }
 
     /**

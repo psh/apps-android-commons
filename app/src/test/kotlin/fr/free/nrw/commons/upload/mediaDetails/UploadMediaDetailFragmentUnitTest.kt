@@ -257,7 +257,7 @@ class UploadMediaDetailFragmentUnitTest {
     @Throws(Exception::class)
     fun testOnImageProcessed() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        `when`(uploadItem.mediaUri).thenReturn(mediaUri)
+        `when`(uploadItem.getMediaUri()).thenReturn(mediaUri)
         fragment.onImageProcessed(uploadItem, place)
     }
 
@@ -340,7 +340,7 @@ class UploadMediaDetailFragmentUnitTest {
     @Throws(Exception::class)
     fun testShowExternalMap() {
         shadowOf(Looper.getMainLooper()).idle()
-        `when`(uploadItem.gpsCoords).thenReturn(imageCoordinates)
+        `when`(uploadItem.getGpsCoords()).thenReturn(imageCoordinates)
         `when`(imageCoordinates.decLatitude).thenReturn(0.0)
         `when`(imageCoordinates.decLongitude).thenReturn(0.0)
         `when`(imageCoordinates.zoomLevel).thenReturn(16.0)
@@ -363,7 +363,7 @@ class UploadMediaDetailFragmentUnitTest {
         `when`(LocationPicker.getCameraPosition(intent)).thenReturn(cameraPosition)
         `when`(latLng.latitude).thenReturn(0.0)
         `when`(latLng.longitude).thenReturn(0.0)
-        `when`(uploadItem.gpsCoords).thenReturn(imageCoordinates)
+        `when`(uploadItem.getGpsCoords()).thenReturn(imageCoordinates)
         val activityResult = ActivityResult(Activity.RESULT_OK, intent)
 
         val handleResultMethod = UploadMediaDetailFragment::class.java.getDeclaredMethod("onCameraPosition", ActivityResult::class.java)
@@ -392,7 +392,7 @@ class UploadMediaDetailFragmentUnitTest {
         `when`(LocationPicker.getCameraPosition(intent)).thenReturn(cameraPosition)
         `when`(latLng.latitude).thenReturn(0.0)
         `when`(latLng.longitude).thenReturn(0.0)
-        `when`(uploadItem.gpsCoords).thenReturn(imageCoordinates)
+        `when`(uploadItem.getGpsCoords()).thenReturn(imageCoordinates)
 
         val activityResult = ActivityResult(Activity.RESULT_OK,intent)
 
@@ -460,10 +460,10 @@ class UploadMediaDetailFragmentUnitTest {
     fun testRememberedZoomLevelOnNull() {
         shadowOf(Looper.getMainLooper()).idle()
         Whitebox.setInternalState(fragment, "defaultKvStore", defaultKvStore)
-        `when`(uploadItem.gpsCoords).thenReturn(null)
+        `when`(uploadItem.getGpsCoords()).thenReturn(null)
         `when`(defaultKvStore.getString(LAST_ZOOM)).thenReturn("13.0")
         fragment.showExternalMap(uploadItem)
-        Mockito.verify(uploadItem, Mockito.times(1)).gpsCoords
+        Mockito.verify(uploadItem, Mockito.times(1)).getGpsCoords()
         Mockito.verify(defaultKvStore, Mockito.times(2)).getString(LAST_ZOOM)
         val shadowActivity: ShadowActivity = shadowOf(activity)
         val startedIntent = shadowActivity.nextStartedActivity
@@ -475,13 +475,13 @@ class UploadMediaDetailFragmentUnitTest {
     @Throws(Exception::class)
     fun testRememberedZoomLevelOnNotNull() {
         shadowOf(Looper.getMainLooper()).idle()
-        `when`(uploadItem.gpsCoords).thenReturn(imageCoordinates)
+        `when`(uploadItem.getGpsCoords()).thenReturn(imageCoordinates)
         `when`(imageCoordinates.decLatitude).thenReturn(8.0)
         `when`(imageCoordinates.decLongitude).thenReturn(-8.0)
         `when`(imageCoordinates.zoomLevel).thenReturn(14.0)
         `when`(defaultKvStore.getString(LAST_ZOOM)).thenReturn(null)
         fragment.showExternalMap(uploadItem)
-        Mockito.verify(uploadItem.gpsCoords, Mockito.times(1)).zoomLevel
+        Mockito.verify(uploadItem.getGpsCoords(), Mockito.times(1)).zoomLevel
         val shadowActivity: ShadowActivity = shadowOf(activity)
         val startedIntent = shadowActivity.nextStartedActivity
         val shadowIntent: ShadowIntent = shadowOf(startedIntent)

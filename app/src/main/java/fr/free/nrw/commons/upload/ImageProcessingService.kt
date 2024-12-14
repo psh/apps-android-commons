@@ -38,18 +38,18 @@ class ImageProcessingService @Inject constructor(
      * @return Quality of UploadItem
      */
     fun validateImage(uploadItem: UploadItem, inAppPictureLocation: LatLng?): Single<Int> {
-        val currentImageQuality = uploadItem.imageQuality
+        val currentImageQuality = uploadItem.getImageQuality()
         Timber.d("Current image quality is %d", currentImageQuality)
         if (currentImageQuality == IMAGE_KEEP || currentImageQuality == IMAGE_OK) {
             return Single.just(IMAGE_OK)
         }
 
         Timber.d("Checking the validity of image")
-        val filePath = uploadItem.mediaUri.path
+        val filePath = uploadItem.getMediaUri().path
 
         return Single.zip(
             checkDuplicateImage(filePath),
-            checkImageGeoLocation(uploadItem.place, filePath, inAppPictureLocation),
+            checkImageGeoLocation(uploadItem.getPlace(), filePath, inAppPictureLocation),
             checkDarkImage(filePath!!),
             checkFBMD(filePath),
             checkEXIF(filePath)
@@ -69,7 +69,7 @@ class ImageProcessingService @Inject constructor(
      * @return Quality of caption of the UploadItem
      */
     fun validateCaption(uploadItem: UploadItem): Single<Int> {
-        val currentImageQuality = uploadItem.imageQuality
+        val currentImageQuality = uploadItem.getImageQuality()
         Timber.d("Current image quality is %d", currentImageQuality)
         if (currentImageQuality == IMAGE_KEEP) {
             return Single.just(IMAGE_OK)
@@ -101,13 +101,13 @@ class ImageProcessingService @Inject constructor(
      * Checks item caption - empty caption - existing caption
      */
     private fun validateItemTitle(uploadItem: UploadItem): Single<Int> {
-        Timber.d("Checking for image title %s", uploadItem.uploadMediaDetails)
-        val captions = uploadItem.uploadMediaDetails
+        Timber.d("Checking for image title %s", uploadItem.getUploadMediaDetails())
+        val captions = uploadItem.getUploadMediaDetails()
         if (captions.isEmpty()) {
             return Single.just(EMPTY_CAPTION)
         }
 
-        return mediaClient.checkPageExistsUsingTitle("File:" + uploadItem.fileName)
+        return mediaClient.checkPageExistsUsingTitle("File:" + uploadItem.getFileName())
             .map { doesFileExist: Boolean ->
                 Timber.d("Result for valid title is %s", doesFileExist)
                 if (doesFileExist) FILE_NAME_EXISTS else IMAGE_OK
