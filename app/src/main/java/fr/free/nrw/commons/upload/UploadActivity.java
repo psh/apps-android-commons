@@ -73,7 +73,7 @@ import javax.inject.Named;
 import timber.log.Timber;
 
 public class UploadActivity extends BaseActivity implements
-    UploadContract.View, UploadBaseFragment.Callback, ThumbnailsAdapter.OnThumbnailDeletedListener {
+    UploadContract.View, UploadBaseFragment.Callback {
 
     @Inject
     ContributionController contributionController;
@@ -107,6 +107,7 @@ public class UploadActivity extends BaseActivity implements
     private boolean isInAppCameraUpload;
     private List<UploadableFile> uploadableFiles = Collections.emptyList();
     private int currentSelectedPosition = 0;
+
     /*
      Checks for if multiple files selected
      */
@@ -207,10 +208,10 @@ public class UploadActivity extends BaseActivity implements
     private void initThumbnailsRecyclerView() {
         binding.rvThumbnails.setLayoutManager(new LinearLayoutManager(this,
             LinearLayoutManager.HORIZONTAL, false));
-        thumbnailsAdapter = new ThumbnailsAdapter(() -> currentSelectedPosition);
-        thumbnailsAdapter.setOnThumbnailDeletedListener(this);
+        thumbnailsAdapter = new ThumbnailsAdapter(
+            this::currentSelectedPosition, this::onThumbnailDeleted
+        );
         binding.rvThumbnails.setAdapter(thumbnailsAdapter);
-
     }
 
     private void initViewPager() {
@@ -448,7 +449,6 @@ public class UploadActivity extends BaseActivity implements
     }
 
     private void receiveSharedItems() {
-        ThumbnailsAdapter.context=this;
         final Intent intent = getIntent();
         final String action = intent.getAction();
         if (Intent.ACTION_SEND.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
@@ -470,6 +470,7 @@ public class UploadActivity extends BaseActivity implements
                     showAlertForBattery();
                 }
                 thumbnailsAdapter.setUploadableFiles(uploadableFiles);
+                thumbnailsAdapter.notifyDataSetChanged();
             } else {
                 binding.llContainerTopCard.setVisibility(View.GONE);
             }
@@ -782,7 +783,10 @@ public class UploadActivity extends BaseActivity implements
         }
     }
 
-    @Override
+    private int currentSelectedPosition() {
+        return currentSelectedPosition;
+    }
+
     public void onThumbnailDeleted(final int position) {
         presenter.deletePictureAtIndex(position);
     }
