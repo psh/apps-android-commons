@@ -142,7 +142,7 @@ class UploadRepository @Inject constructor(
      * @return
      */
     fun getLicenses(): List<String> {
-        return uploadModel.licenses
+        return uploadModel.getLicenses()
     }
 
     /**
@@ -151,7 +151,7 @@ class UploadRepository @Inject constructor(
      * @return
      */
     fun getSelectedLicense(): String? {
-        return uploadModel.selectedLicense
+        return uploadModel.getSelectedLicense()
     }
 
     /**
@@ -160,7 +160,7 @@ class UploadRepository @Inject constructor(
      * @return
      */
     fun getCount(): Int {
-        return uploadModel.count
+        return uploadModel.getCount()
     }
 
     /**
@@ -173,10 +173,10 @@ class UploadRepository @Inject constructor(
      * @return
      */
     fun preProcessImage(
-        uploadableFile: UploadableFile?,
-        place: Place?,
-        similarImageInterface: SimilarImageInterface?,
-        inAppPictureLocation: LatLng?
+        uploadableFile: UploadableFile,
+        place: Place,
+        similarImageInterface: SimilarImageInterface,
+        inAppPictureLocation: LatLng
     ): Observable<UploadItem> {
         return uploadModel.preProcessImage(
             uploadableFile,
@@ -234,7 +234,7 @@ class UploadRepository @Inject constructor(
      */
     fun getUploadItem(index: Int): UploadItem? {
         return if (index >= 0) {
-            uploadModel.items.getOrNull(index)
+            uploadModel.getItems().getOrNull(index)
         } else null //There is no item to copy details
     }
 
@@ -244,7 +244,7 @@ class UploadRepository @Inject constructor(
      * @param licenseName
      */
     fun setSelectedLicense(licenseName: String?) {
-        uploadModel.selectedLicense = licenseName
+        uploadModel.setSelectedLicense(licenseName)
     }
 
     fun onDepictItemClicked(depictedItem: DepictedItem, media: Media?) {
@@ -257,7 +257,7 @@ class UploadRepository @Inject constructor(
      * @return
      */
     fun getSelectedDepictions(): List<DepictedItem> {
-        return uploadModel.selectedDepictions
+        return uploadModel.getSelectedDepictions()
     }
 
     /**
@@ -266,7 +266,7 @@ class UploadRepository @Inject constructor(
      * @return selected existing depicts
      */
     fun getSelectedExistingDepictions(): List<String> {
-        return uploadModel.selectedExistingDepictions
+        return uploadModel.getSelectedExistingDepictions()
     }
 
     /**
@@ -274,8 +274,8 @@ class UploadRepository @Inject constructor(
      *
      * @param selectedExistingDepictions existing depicts
      */
-    fun setSelectedExistingDepictions(selectedExistingDepictions: List<String>) {
-        uploadModel.selectedExistingDepictions = selectedExistingDepictions
+    fun setSelectedExistingDepictions(selectedExistingDepictions: MutableList<String>) {
+        uploadModel.setSelectedExistingDepictions(selectedExistingDepictions)
     }
 
     /**
@@ -297,7 +297,7 @@ class UploadRepository @Inject constructor(
     fun getPlaceDepictions(): Single<List<DepictedItem>> {
         val qids = mutableSetOf<String>()
         getUploads().forEach { item ->
-            item.getPlace()?.let {
+            item.getPlace().let {
                 it.wikiDataEntityId?.let { it1 ->
                     qids.add(it1)
                 }
@@ -315,7 +315,7 @@ class UploadRepository @Inject constructor(
     fun getPlaceCategories(): Single<List<CategoryItem>> {
         val qids = mutableSetOf<String>()
         getUploads().forEach { item ->
-            item.getPlace()?.category?.let { qids.add(it) }
+            item.getPlace().category?.let { qids.add(it) }
         }
         return Single.fromObservable(categoriesModel.getCategoriesByName(qids.toList()))
     }
@@ -374,7 +374,7 @@ class UploadRepository @Inject constructor(
     }
 
     fun isWMLSupportedForThisPlace(): Boolean {
-        return uploadModel.items.firstOrNull()?.isWLMUpload() == true
+        return uploadModel.getItems().firstOrNull()?.isWLMUpload() == true
     }
 
     /**

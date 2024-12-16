@@ -101,12 +101,11 @@ class UploadMediaPresenter @Inject constructor(
      * Receives the corresponding uploadable file, processes it and return the view with and uplaod item
      */
     override fun receiveImage(
-        uploadableFile: UploadableFile?, place: Place?, inAppPictureLocation: LatLng?
+        uploadableFile: UploadableFile, place: Place, inAppPictureLocation: LatLng
     ) {
         view.showProgress(true)
         compositeDisposable.add(
-            repository
-                .preProcessImage(uploadableFile, place, this, inAppPictureLocation)
+            repository.preProcessImage(uploadableFile, place, this, inAppPictureLocation)
                 .map { uploadItem: UploadItem ->
                     if (place != null && place.isMonument) {
                         if (place.location != null) {

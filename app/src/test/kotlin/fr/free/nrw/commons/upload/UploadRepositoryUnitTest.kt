@@ -65,7 +65,7 @@ class UploadRepositoryUnitTest {
     private lateinit var place: Place
 
     @Mock
-    private var location: LatLng? = null
+    private lateinit var location: LatLng
 
     @Mock
     private lateinit var similarImageInterface: SimilarImageInterface
@@ -120,7 +120,7 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testGetUploads() {
-        assertEquals(repository.getUploads(), uploadModel.uploads)
+        assertEquals(repository.getUploads(), uploadModel.getUploads())
     }
 
     @Test
@@ -166,17 +166,17 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testGetLicenses() {
-        assertEquals(repository.getLicenses(), uploadModel.licenses)
+        assertEquals(repository.getLicenses(), uploadModel.getLicenses())
     }
 
     @Test
     fun testGetSelectedLicense() {
-        assertEquals(repository.getSelectedLicense(), uploadModel.selectedLicense)
+        assertEquals(repository.getSelectedLicense(), uploadModel.getSelectedLicense())
     }
 
     @Test
     fun testGetCount() {
-        assertEquals(repository.getCount(), uploadModel.count)
+        assertEquals(repository.getCount(), uploadModel.getCount())
     }
 
     @Test
@@ -215,10 +215,10 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testGetUploadItemCaseNonNull() {
-        `when`(uploadModel.items).thenReturn(listOf(uploadItem))
+        `when`(uploadModel.getItems()).thenReturn(listOf(uploadItem))
         assertEquals(
             repository.getUploadItem(0),
-            uploadModel.items[0],
+            uploadModel.getItems()[0],
         )
     }
 
@@ -235,8 +235,8 @@ class UploadRepositoryUnitTest {
     @Test
     fun testSetSelectedExistingDepictions() {
         assertEquals(
-            repository.setSelectedExistingDepictions(listOf("")),
-            uploadModel.setSelectedExistingDepictions(listOf("")),
+            repository.setSelectedExistingDepictions(mutableListOf("")),
+            uploadModel.setSelectedExistingDepictions(mutableListOf("")),
         )
     }
 
@@ -250,12 +250,12 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testGetSelectedDepictions() {
-        assertEquals(repository.getSelectedDepictions(), uploadModel.selectedDepictions)
+        assertEquals(repository.getSelectedDepictions(), uploadModel.getSelectedDepictions())
     }
 
     @Test
     fun testGetSelectedExistingDepictions() {
-        assertEquals(repository.getSelectedExistingDepictions(), uploadModel.selectedExistingDepictions)
+        assertEquals(repository.getSelectedExistingDepictions(), uploadModel.getSelectedExistingDepictions())
     }
 
     @Test
@@ -268,7 +268,7 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testGetPlaceDepictions() {
-        `when`(uploadModel.uploads).thenReturn(listOf(uploadItem))
+        `when`(uploadModel.getUploads()).thenReturn(listOf(uploadItem))
         `when`(uploadItem.getPlace()).thenReturn(place)
         `when`(place.wikiDataEntityId).thenReturn("1")
         assertEquals(
@@ -331,7 +331,7 @@ class UploadRepositoryUnitTest {
 
     @Test
     fun testIsWMLSupportedForThisPlace() {
-        `when`(uploadModel.items).thenReturn(listOf(uploadItem))
+        `when`(uploadModel.getItems()).thenReturn(listOf(uploadItem))
         `when`(uploadItem.isWLMUpload()).thenReturn(true)
         assertEquals(
             repository.isWMLSupportedForThisPlace(),

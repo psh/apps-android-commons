@@ -255,7 +255,7 @@ class DepictsPresenter
         ) {
             this.view = view
             this.media = media
-            repository.setSelectedExistingDepictions(view.getExistingDepictions() ?: emptyList())
+            repository.setSelectedExistingDepictions(view.getExistingDepictions()?.toMutableList() ?: mutableListOf())
             compositeDisposable.add(
                 searchTerm
                     .observeOn(mainThreadScheduler)

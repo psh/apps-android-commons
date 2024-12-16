@@ -1,6 +1,7 @@
 package fr.free.nrw.commons.upload
 
 import android.net.Uri
+import com.nhaarman.mockitokotlin2.isA
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.filepicker.UploadableFile
@@ -109,14 +110,7 @@ class UploadMediaPresenterTest {
      */
     @Test
     fun receiveImageTest() {
-        whenever(
-            repository.preProcessImage(
-                ArgumentMatchers.any(UploadableFile::class.java),
-                ArgumentMatchers.any(Place::class.java),
-                ArgumentMatchers.any(UploadMediaPresenter::class.java),
-                ArgumentMatchers.any(LatLng::class.java),
-            ),
-        ).thenReturn(testObservableUploadItem)
+        whenever(repository.preProcessImage(isA(), isA(), isA(), isA())).thenReturn(testObservableUploadItem)
         uploadMediaPresenter.receiveImage(uploadableFile, place, location)
         verify(view).showProgress(true)
         testScheduler.triggerActions()
@@ -260,14 +254,7 @@ class UploadMediaPresenterTest {
         val item: Observable<UploadItem> =
             Observable.just(UploadItem(Uri.EMPTY, "", imageCoordinates, germanyAsPlace, 0, "", Uri.EMPTY, ""))
 
-        whenever(
-            repository.preProcessImage(
-                ArgumentMatchers.any(UploadableFile::class.java),
-                ArgumentMatchers.any(Place::class.java),
-                ArgumentMatchers.any(UploadMediaPresenter::class.java),
-                ArgumentMatchers.any(LatLng::class.java),
-            ),
-        ).thenReturn(item)
+        whenever(repository.preProcessImage(isA(), isA(), isA(), isA())).thenReturn(item)
 
         uploadMediaPresenter.receiveImage(uploadableFile, germanyAsPlace, location)
         verify(view).showProgress(true)

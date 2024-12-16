@@ -53,9 +53,9 @@ interface UploadMediaDetailsContract {
 
     interface UserActionListener : BasePresenter<View?> {
         fun receiveImage(
-            uploadableFile: UploadableFile?,
-            place: Place?,
-            inAppPictureLocation: LatLng?
+            uploadableFile: UploadableFile,
+            place: Place,
+            inAppPictureLocation: LatLng
         )
 
         fun setUploadMediaDetails(

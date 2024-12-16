@@ -134,12 +134,12 @@ class UploadModelUnitTest {
     @Ignore
     @Test
     fun testGetSelectedExistingDepictions() {
-        uploadModel.selectedExistingDepictions
+        uploadModel.getSelectedExistingDepictions()
     }
 
     @Ignore
     @Test
     fun testSetSelectedExistingDepictions() {
-        uploadModel.selectedExistingDepictions = listOf("")
+        uploadModel.setSelectedExistingDepictions(mutableListOf(""))
     }
 }
