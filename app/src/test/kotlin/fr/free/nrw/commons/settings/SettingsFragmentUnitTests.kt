@@ -47,7 +47,7 @@ class SettingsFragmentUnitTests {
     private lateinit var context: Context
 
     @Mock
-    private lateinit var recentLanguagesDao: RecentLanguagesRepository
+    private lateinit var recentLanguagesRepository: RecentLanguagesRepository
 
     @Mock
     private lateinit var recentLanguagesTextView: TextView
@@ -75,7 +75,7 @@ class SettingsFragmentUnitTests {
 
         layoutInflater = LayoutInflater.from(activity)
 
-        Whitebox.setInternalState(fragment, "recentLanguagesDao", recentLanguagesDao)
+        Whitebox.setInternalState(fragment, "languagesRepository", recentLanguagesRepository)
         Whitebox.setInternalState(
             fragment,
             "recentLanguagesTextView",
@@ -156,14 +156,14 @@ class SettingsFragmentUnitTests {
             )
         method.isAccessible = true
         method.invoke(fragment, "appUiDefaultLanguagePref")
-        verify(recentLanguagesDao, times(1)).getRecentLanguages()
+        verify(recentLanguagesRepository, times(1)).getRecentLanguages()
     }
 
     @Test
     @Throws(Exception::class)
     fun `Test prepareAppLanguages when recently used languages is not empty`() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        whenever(recentLanguagesDao.getRecentLanguages())
+        whenever(recentLanguagesRepository.getRecentLanguages())
             .thenReturn(
                 mutableListOf(
                     Language("English", "en"),
@@ -181,7 +181,7 @@ class SettingsFragmentUnitTests {
             )
         method.isAccessible = true
         method.invoke(fragment, "appUiDefaultLanguagePref")
-        verify(recentLanguagesDao, times(2)).getRecentLanguages()
+        verify(recentLanguagesRepository, times(2)).getRecentLanguages()
     }
 
     @Test
@@ -216,7 +216,7 @@ class SettingsFragmentUnitTests {
     @Test
     @Throws(Exception::class)
     fun testOnRecentLanguageClicked() {
-        whenever(recentLanguagesDao.findRecentLanguage(any()))
+        whenever(recentLanguagesRepository.findRecentLanguage(any()))
             .thenReturn(true)
         whenever(adapterView.adapter)
             .thenReturn(
@@ -236,7 +236,7 @@ class SettingsFragmentUnitTests {
             )
         method.isAccessible = true
         method.invoke(fragment, "test", Mockito.mock(Dialog::class.java), adapterView, 0)
-        verify(recentLanguagesDao, times(1)).findRecentLanguage(any())
+        verify(recentLanguagesRepository, times(1)).findRecentLanguage(any())
         verify(adapterView, times(2)).adapter
     }
 

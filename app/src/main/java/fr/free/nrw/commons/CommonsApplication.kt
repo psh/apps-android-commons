@@ -17,7 +17,6 @@ import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
-import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesDao
 import fr.free.nrw.commons.concurrency.BackgroundPoolExceptionHandler
 import fr.free.nrw.commons.concurrency.ThreadPoolService
 import fr.free.nrw.commons.contributions.ContributionDao
@@ -251,7 +250,7 @@ class CommonsApplication : MultiDexApplication() {
         } catch (e: SQLiteException) {
             Timber.e(e)
         }
-        BookmarkPicturesDao.Table.onDelete(db)
+//        BookmarkPicturesDao.Table.onDelete(db)
         BookmarkLocationsDao.Table.onDelete(db)
         BookmarkItemsDao.Table.onDelete(db)
     }

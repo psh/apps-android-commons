@@ -4,6 +4,7 @@ import android.net.Uri
 import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.bookmarks.models.Bookmark
+import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesRepository
 import fr.free.nrw.commons.media.MediaClient
 import io.reactivex.Single
 import media
@@ -23,7 +24,7 @@ class BookmarkPicturesControllerTest {
     var mediaClient: MediaClient? = null
 
     @Mock
-    var bookmarkDao: BookmarkPicturesDao? = null
+    var bookmarkPicturesRepository: BookmarkPicturesRepository? = null
 
     @InjectMocks
     var bookmarkPicturesController: BookmarkPicturesController? = null
@@ -35,7 +36,7 @@ class BookmarkPicturesControllerTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         val mockMedia = mockMedia
-        whenever(bookmarkDao!!.allBookmarks)
+        whenever(bookmarkPicturesRepository!!.getAllBookmarks())
             .thenReturn(mockBookmarkList)
         whenever(
             mediaClient!!.getMedia(
@@ -51,8 +52,8 @@ class BookmarkPicturesControllerTest {
     private val mockBookmarkList: List<Bookmark>
         private get() {
             val list = ArrayList<Bookmark>()
-            list.add(Bookmark("File:Test1.jpg", "Maskaravivek", Uri.EMPTY))
-            list.add(Bookmark("File:Test2.jpg", "Maskaravivek", Uri.EMPTY))
+            list.add(Bookmark("File:Test1.jpg", "Maskaravivek"))
+            list.add(Bookmark("File:Test2.jpg", "Maskaravivek"))
             return list
         }
 

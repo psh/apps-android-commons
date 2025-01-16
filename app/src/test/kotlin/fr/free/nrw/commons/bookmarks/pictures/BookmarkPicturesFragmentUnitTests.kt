@@ -1,6 +1,5 @@
 package fr.free.nrw.commons.bookmarks.pictures
 
-import android.content.ContentProviderClient
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper.getMainLooper
@@ -20,6 +19,8 @@ import com.nhaarman.mockitokotlin2.verify
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
+import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesDao
+import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesRepository
 import fr.free.nrw.commons.category.GridViewAdapter
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.databinding.FragmentBookmarksPicturesBinding
@@ -63,7 +64,7 @@ class BookmarkPicturesFragmentUnitTests {
     private lateinit var parentLayout: RelativeLayout
 
     @Mock
-    private lateinit var client: ContentProviderClient
+    private lateinit var dao: BookmarkPicturesDao
 
     @Mock
     private lateinit var savedInstanceState: Bundle
@@ -96,9 +97,7 @@ class BookmarkPicturesFragmentUnitTests {
 
         binding = FragmentBookmarksPicturesBinding.inflate(LayoutInflater.from(activity))
 
-        val bookmarkDao = BookmarkPicturesDao { client }
-
-        controller = BookmarkPicturesController(mediaClient, bookmarkDao)
+        controller = BookmarkPicturesController(mediaClient, BookmarkPicturesRepository(dao))
 
         fragment.controller = controller
 

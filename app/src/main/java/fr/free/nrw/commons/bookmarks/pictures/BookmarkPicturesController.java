@@ -2,6 +2,7 @@ package fr.free.nrw.commons.bookmarks.pictures;
 
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.bookmarks.models.Bookmark;
+import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesRepository;
 import fr.free.nrw.commons.media.MediaClient;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -16,14 +17,14 @@ import javax.inject.Singleton;
 public class BookmarkPicturesController {
 
     private final MediaClient mediaClient;
-    private final BookmarkPicturesDao bookmarkDao;
+    private final BookmarkPicturesRepository bookmarkPicturesRepository;
 
     private List<Bookmark> currentBookmarks;
 
     @Inject
-    public BookmarkPicturesController(MediaClient mediaClient, BookmarkPicturesDao bookmarkDao) {
+    public BookmarkPicturesController(MediaClient mediaClient, BookmarkPicturesRepository bookmarkPicturesRepository) {
         this.mediaClient = mediaClient;
-        this.bookmarkDao = bookmarkDao;
+        this.bookmarkPicturesRepository = bookmarkPicturesRepository;
         currentBookmarks = new ArrayList<>();
     }
 
@@ -32,7 +33,7 @@ public class BookmarkPicturesController {
      * @return a list of bookmarked Media object
      */
     Single<List<Media>> loadBookmarkedPictures() {
-        List<Bookmark> bookmarks = bookmarkDao.getAllBookmarks();
+        List<Bookmark> bookmarks = bookmarkPicturesRepository.getAllBookmarks();
         currentBookmarks = bookmarks;
         return Observable.fromIterable(bookmarks)
                 .flatMap((Function<Bookmark, ObservableSource<Media>>) this::getMediaFromBookmark)
@@ -50,7 +51,7 @@ public class BookmarkPicturesController {
      * @return a list of bookmarked Media object
      */
     boolean needRefreshBookmarkedPictures() {
-        List<Bookmark> bookmarks = bookmarkDao.getAllBookmarks();
+        List<Bookmark> bookmarks = bookmarkPicturesRepository.getAllBookmarks();
         return bookmarks.size() != currentBookmarks.size();
     }
 

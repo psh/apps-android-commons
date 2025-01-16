@@ -1,16 +1,8 @@
 package fr.free.nrw.commons.bookmarks.models
 
-import android.net.Uri
-
 class Bookmark(
     mediaName: String?,
-    mediaCreator: String?,
-    /**
-     * Gets or Sets the content URI - marking this bookmark as already saved in the database
-     * @return content URI
-     * @param contentUri the content URI
-     */
-    var contentUri: Uri?,
+    mediaCreator: String?
 ) {
     /**
      * Gets the media name

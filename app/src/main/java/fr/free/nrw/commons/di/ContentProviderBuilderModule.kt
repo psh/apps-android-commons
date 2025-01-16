@@ -4,8 +4,6 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsContentProvider
 import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsContentProvider
-import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesContentProvider
-import fr.free.nrw.commons.explore.recentsearches.RecentSearchesContentProvider
 
 /**
  * This Class Represents the Module for dependency injection (using dagger)
@@ -15,12 +13,6 @@ import fr.free.nrw.commons.explore.recentsearches.RecentSearchesContentProvider
 @Module
 @Suppress("unused")
 abstract class ContentProviderBuilderModule {
-    @ContributesAndroidInjector
-    abstract fun bindRecentSearchesContentProvider(): RecentSearchesContentProvider
-
-    @ContributesAndroidInjector
-    abstract fun bindBookmarkContentProvider(): BookmarkPicturesContentProvider
-
     @ContributesAndroidInjector
     abstract fun bindBookmarkLocationContentProvider(): BookmarkLocationsContentProvider
 

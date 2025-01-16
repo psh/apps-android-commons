@@ -34,8 +34,7 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.auth.SessionManager;
 import fr.free.nrw.commons.bookmarks.models.Bookmark;
-import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesContentProvider;
-import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesDao;
+import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesRepository;
 import fr.free.nrw.commons.contributions.Contribution;
 import fr.free.nrw.commons.contributions.MainActivity;
 import fr.free.nrw.commons.databinding.FragmentMediaDetailPagerBinding;
@@ -59,7 +58,8 @@ import timber.log.Timber;
 
 public class MediaDetailPagerFragment extends CommonsDaggerSupportFragment implements ViewPager.OnPageChangeListener, MediaDetailFragment.Callback {
 
-    @Inject BookmarkPicturesDao bookmarkDao;
+    @Inject
+    BookmarkPicturesRepository bookmarkPicturesRepository;
 
     @Inject
     protected OkHttpJsonApiClient okHttpJsonApiClient;
@@ -207,8 +207,11 @@ public class MediaDetailPagerFragment extends CommonsDaggerSupportFragment imple
         MediaDetailFragment mediaDetailFragment = this.adapter.getCurrentMediaDetailFragment();
         switch (item.getItemId()) {
             case R.id.menu_bookmark_current_image:
-                boolean bookmarkExists = bookmarkDao.updateBookmark(bookmark);
-                Snackbar snackbar = bookmarkExists ? Snackbar.make(getView(), R.string.add_bookmark, Snackbar.LENGTH_LONG) : Snackbar.make(getView(), R.string.remove_bookmark, Snackbar.LENGTH_LONG);
+                boolean bookmarkExists = bookmarkPicturesRepository.findBookmark(bookmark);
+                bookmarkPicturesRepository.updateBookmark(bookmark);
+                Snackbar snackbar = bookmarkExists ?
+                    Snackbar.make(getView(), R.string.add_bookmark, Snackbar.LENGTH_LONG) :
+                    Snackbar.make(getView(), R.string.remove_bookmark, Snackbar.LENGTH_LONG);
                 snackbar.show();
                 updateBookmarkState(item);
                 return true;
@@ -419,11 +422,7 @@ public class MediaDetailPagerFragment extends CommonsDaggerSupportFragment imple
                     }
 
                     // Initialize bookmark object
-                    bookmark = new Bookmark(
-                            m.getFilename(),
-                            m.getAuthor(),
-                            BookmarkPicturesContentProvider.uriForName(m.getFilename())
-                    );
+                    bookmark = new Bookmark(m.getFilename(), m.getAuthor());
                     updateBookmarkState(menu.findItem(R.id.menu_bookmark_current_image));
                     final Integer contributionState = provider.getContributionStateAt(position);
                     if (contributionState != null) {
@@ -492,7 +491,7 @@ public class MediaDetailPagerFragment extends CommonsDaggerSupportFragment imple
     }
 
     private void updateBookmarkState(MenuItem item) {
-        boolean isBookmarked = bookmarkDao.findBookmark(bookmark);
+        boolean isBookmarked = bookmarkPicturesRepository.findBookmark(bookmark);
         if(isBookmarked) {
             if(removedItems.contains(binding.mediaDetailsPager.getCurrentItem())) {
                 removedItems.remove(new Integer(binding.mediaDetailsPager.getCurrentItem()));

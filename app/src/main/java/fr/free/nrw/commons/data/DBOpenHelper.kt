@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
-import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesDao
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesDao
 
 
@@ -27,7 +26,7 @@ class DBOpenHelper(
      */
     override fun onCreate(db: SQLiteDatabase) {
         // CategoryDao.Table.onCreate(db)
-        BookmarkPicturesDao.Table.onCreate(db)
+        // BookmarkPicturesDao.Table.onCreate(db)
         BookmarkLocationsDao.Table.onCreate(db)
         BookmarkItemsDao.Table.onCreate(db)
         RecentSearchesDao.Table.onCreate(db)
@@ -36,7 +35,7 @@ class DBOpenHelper(
 
     override fun onUpgrade(db: SQLiteDatabase, from: Int, to: Int) {
         // CategoryDao.Table.onUpdate(db, from, to)
-        BookmarkPicturesDao.Table.onUpdate(db, from, to)
+        // BookmarkPicturesDao.Table.onUpdate(db, from, to)
         BookmarkLocationsDao.Table.onUpdate(db, from, to)
         BookmarkItemsDao.Table.onUpdate(db, from, to)
         RecentSearchesDao.Table.onUpdate(db, from, to)
