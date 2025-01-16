@@ -1,7 +1,6 @@
 package fr.free.nrw.commons.description
 
 import android.app.ProgressDialog
-import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.speech.RecognizerIntent
@@ -18,7 +17,7 @@ import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
 import fr.free.nrw.commons.databinding.ActivityDescriptionEditBinding
 import fr.free.nrw.commons.description.EditDescriptionConstants.LIST_OF_DESCRIPTION_AND_CAPTION
 import fr.free.nrw.commons.description.EditDescriptionConstants.WIKITEXT
-import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository
 import fr.free.nrw.commons.settings.Prefs
 import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.upload.UploadMediaDetail
@@ -68,7 +67,7 @@ class DescriptionEditActivity :
     private var progressDialog: ProgressDialog? = null
 
     @Inject
-    lateinit var recentLanguagesDao: RecentLanguagesDao
+    lateinit var languagesRepository: RecentLanguagesRepository
 
     private lateinit var binding: ActivityDescriptionEditBinding
 
@@ -120,7 +119,7 @@ class DescriptionEditActivity :
                 this,
                 savedLanguageValue,
                 descriptionAndCaptions,
-                recentLanguagesDao,
+                languagesRepository,
                 voiceInputResultLauncher
             )
         uploadMediaDetailAdapter.setCallback { titleStringID: Int, messageStringId: Int ->

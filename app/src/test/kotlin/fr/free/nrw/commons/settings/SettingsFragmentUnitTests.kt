@@ -18,7 +18,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.recentlanguages.Language
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesAdapter
-import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository
 import fr.free.nrw.commons.settings.SettingsFragment.Companion.createLocale
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -47,7 +47,7 @@ class SettingsFragmentUnitTests {
     private lateinit var context: Context
 
     @Mock
-    private lateinit var recentLanguagesDao: RecentLanguagesDao
+    private lateinit var recentLanguagesDao: RecentLanguagesRepository
 
     @Mock
     private lateinit var recentLanguagesTextView: TextView

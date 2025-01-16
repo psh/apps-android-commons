@@ -31,7 +31,7 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.databinding.RowItemDescriptionBinding;
 import fr.free.nrw.commons.recentlanguages.Language;
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesAdapter;
-import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao;
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository;
 import fr.free.nrw.commons.ui.PasteSensitiveTextInputEditText;
 import fr.free.nrw.commons.utils.AbstractTextWatcher;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import timber.log.Timber;
 public class UploadMediaDetailAdapter extends
     RecyclerView.Adapter<UploadMediaDetailAdapter.ViewHolder> {
 
-    RecentLanguagesDao recentLanguagesDao;
+    RecentLanguagesRepository languagesRepository;
 
     private List<UploadMediaDetail> uploadMediaDetails;
     private Callback callback;
@@ -64,21 +64,21 @@ public class UploadMediaDetailAdapter extends
     private RowItemDescriptionBinding binding;
 
     public UploadMediaDetailAdapter(Fragment fragment, String savedLanguageValue,
-        RecentLanguagesDao recentLanguagesDao, ActivityResultLauncher<Intent> voiceInputResultLauncher) {
+        RecentLanguagesRepository languagesRepository, ActivityResultLauncher<Intent> voiceInputResultLauncher) {
         uploadMediaDetails = new ArrayList<>();
         selectedLanguages = new HashMap<>();
         this.savedLanguageValue = savedLanguageValue;
-        this.recentLanguagesDao = recentLanguagesDao;
+        this.languagesRepository = languagesRepository;
         this.fragment = fragment;
         this.voiceInputResultLauncher = voiceInputResultLauncher;
     }
 
     public UploadMediaDetailAdapter(Activity activity, final String savedLanguageValue,
-        List<UploadMediaDetail> uploadMediaDetails, RecentLanguagesDao recentLanguagesDao, ActivityResultLauncher<Intent> voiceInputResultLauncher) {
+        List<UploadMediaDetail> uploadMediaDetails, RecentLanguagesRepository languagesRepository, ActivityResultLauncher<Intent> voiceInputResultLauncher) {
         this.uploadMediaDetails = uploadMediaDetails;
         selectedLanguages = new HashMap<>();
         this.savedLanguageValue = savedLanguageValue;
-        this.recentLanguagesDao = recentLanguagesDao;
+        this.languagesRepository = languagesRepository;
         this.activity = activity;
         this.voiceInputResultLauncher = voiceInputResultLauncher;
     }
@@ -336,7 +336,7 @@ public class UploadMediaDetailAdapter extends
 
         private void initLanguage(int position, UploadMediaDetail description) {
 
-            final List<Language> recentLanguages = recentLanguagesDao.getRecentLanguages();
+            final List<Language> recentLanguages = languagesRepository.getRecentLanguages();
 
             LanguagesAdapter languagesAdapter = new LanguagesAdapter(
                 descriptionLanguages.getContext(),
@@ -403,11 +403,11 @@ public class UploadMediaDetailAdapter extends
                             final String languageName
                                 = ((LanguagesAdapter) adapterView.getAdapter()).getLanguageName(i);
                             final boolean isExists
-                                = recentLanguagesDao.findRecentLanguage(languageCode);
+                                = languagesRepository.findRecentLanguage(languageCode);
                             if (isExists) {
-                                recentLanguagesDao.deleteRecentLanguage(languageCode);
+                                languagesRepository.deleteRecentLanguage(languageCode);
                             }
-                            recentLanguagesDao
+                            languagesRepository
                                 .addRecentLanguage(new Language(languageName, languageCode));
 
                             selectedLanguages.clear();
@@ -494,11 +494,11 @@ public class UploadMediaDetailAdapter extends
             description.setLanguageCode(languageCode);
             final String languageName = ((RecentLanguagesAdapter) adapterView.getAdapter())
                 .getLanguageName(position);
-            final boolean isExists = recentLanguagesDao.findRecentLanguage(languageCode);
+            final boolean isExists = languagesRepository.findRecentLanguage(languageCode);
             if (isExists) {
-                recentLanguagesDao.deleteRecentLanguage(languageCode);
+                languagesRepository.deleteRecentLanguage(languageCode);
             }
-            recentLanguagesDao.addRecentLanguage(new Language(languageName, languageCode));
+            languagesRepository.addRecentLanguage(new Language(languageName, languageCode));
 
             selectedLanguages.clear();
             selectedLanguages.put(position, languageCode);
@@ -533,7 +533,7 @@ public class UploadMediaDetailAdapter extends
             } else {
                 if (recentLanguages.size() > 5) {
                     for (int i = recentLanguages.size() - 1; i >= 5; i--) {
-                        recentLanguagesDao.deleteRecentLanguage(recentLanguages.get(i)
+                        languagesRepository.deleteRecentLanguage(recentLanguages.get(i)
                             .getLanguageCode());
                     }
                 }
@@ -545,7 +545,7 @@ public class UploadMediaDetailAdapter extends
                     final RecentLanguagesAdapter recentLanguagesAdapter
                         = new RecentLanguagesAdapter(
                         descriptionLanguages.getContext(),
-                        recentLanguagesDao.getRecentLanguages(),
+                        languagesRepository.getRecentLanguages(),
                         selectedLanguages);
                     languageHistoryListView.setAdapter(recentLanguagesAdapter);
                 }

@@ -35,7 +35,7 @@ import fr.free.nrw.commons.kvstore.BasicKvStore;
 import fr.free.nrw.commons.kvstore.JsonKvStore;
 import fr.free.nrw.commons.location.LatLng;
 import fr.free.nrw.commons.nearby.Place;
-import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao;
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository;
 import fr.free.nrw.commons.settings.Prefs;
 import fr.free.nrw.commons.upload.ImageCoordinates;
 import fr.free.nrw.commons.upload.SimilarImageDialogFragment;
@@ -110,7 +110,7 @@ public class UploadMediaDetailFragment extends UploadBaseFragment implements
     JsonKvStore defaultKvStore;
 
     @Inject
-    RecentLanguagesDao recentLanguagesDao;
+    RecentLanguagesRepository languagesRepository;
 
     private UploadableFile uploadableFile;
     private Place place;
@@ -295,7 +295,7 @@ public class UploadMediaDetailFragment extends UploadBaseFragment implements
      */
     private void initRecyclerView() {
         uploadMediaDetailAdapter = new UploadMediaDetailAdapter(this,
-            defaultKvStore.getString(Prefs.DESCRIPTION_LANGUAGE, ""), recentLanguagesDao, voiceInputResultLauncher);
+            defaultKvStore.getString(Prefs.DESCRIPTION_LANGUAGE, ""), languagesRepository, voiceInputResultLauncher);
         uploadMediaDetailAdapter.setCallback(this::showInfoAlert);
         uploadMediaDetailAdapter.setEventListener(this);
         binding.rvDescriptions.setLayoutManager(new LinearLayoutManager(getContext()));

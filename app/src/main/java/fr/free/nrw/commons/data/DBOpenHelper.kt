@@ -8,7 +8,6 @@ import fr.free.nrw.commons.bookmarks.items.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
 import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesDao
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesDao
-import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao
 
 
 class DBOpenHelper(
@@ -32,7 +31,7 @@ class DBOpenHelper(
         BookmarkLocationsDao.Table.onCreate(db)
         BookmarkItemsDao.Table.onCreate(db)
         RecentSearchesDao.Table.onCreate(db)
-        RecentLanguagesDao.Table.onCreate(db)
+        // RecentLanguagesDao.Table.onCreate(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, from: Int, to: Int) {
@@ -41,7 +40,7 @@ class DBOpenHelper(
         BookmarkLocationsDao.Table.onUpdate(db, from, to)
         BookmarkItemsDao.Table.onUpdate(db, from, to)
         RecentSearchesDao.Table.onUpdate(db, from, to)
-        RecentLanguagesDao.Table.onUpdate(db, from, to)
+        // RecentLanguagesDao.Table.onUpdate(db, from, to)
         deleteTable(db, CONTRIBUTIONS_TABLE)
     }
 

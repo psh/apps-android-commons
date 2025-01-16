@@ -27,6 +27,8 @@ import fr.free.nrw.commons.db.AppDatabase
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.nearby.PlaceDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository
 import fr.free.nrw.commons.review.ReviewDao
 import fr.free.nrw.commons.settings.Prefs
 import fr.free.nrw.commons.upload.UploadController
@@ -195,13 +197,23 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         "commons_room.db"
     ).addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().build()
 
+    // Repository Classes
     @Provides
     fun providesCategoryRepository(dao: CategoryDao) : CategoryRepository =
         CategoryRepository(dao)
 
     @Provides
+    fun providesRecentLanguagesRepository(dao: RecentLanguagesDao) : RecentLanguagesRepository =
+        RecentLanguagesRepository(dao)
+
+    // Room Dao Classes
+    @Provides
     fun providesCategoryDao(appDatabase: AppDatabase): CategoryDao =
         appDatabase.categoryDao()
+
+    @Provides
+    fun providesRecentLanguagesDao(appDatabase: AppDatabase): RecentLanguagesDao =
+        appDatabase.recentLanguagesDao()
 
     @Provides
     fun providesContributionsDao(appDatabase: AppDatabase): ContributionDao =

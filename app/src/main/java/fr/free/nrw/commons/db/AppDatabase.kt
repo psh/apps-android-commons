@@ -15,6 +15,8 @@ import fr.free.nrw.commons.customselector.database.UploadedStatus
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
 import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.nearby.PlaceDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesDao
+import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesEntity
 import fr.free.nrw.commons.review.ReviewDao
 import fr.free.nrw.commons.review.ReviewEntity
 import fr.free.nrw.commons.upload.depicts.Depicts
@@ -31,6 +33,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
         Depicts::class,
         NotForUploadStatus::class,
         Place::class,
+        RecentLanguagesEntity::class,
         ReviewEntity::class,
         UploadedStatus::class,
     ],
@@ -50,6 +53,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun UploadedStatusDao(): UploadedStatusDao
 
     abstract fun NotForUploadStatusDao(): NotForUploadStatusDao
+
+    abstract fun recentLanguagesDao(): RecentLanguagesDao
 
     abstract fun ReviewDao(): ReviewDao
 
