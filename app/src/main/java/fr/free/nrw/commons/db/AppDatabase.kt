@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
 import fr.free.nrw.commons.bookmarks.category.BookmarksCategoryModal
+import fr.free.nrw.commons.category.db.CategoryDao
+import fr.free.nrw.commons.category.db.CategoryEntity
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatus
@@ -20,15 +22,25 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
 
 /**
  * The database for accessing the respective DAOs
- *
  */
 @Database(
-    entities = [Contribution::class, Depicts::class, UploadedStatus::class, NotForUploadStatus::class, ReviewEntity::class, Place::class, BookmarksCategoryModal::class],
+    entities = [
+        BookmarksCategoryModal::class,
+        CategoryEntity::class,
+        Contribution::class,
+        Depicts::class,
+        NotForUploadStatus::class,
+        Place::class,
+        ReviewEntity::class,
+        UploadedStatus::class,
+    ],
     version = 19,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun categoryDao(): CategoryDao
+
     abstract fun contributionDao(): ContributionDao
 
     abstract fun PlaceDao(): PlaceDao

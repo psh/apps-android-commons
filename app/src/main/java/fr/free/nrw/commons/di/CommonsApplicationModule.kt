@@ -16,6 +16,8 @@ import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
+import fr.free.nrw.commons.category.db.CategoryDao
+import fr.free.nrw.commons.category.db.CategoryRepository
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
@@ -85,11 +87,6 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
      * Provides an instance of CategoryContentProviderClient i.e. the categories
      * that are there in local storage
      */
-    @Provides
-    @Named("category")
-    open fun provideCategoryContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.CATEGORY_AUTHORITY)
-
     @Provides
     @Named("recentsearch")
     fun provideRecentSearchContentProviderClient(context: Context): ContentProviderClient? =
@@ -197,6 +194,14 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         AppDatabase::class.java,
         "commons_room.db"
     ).addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().build()
+
+    @Provides
+    fun providesCategoryRepository(dao: CategoryDao) : CategoryRepository =
+        CategoryRepository(dao)
+
+    @Provides
+    fun providesCategoryDao(appDatabase: AppDatabase): CategoryDao =
+        appDatabase.categoryDao()
 
     @Provides
     fun providesContributionsDao(appDatabase: AppDatabase): ContributionDao =

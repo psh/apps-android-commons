@@ -2,6 +2,7 @@ package fr.free.nrw.commons.category
 
 import android.text.TextUtils
 import fr.free.nrw.commons.Media
+import fr.free.nrw.commons.category.db.CategoryRepository
 import fr.free.nrw.commons.upload.GpsCategoryModel
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import fr.free.nrw.commons.utils.StringSortingUtils
@@ -19,7 +20,7 @@ class CategoriesModel
     @Inject
     constructor(
         private val categoryClient: CategoryClient,
-        private val categoryDao: CategoryDao,
+        private val categoryRepository: CategoryRepository,
         private val gpsCategoryModel: GpsCategoryModel,
     ) {
         private val selectedCategories: MutableList<CategoryItem> = mutableListOf()
@@ -74,7 +75,7 @@ class CategoriesModel
          * @param item
          */
         fun updateCategoryCount(item: CategoryItem) {
-            var category = categoryDao.find(item.name)
+            var category = categoryRepository.find(item.name)
 
             // Newly used category...
             if (category == null) {
@@ -87,7 +88,7 @@ class CategoriesModel
                 )
             }
             category.incTimesUsed()
-            categoryDao.save(category)
+            categoryRepository.save(category)
         }
 
         /**
@@ -114,7 +115,7 @@ class CategoriesModel
                     categoriesFromDepiction(selectedDepictions),
                     gpsCategoryModel.categoriesFromLocation,
                     titleCategories(imageTitleList),
-                    Observable.just(categoryDao.recentCategories(SEARCH_CATS_LIMIT)),
+                    Observable.just(categoryRepository.recentCategories(SEARCH_CATS_LIMIT)),
                     Function4(::combine),
                 )
             } else {

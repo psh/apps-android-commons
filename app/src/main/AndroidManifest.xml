@@ -209,12 +209,6 @@
         android:resource="@xml/provider_paths" />
     </provider>
     <provider
-      android:name=".category.CategoryContentProvider"
-      android:authorities="${applicationId}.categories.contentprovider"
-      android:exported="false"
-      android:label="@string/provider_categories"
-      android:syncable="false" />
-    <provider
       android:name=".explore.recentsearches.RecentSearchesContentProvider"
       android:authorities="${applicationId}.explore.recentsearches.contentprovider"
       android:exported="false"

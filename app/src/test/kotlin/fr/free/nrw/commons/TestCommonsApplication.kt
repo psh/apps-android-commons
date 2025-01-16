@@ -44,12 +44,8 @@ class MockCommonsApplicationModule(appContext: Context) : CommonsApplicationModu
     val mockDbOpenHelper: DBOpenHelper = mock()
     val lruCache: LruCache<String, String> = mock()
     val gson: Gson = Gson()
-    val categoryClient: ContentProviderClient = mock()
     val contributionClient: ContentProviderClient = mock()
     val modificationClient: ContentProviderClient = mock()
-    val uploadPrefs: JsonKvStore = mock()
-
-    override fun provideCategoryContentProviderClient(context: Context): ContentProviderClient = categoryClient
 
     override fun provideContributionContentProviderClient(context: Context): ContentProviderClient = contributionClient
 

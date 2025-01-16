@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import depictedItem
+import fr.free.nrw.commons.category.db.CategoryRepository
 import fr.free.nrw.commons.upload.GpsCategoryModel
 import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
@@ -18,7 +19,7 @@ import org.mockito.MockitoAnnotations
 // class for testing CategoriesModel class
 class CategoriesModelTest {
     @Mock
-    internal lateinit var categoryDao: CategoryDao
+    internal lateinit var categoryRepository: CategoryRepository
 
     @Mock
     internal lateinit var categoryClient: CategoryClient
@@ -32,7 +33,7 @@ class CategoriesModelTest {
     @Throws(Exception::class)
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        categoriesModel = CategoriesModel(categoryClient, categoryDao, gpsCategoryModel)
+        categoriesModel = CategoriesModel(categoryClient, categoryRepository, gpsCategoryModel)
     }
 
     // Test Case for verifying that Categories search (MW api calls)
@@ -131,7 +132,7 @@ class CategoriesModelTest {
                 ),
             ),
         )
-        whenever(categoryDao.recentCategories(25)).thenReturn(
+        whenever(categoryRepository.recentCategories(25)).thenReturn(
             listOf(
                 CategoryItem(
                     "recentCategories",
@@ -160,7 +161,7 @@ class CategoriesModelTest {
             ),
         )
         val imageTitleList = listOf("Test")
-        CategoriesModel(categoryClient, categoryDao, gpsCategoryModel)
+        CategoriesModel(categoryClient, categoryRepository, gpsCategoryModel)
             .searchAll("", imageTitleList, listOf(depictedItem))
             .test()
             .assertValue(
