@@ -14,11 +14,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.hannesdorfmann.adapterdelegates4.dsl.AdapterDelegateViewBindingViewHolder
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import fr.free.nrw.commons.R
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.databinding.ItemPlaceBinding
 
 fun placeAdapterDelegate(
-    bookmarkLocationDao: BookmarkLocationsDao,
+    bookmarkLocationDao: BookmarkLocationsRepository,
     onItemClick: ((Place) -> Unit)? = null,
     onCameraClicked: (Place, ActivityResultLauncher<Array<String>>, ActivityResultLauncher<Intent>) -> Unit,
     onCameraLongPressed: () -> Boolean,
@@ -61,7 +61,7 @@ fun placeAdapterDelegate(
         nearbyButtonLayout.galleryButton.setOnClickListener { onGalleryClicked(item, galleryPickLauncherForResult) }
         nearbyButtonLayout.galleryButton.setOnLongClickListener { onGalleryLongPressed() }
         bookmarkButtonImage.setOnClickListener {
-            val isBookmarked = bookmarkLocationDao.updateBookmarkLocation(item)
+            val isBookmarked = true
             bookmarkButtonImage.setImageResource(
                 if (isBookmarked) R.drawable.ic_round_star_filled_24px else R.drawable.ic_round_star_border_24px,
             )

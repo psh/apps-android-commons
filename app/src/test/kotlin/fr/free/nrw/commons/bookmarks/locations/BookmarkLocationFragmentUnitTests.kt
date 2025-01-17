@@ -14,6 +14,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.contributions.ContributionController
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.databinding.FragmentBookmarksLocationsBinding
@@ -55,7 +56,7 @@ class BookmarkLocationFragmentUnitTests {
     private lateinit var savedInstanceState: Bundle
 
     @Mock
-    private lateinit var bookmarkLocationDao: BookmarkLocationsDao
+    private lateinit var bookmarkLocationDao: BookmarkLocationsRepository
 
     @Mock
     private lateinit var controller: BookmarkLocationsController

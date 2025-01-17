@@ -3,7 +3,7 @@ package fr.free.nrw.commons.nearby
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager.LocationChangeType
 import fr.free.nrw.commons.nearby.contract.NearbyParentFragmentContract
@@ -29,7 +29,7 @@ class NearbyParentFragmentPresenterTest {
     internal lateinit var nearbyParentFragmentView: NearbyParentFragmentContract.View
 
     @Mock
-    internal lateinit var bookmarkLocationsDao: BookmarkLocationsDao
+    internal lateinit var bookmarkLocationsDao: BookmarkLocationsRepository
 
     @Mock
     internal lateinit var placesRepository: PlacesRepository
@@ -463,7 +463,7 @@ class NearbyParentFragmentPresenterTest {
         nearbyPlacesInfo.searchLatLng = latestLocation
         nearbyPlacesInfo.placeList = emptyList<Place>()
 
-        whenever(bookmarkLocationsDao.allBookmarksLocations).thenReturn(Collections.emptyList())
+        whenever(bookmarkLocationsDao.getAllBookmarksLocations()).thenReturn(Collections.emptyList())
         nearbyPresenter.updateMapMarkers(nearbyPlacesInfo.placeList, latestLocation, null)
         Mockito.verify(nearbyParentFragmentView).setProgressBarVisibility(false)
     }

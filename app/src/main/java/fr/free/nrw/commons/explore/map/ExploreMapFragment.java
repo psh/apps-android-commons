@@ -37,7 +37,7 @@ import fr.free.nrw.commons.MapController;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.Utils;
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao;
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository;
 import fr.free.nrw.commons.databinding.FragmentExploreMapBinding;
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment;
 import fr.free.nrw.commons.explore.ExploreMapRootFragment;
@@ -110,7 +110,7 @@ public class ExploreMapFragment extends CommonsDaggerSupportFragment
     @Named("default_preferences")
     JsonKvStore applicationKvStore;
     @Inject
-    BookmarkLocationsDao bookmarkLocationDao; // May be needed in future if we want to integrate bookmarking explore places
+    BookmarkLocationsRepository bookmarkLocationDao; // May be needed in future if we want to integrate bookmarking explore places
     @Inject
     SystemThemeUtils systemThemeUtils;
     LocationPermissionsHelper locationPermissionsHelper;

@@ -2,13 +2,13 @@ package fr.free.nrw.commons.nearby.fragments
 
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.nearby.placeAdapterDelegate
 import fr.free.nrw.commons.upload.categories.BaseDelegateAdapter
 
 class PlaceAdapter(
-    bookmarkLocationsDao: BookmarkLocationsDao,
+    bookmarkLocationsDao: BookmarkLocationsRepository,
     onPlaceClicked: ((Place) -> Unit)? = null,
     onBookmarkClicked: (Place, Boolean) -> Unit,
     commonPlaceClickActions: CommonPlaceClickActions,

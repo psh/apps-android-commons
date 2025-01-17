@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import dagger.android.support.DaggerFragment;
 import fr.free.nrw.commons.R;
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository;
 import fr.free.nrw.commons.contributions.ContributionController;
 import fr.free.nrw.commons.databinding.FragmentBookmarksLocationsBinding;
 import fr.free.nrw.commons.nearby.Place;
@@ -31,7 +32,7 @@ public class BookmarkLocationsFragment extends DaggerFragment {
 
     @Inject BookmarkLocationsController controller;
     @Inject ContributionController contributionController;
-    @Inject BookmarkLocationsDao bookmarkLocationDao;
+    @Inject BookmarkLocationsRepository bookmarkLocationDao;
     @Inject CommonPlaceClickActions commonPlaceClickActions;
     private PlaceAdapter adapter;
 

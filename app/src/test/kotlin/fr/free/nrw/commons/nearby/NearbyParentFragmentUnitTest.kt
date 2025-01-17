@@ -23,7 +23,7 @@ import fr.free.nrw.commons.BaseMarker
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.kvstore.JsonKvStore
@@ -108,7 +108,7 @@ class NearbyParentFragmentUnitTest {
     private lateinit var imageView: ImageView
 
     @Mock
-    private lateinit var bookmarkLocationDao: BookmarkLocationsDao
+    private lateinit var bookmarkLocationDao: BookmarkLocationsRepository
 
     private lateinit var layoutInflater: LayoutInflater
     private lateinit var fragment: NearbyParentFragment

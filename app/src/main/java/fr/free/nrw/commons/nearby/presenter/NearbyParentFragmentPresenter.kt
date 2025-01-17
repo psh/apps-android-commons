@@ -4,7 +4,7 @@ import android.location.Location
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleCoroutineScope
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager.LocationChangeType
@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 class NearbyParentFragmentPresenter
     (
-    val bookmarkLocationDao: BookmarkLocationsDao,
+    val bookmarkLocationsRepository: BookmarkLocationsRepository,
     val placesRepository: PlacesRepository,
     val nearbyController: NearbyController
 ) :
@@ -135,12 +135,12 @@ class NearbyParentFragmentPresenter
      */
     override fun toggleBookmarkedStatus(place: Place?) {
         if (place == null) return
-        val nowBookmarked = bookmarkLocationDao.updateBookmarkLocation(place)
+        val nowBookmarked = bookmarkLocationsRepository.updateBookmarkLocation(place)
         bookmarkChangedPlaces.add(place)
         val placeIndex =
             NearbyController.markerLabelList.indexOfFirst { it.place.location == place.location }
         NearbyController.markerLabelList[placeIndex] = MarkerPlaceGroup(
-            nowBookmarked,
+            true,
             NearbyController.markerLabelList[placeIndex].place
         )
         nearbyParentFragmentView.setFilterState()
@@ -334,7 +334,7 @@ class NearbyParentFragmentPresenter
             for (i in 0..updatedGroups.lastIndex) {
                 val repoPlace = placesRepository.fetchPlace(updatedGroups[i].place.entityID)
                 if (repoPlace != null && repoPlace.name != null && repoPlace.name != ""){
-                    updatedGroups[i].isBookmarked = bookmarkLocationDao.findBookmarkLocation(repoPlace)
+                    updatedGroups[i].isBookmarked = bookmarkLocationsRepository.findBookmarkLocation(repoPlace)
                     updatedGroups[i].place.apply {
                         name = repoPlace.name
                         isMonument = repoPlace.isMonument
@@ -372,7 +372,7 @@ class NearbyParentFragmentPresenter
                             collectResults.send(
                                 fetchedPlaces.mapIndexed { index, place ->
                                     Pair(indices[index], MarkerPlaceGroup(
-                                        bookmarkLocationDao.findBookmarkLocation(place),
+                                        bookmarkLocationsRepository.findBookmarkLocation(place),
                                         place
                                     ))
                                 }
@@ -434,7 +434,7 @@ class NearbyParentFragmentPresenter
                     for ((index, group) in updatedGroups.withIndex()) {
                         if (bookmarkChangedPlacesBacklog.containsKey(group.place.location)) {
                             updatedGroups[index] = MarkerPlaceGroup(
-                                bookmarkLocationDao
+                                bookmarkLocationsRepository
                                     .findBookmarkLocation(updatedGroups[index].place),
                                 updatedGroups[index].place
                             )
@@ -545,7 +545,7 @@ class NearbyParentFragmentPresenter
                 ).sortedBy { it.getDistanceInDouble(mapFocus) }.take(NearbyController.MAX_RESULTS)
                     .map {
                         MarkerPlaceGroup(
-                            bookmarkLocationDao.findBookmarkLocation(it), it
+                            bookmarkLocationsRepository.findBookmarkLocation(it), it
                         )
                     }
                 ensureActive()

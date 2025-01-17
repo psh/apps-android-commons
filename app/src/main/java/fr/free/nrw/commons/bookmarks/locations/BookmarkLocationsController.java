@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.bookmarks.locations;
 
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -11,7 +12,7 @@ import fr.free.nrw.commons.nearby.Place;
 public class BookmarkLocationsController {
 
     @Inject
-    BookmarkLocationsDao bookmarkLocationDao;
+    BookmarkLocationsRepository bookmarkLocationDao;
 
     @Inject
     public BookmarkLocationsController() {}

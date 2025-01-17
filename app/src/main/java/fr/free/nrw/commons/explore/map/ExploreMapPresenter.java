@@ -9,7 +9,7 @@ import android.view.View;
 import fr.free.nrw.commons.BaseMarker;
 import fr.free.nrw.commons.MapController;
 import fr.free.nrw.commons.MapController.ExplorePlacesInfo;
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao;
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository;
 import fr.free.nrw.commons.explore.map.ExploreMapController.NearbyBaseMarkerThumbCallback;
 import fr.free.nrw.commons.kvstore.JsonKvStore;
 import fr.free.nrw.commons.location.LatLng;
@@ -23,7 +23,7 @@ public class ExploreMapPresenter
     implements ExploreMapContract.UserActions,
     NearbyBaseMarkerThumbCallback {
 
-    BookmarkLocationsDao bookmarkLocationDao;
+    BookmarkLocationsRepository bookmarkLocationDao;
     private boolean isNearbyLocked;
     private LatLng currentLatLng;
     private ExploreMapController exploreMapController;
@@ -51,7 +51,7 @@ public class ExploreMapPresenter
         );
     private ExploreMapContract.View exploreMapFragmentView = DUMMY;
 
-    public ExploreMapPresenter(BookmarkLocationsDao bookmarkLocationDao) {
+    public ExploreMapPresenter(BookmarkLocationsRepository bookmarkLocationDao) {
         this.bookmarkLocationDao = bookmarkLocationDao;
     }
 

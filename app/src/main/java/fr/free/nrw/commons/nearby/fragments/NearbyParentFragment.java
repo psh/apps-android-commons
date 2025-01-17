@@ -70,7 +70,7 @@ import fr.free.nrw.commons.CommonsApplication.BaseLogoutListener;
 import fr.free.nrw.commons.MapController.NearbyPlacesInfo;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.Utils;
-import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao;
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository;
 import fr.free.nrw.commons.contributions.ContributionController;
 import fr.free.nrw.commons.contributions.MainActivity;
 import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment;
@@ -92,7 +92,6 @@ import fr.free.nrw.commons.nearby.NearbyFilterSearchRecyclerViewAdapter;
 import fr.free.nrw.commons.nearby.NearbyFilterState;
 import fr.free.nrw.commons.nearby.Place;
 import fr.free.nrw.commons.nearby.PlacesRepository;
-import fr.free.nrw.commons.nearby.Sitelinks;
 import fr.free.nrw.commons.nearby.WikidataFeedback;
 import fr.free.nrw.commons.nearby.contract.NearbyParentFragmentContract;
 import fr.free.nrw.commons.nearby.fragments.AdvanceQueryFragment.Callback;
@@ -183,7 +182,7 @@ public class NearbyParentFragment extends CommonsDaggerSupportFragment
     @Named("default_preferences")
     JsonKvStore applicationKvStore;
     @Inject
-    BookmarkLocationsDao bookmarkLocationDao;
+    BookmarkLocationsRepository bookmarkLocationDao;
     @Inject
     PlacesRepository placesRepository;
     @Inject
