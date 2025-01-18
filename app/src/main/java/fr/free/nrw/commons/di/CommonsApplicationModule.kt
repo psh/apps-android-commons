@@ -213,23 +213,23 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
 
     @Provides
     fun providesPlaceDao(appDatabase: AppDatabase): PlaceDao =
-        appDatabase.PlaceDao()
+        appDatabase.placeDao()
 
     @Provides
     fun providesDepictDao(appDatabase: AppDatabase): DepictsDao =
-        appDatabase.DepictsDao()
+        appDatabase.depictsDao()
 
     @Provides
     fun providesUploadedStatusDao(appDatabase: AppDatabase): UploadedStatusDao =
-        appDatabase.UploadedStatusDao()
+        appDatabase.uploadedStatusDao()
 
     @Provides
     fun providesNotForUploadStatusDao(appDatabase: AppDatabase): NotForUploadStatusDao =
-        appDatabase.NotForUploadStatusDao()
+        appDatabase.notForUploadStatusDao()
 
     @Provides
     fun providesReviewDao(appDatabase: AppDatabase): ReviewDao =
-        appDatabase.ReviewDao()
+        appDatabase.reviewDao()
 
     @Provides
     fun providesBookmarkCategoriesDao (appDatabase: AppDatabase): BookmarkCategoriesDao =

@@ -35,9 +35,9 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
  */
 @Database(
     entities = [
+        BookmarkItemsEntity::class,
         BookmarkLocationsEntity::class,
         BookmarkPicturesEntity::class,
-        BookmarkItemsEntity::class,
         BookmarksCategoryModal::class,
         CategoryEntity::class,
         Contribution::class,
@@ -54,29 +54,17 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun bookmarkLocationsDao(): BookmarkLocationsDao
-
-    abstract fun bookmarkPicturesDao(): BookmarkPicturesDao
-
-    abstract fun bookmarkItemsDao(): BookmarkItemsDao
-
-    abstract fun categoryDao(): CategoryDao
-
-    abstract fun contributionDao(): ContributionDao
-
-    abstract fun PlaceDao(): PlaceDao
-
-    abstract fun DepictsDao(): DepictsDao
-
-    abstract fun UploadedStatusDao(): UploadedStatusDao
-
-    abstract fun NotForUploadStatusDao(): NotForUploadStatusDao
-
-    abstract fun recentLanguagesDao(): RecentLanguagesDao
-
-    abstract fun recentSearchesDao(): RecentSearchesDao
-
-    abstract fun ReviewDao(): ReviewDao
-
     abstract fun bookmarkCategoriesDao(): BookmarkCategoriesDao
+    abstract fun bookmarkItemsDao(): BookmarkItemsDao
+    abstract fun bookmarkLocationsDao(): BookmarkLocationsDao
+    abstract fun bookmarkPicturesDao(): BookmarkPicturesDao
+    abstract fun categoryDao(): CategoryDao
+    abstract fun contributionDao(): ContributionDao
+    abstract fun depictsDao(): DepictsDao
+    abstract fun notForUploadStatusDao(): NotForUploadStatusDao
+    abstract fun placeDao(): PlaceDao
+    abstract fun recentLanguagesDao(): RecentLanguagesDao
+    abstract fun recentSearchesDao(): RecentSearchesDao
+    abstract fun reviewDao(): ReviewDao
+    abstract fun uploadedStatusDao(): UploadedStatusDao
 }
