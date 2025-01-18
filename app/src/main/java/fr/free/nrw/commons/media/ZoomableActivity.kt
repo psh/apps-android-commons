@@ -23,7 +23,7 @@ import com.facebook.imagepipeline.image.ImageInfo
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.customselector.database.NotForUploadStatus
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
-import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.helper.CustomSelectorConstants
 import fr.free.nrw.commons.customselector.helper.CustomSelectorConstants.SHOULD_REFRESH
 import fr.free.nrw.commons.customselector.helper.ImageHelper
@@ -114,10 +114,10 @@ class ZoomableActivity : BaseActivity() {
     lateinit var notForUploadStatusDao: NotForUploadStatusDao
 
     /**
-     * UploadedStatus Dao class for database operations
+     * UploadedStatus Repo class for database operations
      */
     @Inject
-    lateinit var uploadedStatusDao: UploadedStatusDao
+    lateinit var uploadedStatusRepository: UploadedStatusRepository
 
     /**
      * View Model Factory.
@@ -284,7 +284,7 @@ class ZoomableActivity : BaseActivity() {
                     fileUtilsWrapper,
                     contentResolver,
                 )
-            var isUploaded = uploadedStatusDao.findByImageSHA1(imageSHA1, true)
+            var isUploaded = uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
             if (isUploaded > 0) {
                 Toast
                     .makeText(
@@ -302,7 +302,7 @@ class ZoomableActivity : BaseActivity() {
                         fileUtilsWrapper,
                     )
                 isUploaded =
-                    uploadedStatusDao.findByModifiedImageSHA1(
+                    uploadedStatusRepository.findByModifiedImageSHA1(
                         imageModifiedSHA1,
                         true,
                     )
@@ -364,7 +364,7 @@ class ZoomableActivity : BaseActivity() {
                     ).show()
             } else {
                 isNonActionable =
-                    uploadedStatusDao.findByImageSHA1(imageSHA1, true)
+                    uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
                 if (isNonActionable > 0) {
                     Toast
                         .makeText(
@@ -382,7 +382,7 @@ class ZoomableActivity : BaseActivity() {
                             fileUtilsWrapper,
                         )
                     isNonActionable =
-                        uploadedStatusDao.findByModifiedImageSHA1(
+                        uploadedStatusRepository.findByModifiedImageSHA1(
                             imageModifiedSHA1,
                             true,
                         )
@@ -504,7 +504,7 @@ class ZoomableActivity : BaseActivity() {
                 )
             var isNonActionable = notForUploadStatusDao.find(imageSHA1)
             if (isNonActionable <= 0) {
-                isNonActionable = uploadedStatusDao.findByImageSHA1(imageSHA1, true)
+                isNonActionable = uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
                 if (isNonActionable <= 0) {
                     val imageModifiedSHA1 =
                         CustomSelectorUtils.generateModifiedSHA1(
@@ -515,7 +515,7 @@ class ZoomableActivity : BaseActivity() {
                             fileUtilsWrapper,
                         )
                     isNonActionable =
-                        uploadedStatusDao.findByModifiedImageSHA1(
+                        uploadedStatusRepository.findByModifiedImageSHA1(
                             imageModifiedSHA1,
                             true,
                         )
@@ -553,7 +553,7 @@ class ZoomableActivity : BaseActivity() {
                 )
             var isNonActionable = notForUploadStatusDao.find(imageSHA1)
             if (isNonActionable <= 0) {
-                isNonActionable = uploadedStatusDao.findByImageSHA1(imageSHA1, true)
+                isNonActionable = uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
                 if (isNonActionable <= 0) {
                     val imageModifiedSHA1 =
                         CustomSelectorUtils.generateModifiedSHA1(
@@ -564,7 +564,7 @@ class ZoomableActivity : BaseActivity() {
                             fileUtilsWrapper,
                         )
                     isNonActionable =
-                        uploadedStatusDao.findByModifiedImageSHA1(
+                        uploadedStatusRepository.findByModifiedImageSHA1(
                             imageModifiedSHA1,
                             true,
                         )

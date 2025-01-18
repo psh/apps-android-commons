@@ -25,6 +25,7 @@ import fr.free.nrw.commons.category.db.CategoryRepository
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.ui.selector.ImageFileLoader
 import fr.free.nrw.commons.data.DBOpenHelper
 import fr.free.nrw.commons.db.AppDatabase
@@ -181,6 +182,10 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
     @Provides
     fun providesRecentSearchesRepository(dao: RecentSearchesDao): RecentSearchesRepository =
         RecentSearchesRepository(dao)
+
+    @Provides
+    fun providesUploadedStatusRepository(dao: UploadedStatusDao): UploadedStatusRepository =
+        UploadedStatusRepository(dao)
 
     // Room Dao Classes
     @Provides

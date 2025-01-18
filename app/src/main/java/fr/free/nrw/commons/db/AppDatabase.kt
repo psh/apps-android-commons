@@ -17,7 +17,7 @@ import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatus
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
-import fr.free.nrw.commons.customselector.database.UploadedStatus
+import fr.free.nrw.commons.customselector.database.UploadedStatusEntity
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
 import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesDao
 import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesEntity
@@ -47,7 +47,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
         RecentLanguagesEntity::class,
         RecentSearchesEntity::class,
         ReviewEntity::class,
-        UploadedStatus::class,
+        UploadedStatusEntity::class,
     ],
     version = 19,
     exportSchema = false,

@@ -9,8 +9,9 @@ import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.TestUtility.setFinalStatic
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
-import fr.free.nrw.commons.customselector.database.UploadedStatus
-import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import fr.free.nrw.commons.customselector.database.UploadedStatusEntity
+import fr.free.nrw.commons.customselector.model.UploadedStatus
+import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.model.Image
 import fr.free.nrw.commons.customselector.ui.adapter.ImageAdapter
 import fr.free.nrw.commons.filepicker.PickedFiles
@@ -71,7 +72,7 @@ class ImageLoaderTest {
     private lateinit var fileUtilsWrapper: FileUtilsWrapper
 
     @Mock
-    private lateinit var uploadedStatusDao: UploadedStatusDao
+    private lateinit var uploadedStatusRepository: UploadedStatusRepository
 
     @Mock
     private lateinit var notForUploadStatusDao: NotForUploadStatusDao
@@ -118,7 +119,7 @@ class ImageLoaderTest {
                 mediaClient,
                 fileProcessor,
                 fileUtilsWrapper,
-                uploadedStatusDao,
+                uploadedStatusRepository,
                 notForUploadStatusDao,
                 context,
             )
@@ -162,7 +163,7 @@ class ImageLoaderTest {
     @Test
     fun testQueryAndSetViewUploadedStatusNull() =
         TestScope(testDispacher).runTest {
-            whenever(uploadedStatusDao.getUploadedFromImageSHA1(any())).thenReturn(null)
+            whenever(uploadedStatusRepository.getFromImageSHA1(any<String>())).thenReturn(null)
             whenever(notForUploadStatusDao.find(any())).thenReturn(0)
             mapModifiedImageSHA1[image] = "testSha1"
             mapImageSHA1[uri] = "testSha1"
@@ -182,7 +183,7 @@ class ImageLoaderTest {
     @Test
     fun testQueryAndSetViewUploadedStatusNotNull() =
         TestScope(testDispacher).runTest {
-            whenever(uploadedStatusDao.getUploadedFromImageSHA1(any())).thenReturn(uploadedStatus)
+            whenever(uploadedStatusRepository.getFromImageSHA1(any<String>())).thenReturn(uploadedStatus)
             whenever(notForUploadStatusDao.find(any())).thenReturn(0)
             whenever(context.getSharedPreferences("custom_selector", 0))
                 .thenReturn(Mockito.mock(SharedPreferences::class.java))
@@ -196,8 +197,8 @@ class ImageLoaderTest {
     fun testNextActionableImage() =
         TestScope(testDispacher).runTest {
             whenever(notForUploadStatusDao.find(any())).thenReturn(0)
-            whenever(uploadedStatusDao.findByImageSHA1(any(), any())).thenReturn(0)
-            whenever(uploadedStatusDao.findByModifiedImageSHA1(any(), any())).thenReturn(0)
+            whenever(uploadedStatusRepository.findByImageSHA1(any(), any())).thenReturn(0)
+            whenever(uploadedStatusRepository.findByModifiedImageSHA1(any(), any())).thenReturn(0)
 //        mockStatic(PickedFiles::class.java)
             BDDMockito
                 .given(PickedFiles.pickedExistingPicture(context, image.uri))
@@ -224,7 +225,7 @@ class ImageLoaderTest {
                 emptyList()
             )
 
-            whenever(uploadedStatusDao.findByImageSHA1(any(), any())).thenReturn(2)
+            whenever(uploadedStatusRepository.findByImageSHA1(any(), any())).thenReturn(2)
             imageLoader.nextActionableImage(
                 listOf(image),
                 testDispacher,
@@ -233,7 +234,7 @@ class ImageLoaderTest {
                 emptyList()
             )
 
-            whenever(uploadedStatusDao.findByModifiedImageSHA1(any(), any())).thenReturn(2)
+            whenever(uploadedStatusRepository.findByModifiedImageSHA1(any(), any())).thenReturn(2)
             imageLoader.nextActionableImage(
                 listOf(image),
                 testDispacher,
@@ -274,7 +275,7 @@ class ImageLoaderTest {
         val func =
             imageLoader.javaClass.getDeclaredMethod(
                 "getResultFromUploadedStatus",
-                UploadedStatus::class.java,
+                UploadedStatusEntity::class.java,
             )
         func.isAccessible = true
 

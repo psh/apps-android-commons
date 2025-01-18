@@ -27,8 +27,8 @@ import fr.free.nrw.commons.contributions.ChunkInfo
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.contributions.MainActivity
-import fr.free.nrw.commons.customselector.database.UploadedStatus
-import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import fr.free.nrw.commons.customselector.model.UploadedStatus
+import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.media.MediaClient
 import fr.free.nrw.commons.nearby.PlacesRepository
@@ -46,6 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Calendar
 import java.util.Date
 import java.util.Random
 import java.util.regex.Pattern
@@ -67,7 +68,7 @@ class UploadWorker(
     lateinit var contributionDao: ContributionDao
 
     @Inject
-    lateinit var uploadedStatusDao: UploadedStatusDao
+    lateinit var uploadedStatusRepository: UploadedStatusRepository
 
     @Inject
     lateinit var uploadClient: UploadClient
@@ -538,13 +539,14 @@ class UploadWorker(
             val imageSha1 = contribution.imageSHA1.toString()
             val modifiedSha1 = fileUtilsWrapper.getSHA1(fileUtilsWrapper.getFileInputStream(contribution.localUri?.path))
             CoroutineScope(Dispatchers.IO).launch {
-                uploadedStatusDao.insertUploaded(
+                uploadedStatusRepository.insert(
                     UploadedStatus(
-                        imageSha1,
-                        modifiedSha1,
-                        imageSha1 == modifiedSha1,
-                        true,
-                    ),
+                        imageSHA1 = imageSha1,
+                        modifiedImageSHA1 = modifiedSha1,
+                        imageResult = imageSha1 == modifiedSha1,
+                        modifiedImageResult = true,
+                        lastUpdated = Calendar.getInstance().time
+                    )
                 )
             }
         }

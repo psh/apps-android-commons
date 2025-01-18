@@ -1,7 +1,6 @@
 package fr.free.nrw.commons.customselector.ui.selector
 
 import android.app.Activity
-import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -19,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
-import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.helper.ImageHelper
 import fr.free.nrw.commons.customselector.helper.ImageHelper.CUSTOM_SELECTOR_PREFERENCE_KEY
 import fr.free.nrw.commons.customselector.helper.ImageHelper.SHOW_ALREADY_ACTIONED_IMAGES_PREFERENCE_KEY
@@ -34,7 +33,6 @@ import fr.free.nrw.commons.databinding.FragmentCustomSelectorBinding
 import fr.free.nrw.commons.databinding.ProgressDialogBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.media.MediaClient
-import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.upload.FileProcessor
 import fr.free.nrw.commons.upload.FileUtilsWrapper
 import io.reactivex.schedulers.Schedulers
@@ -117,10 +115,10 @@ class ImageFragment :
     lateinit var notForUploadStatusDao: NotForUploadStatusDao
 
     /**
-     * UploadedStatus Dao class for database operations
+     * UploadedStatus Repo class for database operations
      */
     @Inject
-    lateinit var uploadedStatusDao: UploadedStatusDao
+    lateinit var uploadedStatusRepository: UploadedStatusRepository
 
     /**
      * FileUtilsWrapper class to get imageSHA1 from uri
