@@ -42,8 +42,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import fr.free.nrw.commons.R
-import fr.free.nrw.commons.customselector.database.NotForUploadStatus
-import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusRepository
 import fr.free.nrw.commons.customselector.helper.CustomSelectorConstants
 import fr.free.nrw.commons.customselector.helper.FolderDeletionHelper
 import fr.free.nrw.commons.customselector.listeners.FolderClickListener
@@ -127,7 +126,7 @@ class CustomSelectorActivity :
      * NotForUploadStatus Dao class for database operations
      */
     @Inject
-    lateinit var notForUploadStatusDao: NotForUploadStatusDao
+    lateinit var notForUploadStatusRepository: NotForUploadStatusRepository
 
     /**
      * FileUtilsWrapper class to get imageSHA1 from uri
@@ -355,7 +354,7 @@ class CustomSelectorActivity :
                         fileUtilsWrapper,
                         contentResolver,
                     )
-                val exists = notForUploadStatusDao.find(imageSHA1)
+                val exists = notForUploadStatusRepository.find(imageSHA1)
                 if (exists < 1) {
                     allImagesAlreadyNotForUpload = false
                 }
@@ -371,7 +370,7 @@ class CustomSelectorActivity :
                             fileUtilsWrapper,
                             contentResolver,
                         )
-                    notForUploadStatusDao.insert(NotForUploadStatus(imageSHA1))
+                    notForUploadStatusRepository.insert(imageSHA1)
                 }
                 withContext(Dispatchers.Main) {
                     images.forEach { image ->
@@ -388,7 +387,7 @@ class CustomSelectorActivity :
                             fileUtilsWrapper,
                             contentResolver,
                         )
-                    notForUploadStatusDao.deleteNotForUploadWithImageSHA1(imageSHA1)
+                    notForUploadStatusRepository.delete(imageSHA1)
                 }
 
                 withContext(Dispatchers.Main) {

@@ -21,8 +21,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
 import com.facebook.drawee.interfaces.DraweeController
 import com.facebook.imagepipeline.image.ImageInfo
 import fr.free.nrw.commons.R
-import fr.free.nrw.commons.customselector.database.NotForUploadStatus
-import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusRepository
 import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.helper.CustomSelectorConstants
 import fr.free.nrw.commons.customselector.helper.CustomSelectorConstants.SHOULD_REFRESH
@@ -111,7 +110,7 @@ class ZoomableActivity : BaseActivity() {
      * NotForUploadStatus Dao class for database operations
      */
     @Inject
-    lateinit var notForUploadStatusDao: NotForUploadStatusDao
+    lateinit var notForUploadStatusRepository: NotForUploadStatusRepository
 
     /**
      * UploadedStatus Repo class for database operations
@@ -354,7 +353,7 @@ class ZoomableActivity : BaseActivity() {
                     fileUtilsWrapper,
                     contentResolver,
                 )
-            var isNonActionable = notForUploadStatusDao.find(imageSHA1)
+            var isNonActionable = notForUploadStatusRepository.find(imageSHA1)
             if (isNonActionable > 0) {
                 Toast
                     .makeText(
@@ -502,7 +501,7 @@ class ZoomableActivity : BaseActivity() {
                     fileUtilsWrapper,
                     contentResolver,
                 )
-            var isNonActionable = notForUploadStatusDao.find(imageSHA1)
+            var isNonActionable = notForUploadStatusRepository.find(imageSHA1)
             if (isNonActionable <= 0) {
                 isNonActionable = uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
                 if (isNonActionable <= 0) {
@@ -551,7 +550,7 @@ class ZoomableActivity : BaseActivity() {
                     fileUtilsWrapper,
                     contentResolver,
                 )
-            var isNonActionable = notForUploadStatusDao.find(imageSHA1)
+            var isNonActionable = notForUploadStatusRepository.find(imageSHA1)
             if (isNonActionable <= 0) {
                 isNonActionable = uploadedStatusRepository.findByImageSHA1(imageSHA1, true)
                 if (isNonActionable <= 0) {
@@ -688,11 +687,7 @@ class ZoomableActivity : BaseActivity() {
                 fileUtilsWrapper,
                 contentResolver,
             )
-        notForUploadStatusDao.insert(
-            NotForUploadStatus(
-                imageSHA1,
-            ),
-        )
+        notForUploadStatusRepository.insert(imageSHA1)
     }
 
     /**

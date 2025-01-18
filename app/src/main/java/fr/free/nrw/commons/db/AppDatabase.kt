@@ -15,7 +15,7 @@ import fr.free.nrw.commons.category.db.CategoryDao
 import fr.free.nrw.commons.category.db.CategoryEntity
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
-import fr.free.nrw.commons.customselector.database.NotForUploadStatus
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusEntity
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.database.UploadedStatusEntity
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
@@ -42,7 +42,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
         CategoryEntity::class,
         Contribution::class,
         Depicts::class,
-        NotForUploadStatus::class,
+        NotForUploadStatusEntity::class,
         Place::class,
         RecentLanguagesEntity::class,
         RecentSearchesEntity::class,

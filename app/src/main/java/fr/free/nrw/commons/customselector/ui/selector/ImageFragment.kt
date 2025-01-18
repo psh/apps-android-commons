@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
-import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusRepository
 import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.helper.ImageHelper
 import fr.free.nrw.commons.customselector.helper.ImageHelper.CUSTOM_SELECTOR_PREFERENCE_KEY
@@ -112,7 +112,7 @@ class ImageFragment :
      * NotForUploadStatus Dao class for database operations
      */
     @Inject
-    lateinit var notForUploadStatusDao: NotForUploadStatusDao
+    lateinit var notForUploadStatusRepository: NotForUploadStatusRepository
 
     /**
      * UploadedStatus Repo class for database operations

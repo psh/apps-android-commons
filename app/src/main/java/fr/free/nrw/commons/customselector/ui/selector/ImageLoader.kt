@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import fr.free.nrw.commons.contributions.Contribution
-import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusRepository
 import fr.free.nrw.commons.customselector.model.UploadedStatus
 import fr.free.nrw.commons.customselector.database.UploadedStatusRepository
 import fr.free.nrw.commons.customselector.helper.ImageHelper
@@ -48,7 +48,7 @@ constructor(
     /**
      * NotForUploadDao for database operations
      */
-    var notForUploadStatusDao: NotForUploadStatusDao,
+    var notForUploadStatusRepository: NotForUploadStatusRepository,
     /**
      * Context for coroutine.
      */
@@ -126,7 +126,7 @@ constructor(
                 return@launch
             }
 
-            val existsInNotForUploadTable = notForUploadStatusDao.find(imageSHA1)
+            val existsInNotForUploadTable = notForUploadStatusRepository.find(imageSHA1)
 
             if (result in arrayOf(Result.NOTFOUND, Result.INVALID) && sha1.isNotEmpty()) {
                 when {
@@ -277,7 +277,7 @@ constructor(
                             context.contentResolver,
                         )
                 }
-            next = notForUploadStatusDao.find(imageSHA1)
+            next = notForUploadStatusRepository.find(imageSHA1)
 
             // After checking the image in the not for upload table, if the image is present then
             // skips the image and moves to next image for checking
