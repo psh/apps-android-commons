@@ -14,6 +14,7 @@ import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.databinding.FragmentSearchHistoryBinding;
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment;
 import fr.free.nrw.commons.explore.SearchActivity;
+import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesRepository;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
@@ -25,7 +26,7 @@ import javax.inject.Inject;
 public class RecentSearchesFragment extends CommonsDaggerSupportFragment {
 
     @Inject
-    RecentSearchesDao recentSearchesDao;
+    RecentSearchesRepository searchesRepository;
     List<String> recentSearches;
     ArrayAdapter adapter;
 
@@ -36,7 +37,7 @@ public class RecentSearchesFragment extends CommonsDaggerSupportFragment {
         Bundle savedInstanceState) {
         binding = FragmentSearchHistoryBinding.inflate(inflater, container, false);
 
-        recentSearches = recentSearchesDao.recentSearches(10);
+        recentSearches = searchesRepository.recentSearches(10);
 
         if (recentSearches.isEmpty()) {
             binding.recentSearchesDeleteButton.setVisibility(View.GONE);
@@ -74,13 +75,13 @@ public class RecentSearchesFragment extends CommonsDaggerSupportFragment {
 
     private void setDeleteRecentPositiveButton(@NonNull final Context context,
         final DialogInterface dialog) {
-        recentSearchesDao.deleteAll();
+        searchesRepository.deleteAll();
         if (binding != null) {
             binding.recentSearchesDeleteButton.setVisibility(View.GONE);
             binding.recentSearchesTextView.setText(R.string.no_recent_searches);
             Toast.makeText(getContext(), getString(R.string.search_history_deleted),
                 Toast.LENGTH_SHORT).show();
-            recentSearches = recentSearchesDao.recentSearches(10);
+            recentSearches = searchesRepository.recentSearches(10);
             adapter = new ArrayAdapter<>(context, R.layout.item_recent_searches,
                 recentSearches);
             binding.recentSearchesList.setAdapter(adapter);
@@ -102,8 +103,8 @@ public class RecentSearchesFragment extends CommonsDaggerSupportFragment {
 
     private void setDeletePositiveButton(@NonNull final Context context,
         final DialogInterface dialog, final int position) {
-        recentSearchesDao.delete(recentSearchesDao.find(recentSearches.get(position)));
-        recentSearches = recentSearchesDao.recentSearches(10);
+        searchesRepository.delete(searchesRepository.find(recentSearches.get(position)));
+        recentSearches = searchesRepository.recentSearches(10);
         adapter = new ArrayAdapter<>(context, R.layout.item_recent_searches,
             recentSearches);
         if (binding != null){
@@ -127,7 +128,7 @@ public class RecentSearchesFragment extends CommonsDaggerSupportFragment {
      * This method is called when search query is null to update Recent Searches
      */
     public void updateRecentSearches() {
-        recentSearches = recentSearchesDao.recentSearches(10);
+        recentSearches = searchesRepository.recentSearches(10);
         adapter.notifyDataSetChanged();
 
         if (!recentSearches.isEmpty()) {

@@ -8,6 +8,7 @@ import fr.free.nrw.commons.wikidata.mwapi.MwQueryResponse
 import fr.free.nrw.commons.wikidata.mwapi.MwQueryResult
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -123,7 +124,7 @@ class ReviewHelperTest {
     }
 
     @Test
-    fun testReviewStatus() {
+    fun testReviewStatus() = runBlocking {
         val reviewDao = mock<ReviewDao>()
         whenever(reviewDao.isReviewedAlready("Test.jpg")).thenReturn(true)
 

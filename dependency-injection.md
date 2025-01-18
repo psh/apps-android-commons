@@ -14,7 +14,6 @@ The top level `CommonsApplicationComponent` pulls together configuration for inj
 
 - if you need to add a new Activity, look at `ActivityBuilderModule` and copy how injection is configured.  The `BaseActivity` class will take care of the rest.
 - if you are adding a new Fragment, look at `FragmentBuilderModule`
-- if you are adding a new ContentProvider, look at `ContentProviderBuilderModule`
 - if you are adding a new Service, look at `ServiceBuilderModule`
 - other dependencies are configured in `CommonsApplicationModule`
 

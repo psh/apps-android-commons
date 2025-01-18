@@ -5,19 +5,19 @@ import androidx.room.Query
 import androidx.room.Upsert
 
 @Dao
-interface BookmarkItemsDaoTNG {
+interface BookmarkItemsDao {
     @Query("select * from bookmarksItems")
-    fun allBookmarksItems(): List<BookmarkItemsEntity>
+    suspend fun allBookmarksItems(): List<BookmarkItemsEntity>
 
     @Upsert
-    fun save(entity: BookmarkItemsEntity)
+    suspend fun save(entity: BookmarkItemsEntity)
 
     @Query("delete from bookmarksItems")
-    fun deleteAll()
+    suspend fun deleteAll()
 
     @Query("delete from bookmarksItems where item_id=:id")
-    fun delete(id: String)
+    suspend fun delete(id: String)
 
     @Query("select * from bookmarksItems where item_id=:id")
-    fun find(id: String): BookmarkItemsEntity?
+    suspend fun find(id: String): BookmarkItemsEntity?
 }

@@ -172,6 +172,8 @@ dependencies {
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation("androidx.work:work-runtime:$work_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.9.0")
+
     testImplementation "androidx.work:work-testing:$work_version"
 
     //Glide
@@ -320,14 +322,6 @@ android {
             buildConfigField "String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\""
             buildConfigField "String", "FILE_USAGES_BASE_URL", "\"https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2\""
             buildConfigField "String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons\""
-            buildConfigField "String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.contributions.contentprovider\""
-            buildConfigField "String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.modifications.contentprovider\""
-            buildConfigField "String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.categories.contentprovider\""
-            buildConfigField "String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.explore.recentsearches.contentprovider\""
-            buildConfigField "String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.recentlanguages.contentprovider\""
-            buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.contentprovider\""
-            buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.locations.contentprovider\""
-            buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.bookmarks.items.contentprovider\""
             buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
             buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
             buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""
@@ -356,14 +350,6 @@ android {
             buildConfigField "String", "PRIVACY_POLICY_URL", "\"https://github.com/commons-app/commons-app-documentation/blob/master/android/Privacy-policy.md\""
             buildConfigField "String", "FILE_USAGES_BASE_URL", "\"https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2\""
             buildConfigField "String", "ACCOUNT_TYPE", "\"fr.free.nrw.commons.beta\""
-            buildConfigField "String", "CONTRIBUTION_AUTHORITY", "\"fr.free.nrw.commons.beta.contributions.contentprovider\""
-            buildConfigField "String", "MODIFICATION_AUTHORITY", "\"fr.free.nrw.commons.beta.modifications.contentprovider\""
-            buildConfigField "String", "CATEGORY_AUTHORITY", "\"fr.free.nrw.commons.beta.categories.contentprovider\""
-            buildConfigField "String", "RECENT_SEARCH_AUTHORITY", "\"fr.free.nrw.commons.beta.explore.recentsearches.contentprovider\""
-            buildConfigField "String", "RECENT_LANGUAGE_AUTHORITY", "\"fr.free.nrw.commons.beta.recentlanguages.contentprovider\""
-            buildConfigField "String", "BOOKMARK_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.contentprovider\""
-            buildConfigField "String", "BOOKMARK_LOCATIONS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.locations.contentprovider\""
-            buildConfigField "String", "BOOKMARK_ITEMS_AUTHORITY", "\"fr.free.nrw.commons.beta.bookmarks.items.contentprovider\""
             buildConfigField "String", "COMMIT_SHA", "\"" + getBuildVersion().toString() + "\""
             buildConfigField "String", "TEST_USERNAME", "\"" + getTestUserName() + "\""
             buildConfigField "String", "TEST_PASSWORD", "\"" + getTestPassword() + "\""

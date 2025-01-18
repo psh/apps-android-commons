@@ -1,7 +1,6 @@
 package fr.free.nrw.commons.di
 
 import android.app.Activity
-import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
@@ -12,13 +11,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
-import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
-import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDaoTNG
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository
-import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDaoTNG
+import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDao
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesDao
 import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesRepository
@@ -30,6 +28,8 @@ import fr.free.nrw.commons.customselector.database.UploadedStatusDao
 import fr.free.nrw.commons.customselector.ui.selector.ImageFileLoader
 import fr.free.nrw.commons.data.DBOpenHelper
 import fr.free.nrw.commons.db.AppDatabase
+import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesDao
+import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesRepository
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.nearby.PlaceDao
@@ -52,8 +52,7 @@ import javax.inject.Singleton
 
 /**
  * The Dependency Provider class for Commons Android.
- * Provides all sorts of ContentProviderClients used by the app
- * along with the Liscences, AccountUtility, UploadController, Logged User,
+ * Provides all sorts of Licences, AccountUtility, UploadController, Logged User,
  * Location manager etc
  */
 @Module
@@ -90,51 +89,6 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         context.getString(R.string.license_name_cc_by_four) to Prefs.Licenses.CC_BY_4,
         context.getString(R.string.license_name_cc_by_sa_four) to Prefs.Licenses.CC_BY_SA_4
     )
-
-    /**
-     * Provides an instance of CategoryContentProviderClient i.e. the categories
-     * that are there in local storage
-     */
-    @Provides
-    @Named("recentsearch")
-    fun provideRecentSearchContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_SEARCH_AUTHORITY)
-
-    @Provides
-    @Named("contribution")
-    open fun provideContributionContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.CONTRIBUTION_AUTHORITY)
-
-    @Provides
-    @Named("modification")
-    open fun provideModificationContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.MODIFICATION_AUTHORITY)
-
-    @Provides
-    @Named("bookmarks")
-    fun provideBookmarkContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_AUTHORITY)
-
-    @Provides
-    @Named("bookmarksLocation")
-    fun provideBookmarkLocationContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_LOCATIONS_AUTHORITY)
-
-    @Provides
-    @Named("bookmarksItem")
-    fun provideBookmarkItemContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_ITEMS_AUTHORITY)
-
-    /**
-     * This method is used to provide instance of RecentLanguagesContentProvider
-     * which provides content of recent used languages from database
-     * @param context Context
-     * @return returns RecentLanguagesContentProvider
-     */
-    @Provides
-    @Named("recent_languages")
-    fun provideRecentLanguagesContentProviderClient(context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_LANGUAGE_AUTHORITY)
 
     /**
      * Provides a Json store instance(JsonKvStore) which keeps
@@ -217,16 +171,24 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         BookmarkPicturesRepository(dao)
 
     @Provides
-    fun providesBookmarkItemsRepository(dao: BookmarkItemsDaoTNG): BookmarkItemsRepository =
+    fun providesBookmarkItemsRepository(dao: BookmarkItemsDao): BookmarkItemsRepository =
         BookmarkItemsRepository(dao)
 
     @Provides
-    fun providesBookmarkLocationsRepository(dao: BookmarkLocationsDaoTNG): BookmarkLocationsRepository =
+    fun providesBookmarkLocationsRepository(dao: BookmarkLocationsDao): BookmarkLocationsRepository =
         BookmarkLocationsRepository(dao)
+
+    @Provides
+    fun providesRecentSearchesRepository(dao: RecentSearchesDao): RecentSearchesRepository =
+        RecentSearchesRepository(dao)
 
     // Room Dao Classes
     @Provides
-    fun providesBookmarkItemsDao(appDatabase: AppDatabase): BookmarkItemsDaoTNG =
+    fun providesRecentSearchessDao(appDatabase: AppDatabase): RecentSearchesDao =
+        appDatabase.recentSearchesDao()
+
+    @Provides
+    fun providesBookmarkItemsDao(appDatabase: AppDatabase): BookmarkItemsDao =
         appDatabase.bookmarkItemsDao()
 
     @Provides
@@ -238,7 +200,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         appDatabase.recentLanguagesDao()
 
     @Provides
-    fun providesBookmarkLocationsDao(appDatabase: AppDatabase): BookmarkLocationsDaoTNG =
+    fun providesBookmarkLocationsDao(appDatabase: AppDatabase): BookmarkLocationsDao =
         appDatabase.bookmarkLocationsDao()
 
     @Provides

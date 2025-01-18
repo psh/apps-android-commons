@@ -9,6 +9,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.rx2.rxCompletable
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -77,7 +79,9 @@ class ReviewHelper
          * @param image
          * @return
          */
-        fun getReviewStatus(image: String?): Boolean = image?.let { dao?.isReviewedAlready(it) } ?: false
+        fun getReviewStatus(image: String?): Boolean = image?.let {
+            runBlocking { dao?.isReviewedAlready(it) }
+        } ?: false
 
         /**
          * Gets the first revision of the file from filename
@@ -131,8 +135,7 @@ class ReviewHelper
          * @param imageId
          */
         fun addViewedImagesToDB(imageId: String?) {
-            Completable
-                .fromAction { imageId?.let { ReviewEntity(it) }?.let { dao!!.insert(it) } }
+            rxCompletable { imageId?.let { ReviewEntity(it) }?.let { dao!!.insert(it) } }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

@@ -17,7 +17,7 @@ interface ReviewDao {
      * @param reviewEntity
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(reviewEntity: ReviewEntity)
+    suspend fun insert(reviewEntity: ReviewEntity)
 
     /**
      * Checks if the image has already been reviewed/skipped by the user
@@ -27,5 +27,5 @@ interface ReviewDao {
      * @return
      */
     @Query("SELECT EXISTS (SELECT * from `reviewed-images` where imageId = (:imageId))")
-    fun isReviewedAlready(imageId: String): Boolean
+    suspend fun isReviewedAlready(imageId: String): Boolean
 }

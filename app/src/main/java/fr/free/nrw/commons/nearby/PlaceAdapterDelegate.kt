@@ -16,6 +16,7 @@ import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.databinding.ItemPlaceBinding
+import kotlinx.coroutines.runBlocking
 
 fun placeAdapterDelegate(
     bookmarkLocationDao: BookmarkLocationsRepository,
@@ -93,13 +94,15 @@ fun placeAdapterDelegate(
                     GONE
                 }
 
-            bookmarkButtonImage.setImageResource(
-                if (bookmarkLocationDao.findBookmarkLocation(item)) {
-                    R.drawable.ic_round_star_filled_24px
-                } else {
-                    R.drawable.ic_round_star_border_24px
-                },
-            )
+            runBlocking {
+                bookmarkButtonImage.setImageResource(
+                    if (bookmarkLocationDao.findBookmarkLocation(item)) {
+                        R.drawable.ic_round_star_filled_24px
+                    } else {
+                        R.drawable.ic_round_star_border_24px
+                    },
+                )
+            }
         }
         nearbyButtonLayout.directionsButton.setOnLongClickListener { onDirectionsLongPressed() }
     }

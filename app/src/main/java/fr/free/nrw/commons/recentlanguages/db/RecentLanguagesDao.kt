@@ -7,14 +7,14 @@ import androidx.room.Upsert
 @Dao
 interface RecentLanguagesDao {
     @Upsert
-    fun save(language: RecentLanguagesEntity)
+    suspend fun save(language: RecentLanguagesEntity)
 
     @Query("select * from recent_languages where language_code=:code")
-    fun find(code: String): RecentLanguagesEntity?
+    suspend fun find(code: String): RecentLanguagesEntity?
 
     @Query("select * from recent_languages")
-    fun recent(): List<RecentLanguagesEntity>
+    suspend fun recent(): List<RecentLanguagesEntity>
 
     @Query("delete from recent_languages where language_code=:code")
-    fun delete(code: String)
+    suspend fun delete(code: String)
 }

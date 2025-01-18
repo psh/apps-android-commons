@@ -5,16 +5,11 @@ import android.accounts.Account
 import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.accounts.NetworkErrorException
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import fr.free.nrw.commons.BuildConfig
-
-private val SYNC_AUTHORITIES = arrayOf(
-    BuildConfig.CONTRIBUTION_AUTHORITY, BuildConfig.MODIFICATION_AUTHORITY
-)
 
 /**
  * Handles WikiMedia commons account Authentication
@@ -89,20 +84,6 @@ class WikiAccountAuthenticator(
         response: AccountAuthenticatorResponse?,
         account: Account?
     ): Bundle {
-        val result = super.getAccountRemovalAllowed(response, account)
-
-        if (result.containsKey(AccountManager.KEY_BOOLEAN_RESULT)
-            && !result.containsKey(AccountManager.KEY_INTENT)
-        ) {
-            val allowed = result.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)
-
-            if (allowed) {
-                for (auth in SYNC_AUTHORITIES) {
-                    ContentResolver.cancelSync(account, auth)
-                }
-            }
-        }
-
-        return result
+        return super.getAccountRemovalAllowed(response, account)
     }
 }

@@ -8,6 +8,8 @@ import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import fr.free.nrw.commons.utils.StringSortingUtils
 import io.reactivex.Observable
 import io.reactivex.functions.Function4
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.rx2.rxObservable
 import timber.log.Timber
 import java.util.Calendar
 import java.util.Date
@@ -75,20 +77,22 @@ class CategoriesModel
          * @param item
          */
         fun updateCategoryCount(item: CategoryItem) {
-            var category = categoryRepository.find(item.name)
+            runBlocking {
+                var category = categoryRepository.find(item.name)
 
-            // Newly used category...
-            if (category == null) {
-                category = Category(
-                    null, item.name,
-                    item.description,
-                    item.thumbnail,
-                    Date(),
-                    0
-                )
+                // Newly used category...
+                if (category == null) {
+                    category = Category(
+                        null, item.name,
+                        item.description,
+                        item.thumbnail,
+                        Date(),
+                        0
+                    )
+                }
+                category.incTimesUsed()
+                categoryRepository.save(category)
             }
-            category.incTimesUsed()
-            categoryRepository.save(category)
         }
 
         /**
@@ -115,7 +119,7 @@ class CategoriesModel
                     categoriesFromDepiction(selectedDepictions),
                     gpsCategoryModel.categoriesFromLocation,
                     titleCategories(imageTitleList),
-                    Observable.just(categoryRepository.recentCategories(SEARCH_CATS_LIMIT)),
+                    rxObservable { categoryRepository.recentCategories(SEARCH_CATS_LIMIT) },
                     Function4(::combine),
                 )
             } else {

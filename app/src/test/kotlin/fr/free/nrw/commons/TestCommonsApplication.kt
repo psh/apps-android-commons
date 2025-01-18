@@ -1,7 +1,6 @@
 package fr.free.nrw.commons
 
 import android.app.Application
-import android.content.ContentProviderClient
 import android.content.Context
 import androidx.collection.LruCache
 import com.google.gson.Gson
@@ -44,12 +43,6 @@ class MockCommonsApplicationModule(appContext: Context) : CommonsApplicationModu
     val mockDbOpenHelper: DBOpenHelper = mock()
     val lruCache: LruCache<String, String> = mock()
     val gson: Gson = Gson()
-    val contributionClient: ContentProviderClient = mock()
-    val modificationClient: ContentProviderClient = mock()
-
-    override fun provideContributionContentProviderClient(context: Context): ContentProviderClient = contributionClient
-
-    override fun provideModificationContentProviderClient(context: Context): ContentProviderClient = modificationClient
 
     override fun providesDefaultKvStore(context: Context, gson: Gson): JsonKvStore = defaultSharedPreferences
 

@@ -36,7 +36,6 @@ import javax.inject.Singleton
         ActivityBuilderModule::class,
         FragmentBuilderModule::class,
         ServiceBuilderModule::class,
-        ContentProviderBuilderModule::class,
         UploadModule::class,
         ContributionsModule::class,
         SearchModule::class,

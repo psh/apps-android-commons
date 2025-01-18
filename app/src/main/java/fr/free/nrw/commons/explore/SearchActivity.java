@@ -18,8 +18,8 @@ import fr.free.nrw.commons.explore.categories.search.SearchCategoryFragment;
 import fr.free.nrw.commons.explore.depictions.search.SearchDepictionsFragment;
 import fr.free.nrw.commons.explore.media.SearchMediaFragment;
 import fr.free.nrw.commons.explore.models.RecentSearch;
-import fr.free.nrw.commons.explore.recentsearches.RecentSearchesDao;
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesFragment;
+import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesRepository;
 import fr.free.nrw.commons.media.MediaDetailPagerFragment;
 import fr.free.nrw.commons.theme.BaseActivity;
 import fr.free.nrw.commons.utils.FragmentUtils;
@@ -41,7 +41,7 @@ public class SearchActivity extends BaseActivity
         implements MediaDetailPagerFragment.MediaDetailProvider, CategoryImagesCallback {
 
     @Inject
-    RecentSearchesDao recentSearchesDao;
+    RecentSearchesRepository searchesRepository;
 
     private SearchMediaFragment searchMediaFragment;
     private SearchCategoryFragment searchCategoryFragment;
@@ -143,13 +143,13 @@ public class SearchActivity extends BaseActivity
     }
 
     private void saveRecentSearch(@NonNull final String query) {
-        final RecentSearch recentSearch = recentSearchesDao.find(query);
+        final RecentSearch recentSearch = searchesRepository.find(query);
         // Newly searched query...
         if (recentSearch == null) {
-            recentSearchesDao.save(new RecentSearch(null, query, new Date()));
+            searchesRepository.save(new RecentSearch(query, new Date()));
         } else {
             recentSearch.setLastSearched(new Date());
-            recentSearchesDao.save(recentSearch);
+            searchesRepository.save(recentSearch);
         }
     }
 

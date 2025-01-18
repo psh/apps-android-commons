@@ -4,14 +4,12 @@ import android.app.Activity
 import android.app.Fragment
 import android.app.Service
 import android.content.BroadcastReceiver
-import android.content.ContentProvider
 import android.content.Context
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.HasBroadcastReceiverInjector
-import dagger.android.HasContentProviderInjector
 import dagger.android.HasFragmentInjector
 import dagger.android.HasServiceInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -20,11 +18,11 @@ import androidx.fragment.app.Fragment as AndroidXFragmen
 
 /**
  * Provides injectors for all sorts of components
- * Ex: Activities, Fragments, Services, ContentProviders
+ * Ex: Activities, Fragments, Services
  */
 class ApplicationlessInjection(applicationContext: Context) : HasAndroidInjector,
     HasActivityInjector, HasFragmentInjector, HasSupportFragmentInjector, HasServiceInjector,
-    HasBroadcastReceiverInjector, HasContentProviderInjector {
+    HasBroadcastReceiverInjector {
     @Inject @JvmField
     var androidInjector: DispatchingAndroidInjector<Any>? = null
 
@@ -42,9 +40,6 @@ class ApplicationlessInjection(applicationContext: Context) : HasAndroidInjector
 
     @Inject @JvmField
     var serviceInjector: DispatchingAndroidInjector<Service>? = null
-
-    @Inject @JvmField
-    var contentProviderInjector: DispatchingAndroidInjector<ContentProvider>? = null
 
     val instance: ApplicationlessInjection get() = _instance!!
 
@@ -75,9 +70,6 @@ class ApplicationlessInjection(applicationContext: Context) : HasAndroidInjector
 
     override fun serviceInjector(): DispatchingAndroidInjector<Service>? =
         serviceInjector
-
-    override fun contentProviderInjector(): AndroidInjector<ContentProvider>? =
-        contentProviderInjector
 
     companion object {
         private var _instance: ApplicationlessInjection? = null

@@ -52,6 +52,7 @@ import fr.free.nrw.commons.utils.DialogUtil
 import fr.free.nrw.commons.utils.PermissionUtils
 import fr.free.nrw.commons.utils.StringUtil
 import fr.free.nrw.commons.utils.ViewUtil
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
@@ -332,7 +333,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
      * to remember later and recall MainActivity to reflect language changes
      * @param keyListPreference
      */
-    private fun prepareAppLanguages(keyListPreference: String) {
+    private fun prepareAppLanguages(keyListPreference: String) = runBlocking {
         // Gets current language code from shared preferences
         val languageCode = getCurrentLanguageCode(keyListPreference)
         val recentLanguages = languagesRepository.getRecentLanguages()
@@ -392,7 +393,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             onRecentLanguageClicked(keyListPreference, dialog, adapterView, position)
         }
 
-        listView.setOnItemClickListener { adapterView, _, position, _ ->
+        listView.setOnItemClickListener { adapterView, _, position, _ -> runBlocking {
             val lCode = (adapterView.adapter as LanguagesAdapter).getLanguageCode(position)
             val languageName = (adapterView.adapter as LanguagesAdapter).getLanguageName(position)
             val isExists = languagesRepository.findRecentLanguage(lCode)
@@ -414,7 +415,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 descriptionLanguageListPreference?.summary = defLocale.getDisplayLanguage(defLocale)
             }
             dialog.dismiss()
-        }
+        }}
 
         dialog.setOnDismissListener { languagesAdapter.filter.filter("") }
     }
@@ -428,7 +429,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun setUpRecentLanguagesSection(
         recentLanguages: List<Language>,
         selectedLanguages: HashMap<Int, String>
-    ) {
+    ) = runBlocking {
         if (recentLanguages.isEmpty()) {
             languageHistoryListView?.visibility = View.GONE
             recentLanguagesTextView?.visibility = View.GONE
@@ -459,7 +460,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         dialog: Dialog,
         adapterView: AdapterView<*>,
         position: Int
-    ) {
+    ) = runBlocking {
         val recentLanguageCode = (adapterView.adapter as RecentLanguagesAdapter).getLanguageCode(position)
         val recentLanguageName = (adapterView.adapter as RecentLanguagesAdapter).getLanguageName(position)
         val isExists = languagesRepository.findRecentLanguage(recentLanguageCode)

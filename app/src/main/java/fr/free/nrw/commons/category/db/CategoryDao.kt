@@ -7,11 +7,11 @@ import androidx.room.Upsert
 @Dao
 interface CategoryDao {
     @Upsert
-    fun save(category: CategoryEntity)
+    suspend fun save(category: CategoryEntity)
 
     @Query("select * from categories where name=:name")
-    fun find(name: String): CategoryEntity?
+    suspend fun find(name: String): CategoryEntity?
 
     @Query("select * from categories order by last_used desc limit :limit")
-    fun recent(limit: Int): List<CategoryEntity>
+    suspend fun recent(limit: Int): List<CategoryEntity>
 }

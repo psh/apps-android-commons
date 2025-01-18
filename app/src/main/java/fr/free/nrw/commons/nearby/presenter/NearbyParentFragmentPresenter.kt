@@ -26,6 +26,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.lang.reflect.InvocationHandler
@@ -135,15 +136,17 @@ class NearbyParentFragmentPresenter
      */
     override fun toggleBookmarkedStatus(place: Place?) {
         if (place == null) return
-        val nowBookmarked = bookmarkLocationsRepository.updateBookmarkLocation(place)
-        bookmarkChangedPlaces.add(place)
-        val placeIndex =
-            NearbyController.markerLabelList.indexOfFirst { it.place.location == place.location }
-        NearbyController.markerLabelList[placeIndex] = MarkerPlaceGroup(
-            true,
-            NearbyController.markerLabelList[placeIndex].place
-        )
-        nearbyParentFragmentView.setFilterState()
+        runBlocking {
+            val nowBookmarked = bookmarkLocationsRepository.updateBookmarkLocation(place)
+            bookmarkChangedPlaces.add(place)
+            val placeIndex =
+                NearbyController.markerLabelList.indexOfFirst { it.place.location == place.location }
+            NearbyController.markerLabelList[placeIndex] = MarkerPlaceGroup(
+                true,
+                NearbyController.markerLabelList[placeIndex].place
+            )
+            nearbyParentFragmentView.setFilterState()
+        }
     }
 
     override fun attachView(view: NearbyParentFragmentContract.View) {
