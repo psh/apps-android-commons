@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.bookmarks.items;
 
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository;
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem;
 import java.util.List;
 import javax.inject.Inject;
@@ -12,7 +13,7 @@ import javax.inject.Singleton;
 public class BookmarkItemsController {
 
     @Inject
-    BookmarkItemsDao bookmarkItemsDao;
+    BookmarkItemsRepository bookmarkItemsRepository;
 
     @Inject
     public BookmarkItemsController() {}
@@ -22,6 +23,6 @@ public class BookmarkItemsController {
      * @return a list of DepictedItem objects.
      */
     public List<DepictedItem> loadFavoritesItems() {
-        return bookmarkItemsDao.getAllBookmarksItems();
+        return bookmarkItemsRepository.getAllBookmarksItems();
     }
 }

@@ -8,18 +8,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 import fr.free.nrw.commons.Media;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.Utils;
 import fr.free.nrw.commons.ViewPagerAdapter;
-import fr.free.nrw.commons.bookmarks.items.BookmarkItemsDao;
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository;
 import fr.free.nrw.commons.category.CategoryImagesCallback;
 import fr.free.nrw.commons.databinding.ActivityWikidataItemDetailsBinding;
 import fr.free.nrw.commons.explore.depictions.child.ChildDepictionsFragment;
@@ -51,7 +47,8 @@ public class WikidataItemDetailsActivity extends BaseActivity implements MediaDe
      * Ex: Rabbit
      */
 
-    @Inject BookmarkItemsDao bookmarkItemsDao;
+    @Inject
+    BookmarkItemsRepository bookmarkItemsRepository;
     private CompositeDisposable compositeDisposable;
     @Inject
     DepictModel depictModel;
@@ -259,8 +256,9 @@ public class WikidataItemDetailsActivity extends BaseActivity implements MediaDe
                     ).subscribeOn(Schedulers.io())
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe(depictedItems -> {
-                         final boolean bookmarkExists = bookmarkItemsDao.updateBookmarkItem(
-                             depictedItems.get(0));
+                         final boolean bookmarkExists = bookmarkItemsRepository.findBookmarkItem(
+                             depictedItems.get(0).getId());
+                         bookmarkItemsRepository.updateBookmarkItem(depictedItems.get(0));
                          final Snackbar snackbar
                              = bookmarkExists ? Snackbar.make(findViewById(R.id.toolbar_layout),
                              R.string.add_bookmark, Snackbar.LENGTH_LONG)
@@ -273,8 +271,9 @@ public class WikidataItemDetailsActivity extends BaseActivity implements MediaDe
                      }));
 
                 } else {
-                    final boolean bookmarkExists
-                        = bookmarkItemsDao.updateBookmarkItem(wikidataItem);
+                    final boolean bookmarkExists = bookmarkItemsRepository.findBookmarkItem(
+                        wikidataItem.getId());
+                    bookmarkItemsRepository.updateBookmarkItem(wikidataItem);
                     final Snackbar snackbar
                         = bookmarkExists ? Snackbar.make(findViewById(R.id.toolbar_layout),
                         R.string.add_bookmark, Snackbar.LENGTH_LONG)
@@ -297,9 +296,9 @@ public class WikidataItemDetailsActivity extends BaseActivity implements MediaDe
         final boolean isBookmarked;
         if(getIntent().getStringExtra("fragment") != null) {
             isBookmarked
-                = bookmarkItemsDao.findBookmarkItem(getIntent().getStringExtra("entityId"));
+                = bookmarkItemsRepository.findBookmarkItem(getIntent().getStringExtra("entityId"));
         } else {
-            isBookmarked = bookmarkItemsDao.findBookmarkItem(wikidataItem.getId());
+            isBookmarked = bookmarkItemsRepository.findBookmarkItem(wikidataItem.getId());
         }
         final int icon
             = isBookmarked ? R.drawable.menu_ic_round_star_filled_24px

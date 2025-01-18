@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
 import fr.free.nrw.commons.bookmarks.category.BookmarksCategoryModal
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDaoTNG
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsEntity
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDaoTNG
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsEntity
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
@@ -34,6 +36,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
     entities = [
         BookmarkLocationsEntity::class,
         BookmarkPicturesEntity::class,
+        BookmarkItemsEntity::class,
         BookmarksCategoryModal::class,
         CategoryEntity::class,
         Contribution::class,
@@ -52,6 +55,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun bookmarkLocationsDao(): BookmarkLocationsDaoTNG
 
     abstract fun bookmarkPicturesDao(): BookmarkPicturesDao
+
+    abstract fun bookmarkItemsDao(): BookmarkItemsDaoTNG
 
     abstract fun categoryDao(): CategoryDao
 

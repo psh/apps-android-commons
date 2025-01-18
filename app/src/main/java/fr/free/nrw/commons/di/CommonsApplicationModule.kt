@@ -16,6 +16,8 @@ import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDaoTNG
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDaoTNG
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsRepository
 import fr.free.nrw.commons.bookmarks.pictures.db.BookmarkPicturesDao
@@ -215,10 +217,18 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         BookmarkPicturesRepository(dao)
 
     @Provides
+    fun providesBookmarkItemsRepository(dao: BookmarkItemsDaoTNG): BookmarkItemsRepository =
+        BookmarkItemsRepository(dao)
+
+    @Provides
     fun providesBookmarkLocationsRepository(dao: BookmarkLocationsDaoTNG): BookmarkLocationsRepository =
         BookmarkLocationsRepository(dao)
 
     // Room Dao Classes
+    @Provides
+    fun providesBookmarkItemsDao(appDatabase: AppDatabase): BookmarkItemsDaoTNG =
+        appDatabase.bookmarkItemsDao()
+
     @Provides
     fun providesCategoryDao(appDatabase: AppDatabase): CategoryDao =
         appDatabase.categoryDao()

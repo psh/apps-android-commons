@@ -1,6 +1,7 @@
 package fr.free.nrw.commons.bookmarks.items
 
 import com.nhaarman.mockitokotlin2.whenever
+import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository
 import fr.free.nrw.commons.category.CategoryItem
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import org.junit.Assert
@@ -13,7 +14,7 @@ import java.util.ArrayList
 
 class BookmarkItemsControllerTest {
     @Mock
-    var bookmarkDao: BookmarkItemsDao? = null
+    var itemsRepository: BookmarkItemsRepository? = null
 
     @InjectMocks
     lateinit var bookmarkItemsController: BookmarkItemsController
@@ -21,7 +22,7 @@ class BookmarkItemsControllerTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        whenever(bookmarkDao!!.allBookmarksItems)
+        whenever(itemsRepository!!.getAllBookmarksItems())
             .thenReturn(mockBookmarkList)
     }
 

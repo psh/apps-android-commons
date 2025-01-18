@@ -1,8 +1,6 @@
 package fr.free.nrw.commons.di
 
 import dagger.Module
-import dagger.android.ContributesAndroidInjector
-import fr.free.nrw.commons.bookmarks.items.BookmarkItemsContentProvider
 
 /**
  * This Class Represents the Module for dependency injection (using dagger)
@@ -12,6 +10,4 @@ import fr.free.nrw.commons.bookmarks.items.BookmarkItemsContentProvider
 @Module
 @Suppress("unused")
 abstract class ContentProviderBuilderModule {
-    @ContributesAndroidInjector
-    abstract fun bindBookmarkItemContentProvider(): BookmarkItemsContentProvider
 }

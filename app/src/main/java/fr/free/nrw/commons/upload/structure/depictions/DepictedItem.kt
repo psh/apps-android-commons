@@ -25,7 +25,6 @@ const val THUMB_IMAGE_SIZE = "70px"
  * Model class for Depicted Item in Upload and Explore
  */
 @Parcelize
-@Entity
 data class DepictedItem constructor(
     override val name: String,
     val description: String?,
