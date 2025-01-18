@@ -13,7 +13,8 @@ import dagger.Module
 import dagger.Provides
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
-import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
+import fr.free.nrw.commons.bookmarks.category.db.BookmarkCategoriesDao
+import fr.free.nrw.commons.bookmarks.category.db.BookmarksCategoryRepository
 import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsRepository
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDao
@@ -160,6 +161,10 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
     ).addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().build()
 
     // Repository Classes
+    @Provides
+    fun providesBookmarksCategoryRepository(dao: BookmarkCategoriesDao) : BookmarksCategoryRepository =
+        BookmarksCategoryRepository(dao)
+
     @Provides
     fun providesCategoryRepository(dao: CategoryDao) : CategoryRepository =
         CategoryRepository(dao)

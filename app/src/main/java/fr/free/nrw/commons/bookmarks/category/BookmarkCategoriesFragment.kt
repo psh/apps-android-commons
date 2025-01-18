@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.android.support.DaggerFragment
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.bookmarks.category.db.BookmarksCategoryRepository
 import fr.free.nrw.commons.category.CategoryDetailsActivity
 import javax.inject.Inject
 
@@ -45,7 +46,7 @@ import javax.inject.Inject
 class BookmarkCategoriesFragment : DaggerFragment() {
 
     @Inject
-    lateinit var bookmarkCategoriesDao: BookmarkCategoriesDao
+    lateinit var categoryRepository: BookmarksCategoryRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,7 +66,7 @@ class BookmarkCategoriesFragment : DaggerFragment() {
                         background = colorResource(R.color.main_background_light)
                     )
                 ) {
-                    val listOfBookmarks by bookmarkCategoriesDao.getAllCategories()
+                    val listOfBookmarks by categoryRepository.getAllCategories()
                         .collectAsStateWithLifecycle(initialValue = emptyList())
                     Surface(modifier = Modifier.fillMaxSize()) {
                         Box(contentAlignment = Alignment.Center) {

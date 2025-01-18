@@ -3,8 +3,8 @@ package fr.free.nrw.commons.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import fr.free.nrw.commons.bookmarks.category.BookmarkCategoriesDao
-import fr.free.nrw.commons.bookmarks.category.BookmarksCategoryModal
+import fr.free.nrw.commons.bookmarks.category.db.BookmarkCategoriesDao
+import fr.free.nrw.commons.bookmarks.category.db.BookmarksCategoryEntity
 import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsDao
 import fr.free.nrw.commons.bookmarks.items.db.BookmarkItemsEntity
 import fr.free.nrw.commons.bookmarks.locations.db.BookmarkLocationsDao
@@ -38,7 +38,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
         BookmarkItemsEntity::class,
         BookmarkLocationsEntity::class,
         BookmarkPicturesEntity::class,
-        BookmarksCategoryModal::class,
+        BookmarksCategoryEntity::class,
         CategoryEntity::class,
         Contribution::class,
         Depicts::class,

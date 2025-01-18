@@ -1,4 +1,4 @@
-package fr.free.nrw.commons.bookmarks.category
+package fr.free.nrw.commons.bookmarks.category.db
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,6 +10,6 @@ import androidx.room.PrimaryKey
  * @constructor Create empty Bookmarks category modal
  */
 @Entity(tableName = "bookmarks_categories")
-data class BookmarksCategoryModal(
+data class BookmarksCategoryEntity(
     @PrimaryKey val categoryName: String
 )

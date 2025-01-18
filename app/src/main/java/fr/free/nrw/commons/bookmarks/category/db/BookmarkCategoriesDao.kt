@@ -1,4 +1,4 @@
-package fr.free.nrw.commons.bookmarks.category
+package fr.free.nrw.commons.bookmarks.category.db
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -18,19 +18,19 @@ interface BookmarkCategoriesDao {
     /**
      * Insert or Delete category bookmark into DB
      *
-     * @param bookmarksCategoryModal
+     * @param bookmarksCategoryEntity
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(bookmarksCategoryModal: BookmarksCategoryModal)
+    suspend fun insert(bookmarksCategoryEntity: BookmarksCategoryEntity)
 
 
     /**
      * Delete category bookmark from DB
      *
-     * @param bookmarksCategoryModal
+     * @param bookmarksCategoryEntity
      */
     @Delete
-    suspend fun delete(bookmarksCategoryModal: BookmarksCategoryModal)
+    suspend fun delete(bookmarksCategoryEntity: BookmarksCategoryEntity)
 
     /**
      * Checks if given category exist in DB
@@ -47,6 +47,6 @@ interface BookmarkCategoriesDao {
      * @return
      */
     @Query("SELECT * FROM bookmarks_categories")
-    fun getAllCategories(): Flow<List<BookmarksCategoryModal>>
+    fun getAllCategories(): Flow<List<BookmarksCategoryEntity>>
 
 }
