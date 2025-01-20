@@ -1,23 +1,23 @@
 package fr.free.nrw.commons.nearby;
 
 import fr.free.nrw.commons.location.LatLng;
+import fr.free.nrw.commons.nearby.db.PlaceRepository;
 import io.reactivex.Completable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * The LocalDataSource class for Places
  */
 public class PlacesLocalDataSource {
 
-    private final PlaceDao placeDao;
+    private final PlaceRepository repository;
 
     @Inject
     public PlacesLocalDataSource(
-        final PlaceDao placeDao) {
-        this.placeDao = placeDao;
+        final PlaceRepository repository) {
+        this.repository = repository;
     }
 
     /**
@@ -27,7 +27,7 @@ public class PlacesLocalDataSource {
      * @return The Place object with the specified entity ID.
      */
     public Place fetchPlace(String entityID){
-        return placeDao.getPlace(entityID);
+        return repository.getPlace(entityID);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PlacesLocalDataSource {
 
         final List<Place> cachedPlaces = new ArrayList<>();
         for (final Constraint constraint : constraints) {
-            cachedPlaces.addAll(placeDao.fetchPlaces(
+            cachedPlaces.addAll(repository.fetchPlaces(
                 constraint.latBegin,
                 constraint.lngBegin,
                 constraint.latEnd,
@@ -112,10 +112,10 @@ public class PlacesLocalDataSource {
      * @return A Completable that completes once the save operation is done.
      */
     public Completable savePlace(Place place) {
-        return placeDao.save(place);
+        return repository.save(place);
     }
 
     public Completable clearCache() {
-        return placeDao.deleteAll();
+        return repository.deleteAll();
     }
 }

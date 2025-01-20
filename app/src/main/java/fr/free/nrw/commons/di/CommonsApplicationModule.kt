@@ -35,7 +35,8 @@ import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesDao
 import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesRepository
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
-import fr.free.nrw.commons.nearby.PlaceDao
+import fr.free.nrw.commons.nearby.db.PlaceDao
+import fr.free.nrw.commons.nearby.db.PlaceRepository
 import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesDao
 import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesRepository
 import fr.free.nrw.commons.review.ReviewDao
@@ -196,6 +197,10 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
     @Provides
     fun providesNotForUploadStatusRepository(dao: NotForUploadStatusDao): NotForUploadStatusRepository =
         NotForUploadStatusRepository(dao)
+
+    @Provides
+    fun providesPlaceRepository(dao: PlaceDao): PlaceRepository =
+        PlaceRepository(dao)
 
     // Room Dao Classes
     @Provides

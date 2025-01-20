@@ -22,7 +22,8 @@ import fr.free.nrw.commons.customselector.database.UploadedStatusDao
 import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesDao
 import fr.free.nrw.commons.explore.recentsearches.db.RecentSearchesEntity
 import fr.free.nrw.commons.nearby.Place
-import fr.free.nrw.commons.nearby.PlaceDao
+import fr.free.nrw.commons.nearby.db.PlaceDao
+import fr.free.nrw.commons.nearby.db.PlaceEntity
 import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesDao
 import fr.free.nrw.commons.recentlanguages.db.RecentLanguagesEntity
 import fr.free.nrw.commons.review.ReviewDao
@@ -43,7 +44,7 @@ import fr.free.nrw.commons.upload.depicts.DepictsDao
         Contribution::class,
         Depicts::class,
         NotForUploadStatusEntity::class,
-        Place::class,
+        PlaceEntity::class,
         RecentLanguagesEntity::class,
         RecentSearchesEntity::class,
         ReviewEntity::class,
