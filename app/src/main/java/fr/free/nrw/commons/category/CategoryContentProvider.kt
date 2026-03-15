@@ -5,9 +5,11 @@ import android.content.ContentValues
 import android.content.UriMatcher
 import android.content.UriMatcher.NO_MATCH
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.text.TextUtils
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import androidx.core.net.toUri
 import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.category.CategoryTable.ALL_FIELDS
@@ -24,38 +26,30 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
 
     @SuppressWarnings("ConstantConditions")
     override fun query(uri: Uri, projection: Array<String>?, selection: String?,
-                       selectionArgs: Array<String>?, sortOrder: String?): Cursor? {
-        val queryBuilder = SQLiteQueryBuilder().apply {
-            tables = TABLE_NAME
-        }
-
+                       selectionArgs: Array<String>?, sortOrder: String?): Cursor {
         val uriType = uriMatcher.match(uri)
-        val db = requireDb()
 
-        val cursor: Cursor? = when (uriType) {
-            CATEGORIES -> queryBuilder.query(
-                db,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder
+        return when (uriType) {
+            CATEGORIES -> requireDb().query(
+                SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                    .columns(projection)
+                    .selection(selection, selectionArgs)
+                    .orderBy(sortOrder)
+                    .create()
             )
-            CATEGORIES_ID -> queryBuilder.query(
-                db,
-                ALL_FIELDS,
-                "_id = ?",
-                arrayOf(uri.lastPathSegment),
-                null,
-                null,
-                sortOrder
+
+            CATEGORIES_ID -> requireDb().query(
+                SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                    .columns(ALL_FIELDS)
+                    .selection("_id = ?", arrayOf(uri.lastPathSegment))
+                    .orderBy(sortOrder)
+                    .create()
             )
+
             else -> throw IllegalArgumentException("Unknown URI $uri")
+        }.apply {
+            setNotificationUri(context?.contentResolver, uri)
         }
-
-        cursor?.setNotificationUri(requireContext().contentResolver, uri)
-        return cursor
     }
 
     override fun getType(uri: Uri): String? = null
@@ -66,11 +60,11 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
         val id: Long
         when (uriType) {
             CATEGORIES -> {
-                id = requireDb().insert(TABLE_NAME, null, contentValues)
+                id = requireDb().insert(TABLE_NAME, CONFLICT_REPLACE, contentValues!!)
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return "${BASE_URI}/$id".toUri()
     }
 
@@ -85,14 +79,14 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
         when (uriType) {
             CATEGORIES -> {
                 for (value in values) {
-                    sqlDB.insert(TABLE_NAME, null, value)
+                    sqlDB.insert(TABLE_NAME, CONFLICT_REPLACE, value)
                 }
                 sqlDB.setTransactionSuccessful()
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
         sqlDB.endTransaction()
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return values.size
     }
 
@@ -108,7 +102,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
                         ?: throw IllegalArgumentException("Invalid ID")
                     rowsUpdated = requireDb().update(
                         TABLE_NAME,
-                        contentValues,
+                        CONFLICT_REPLACE, contentValues!!,
                         "$COLUMN_ID = ?",
                         arrayOf(id.toString())
                     )
@@ -119,7 +113,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri with type $uriType")
         }
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return rowsUpdated
     }
 

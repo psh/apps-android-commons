@@ -38,7 +38,6 @@ import fr.free.nrw.commons.wikidata.WikidataEditListenerImpl
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import java.util.Objects
 import javax.inject.Named
 import javax.inject.Singleton
@@ -158,8 +157,9 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
 
     @Provides
     @Singleton
-    open fun provideDBOpenHelper(context: Context): DBOpenHelper =
-        DBOpenHelper(context)
+    open fun provideDBOpenHelper(context: Context): DBOpenHelper {
+        return DBOpenHelper(DBOpenHelper.createHelper(context))
+    }
 
     @Provides
     @Singleton

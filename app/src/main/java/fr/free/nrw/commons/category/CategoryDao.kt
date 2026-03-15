@@ -5,6 +5,7 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.Cursor
 import android.os.RemoteException
+import fr.free.nrw.commons.category.CategoryContentProvider.Companion.uriForId
 import fr.free.nrw.commons.category.CategoryTable.ALL_FIELDS
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_DESCRIPTION
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_ID
@@ -118,7 +119,7 @@ class CategoryDao @Inject constructor(
     fun fromCursor(cursor: Cursor): Category {
         // Hardcoding column positions!
         return Category(
-            CategoryContentProvider.uriForId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID))),
+            uriForId(cursor.getInt(cursor.getColumnIndex(COLUMN_ID))),
             cursor.getString(cursor.getColumnIndex(COLUMN_NAME)),
             cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION)),
             cursor.getString(cursor.getColumnIndex(COLUMN_THUMBNAIL)),

@@ -4,8 +4,8 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.MatrixCursor
-import android.database.sqlite.SQLiteDatabase
 import android.os.RemoteException
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.argumentCaptor
@@ -17,6 +17,7 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.TestCommonsApplication
+import fr.free.nrw.commons.category.CategoryContentProvider.Companion.BASE_URI
 import fr.free.nrw.commons.category.CategoryTable.ALL_FIELDS
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_DESCRIPTION
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_ID
@@ -55,7 +56,7 @@ class CategoryDaoTest {
             COLUMN_TIMES_USED,
         )
     private val client: ContentProviderClient = mock()
-    private val database: SQLiteDatabase = mock()
+    private val database: SupportSQLiteDatabase = mock()
     private val captor = argumentCaptor<ContentValues>()
     private val queryCaptor = argumentCaptor<Array<String>>()
 
@@ -134,7 +135,7 @@ class CategoryDaoTest {
         createCursor(1).let { cursor ->
             cursor.moveToFirst()
             testObject.fromCursor(cursor).let {
-                assertEquals(CategoryContentProvider.uriForId(1), it.contentUri)
+                assertEquals(uriForId(1), it.contentUri)
                 assertEquals("showImageWithItem", it.name)
                 assertEquals(123L, it.lastUsed?.time)
                 assertEquals(2, it.timesUsed)
@@ -182,7 +183,7 @@ class CategoryDaoTest {
 
         testObject.save(category)
 
-        verify(client).insert(eq(CategoryContentProvider.BASE_URI), captor.capture())
+        verify(client).insert(eq(BASE_URI), captor.capture())
         captor.firstValue.let { cv ->
             assertEquals(5, cv.size())
             assertEquals(category.name, cv.getAsString(COLUMN_NAME))
@@ -230,7 +231,7 @@ class CategoryDaoTest {
         val category = testObject.find("showImageWithItem")
         assertNotNull(category)
 
-        assertEquals(CategoryContentProvider.uriForId(1), category?.contentUri)
+        assertEquals(uriForId(1), category?.contentUri)
         assertEquals("showImageWithItem", category?.name)
         assertEquals("description", category?.description)
         assertEquals("image", category?.thumbnail)
@@ -238,7 +239,7 @@ class CategoryDaoTest {
         assertEquals(2, category?.timesUsed)
 
         verify(client).query(
-            eq(CategoryContentProvider.BASE_URI),
+            eq(BASE_URI),
             eq(ALL_FIELDS),
             eq("$COLUMN_NAME=?"),
             queryCaptor.capture(),
@@ -292,7 +293,7 @@ class CategoryDaoTest {
         assertEquals("showImageWithItem", result[0].name)
 
         verify(client).query(
-            eq(CategoryContentProvider.BASE_URI),
+            eq(BASE_URI),
             eq(ALL_FIELDS),
             isNull(),
             queryCaptor.capture(),

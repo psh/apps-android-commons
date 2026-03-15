@@ -2,13 +2,14 @@ package fr.free.nrw.commons.bookmarks.pictures
 
 import android.content.ContentValues
 import android.database.Cursor
-import android.database.sqlite.SQLiteQueryBuilder
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.net.Uri
-import fr.free.nrw.commons.BuildConfig
-import fr.free.nrw.commons.di.CommonsDaggerContentProvider
 import androidx.core.net.toUri
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable.COLUMN_MEDIA_NAME
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable.TABLE_NAME
+import fr.free.nrw.commons.di.CommonsDaggerContentProvider
 
 /**
  * Handles private storage for Bookmark pictures
@@ -28,17 +29,15 @@ class BookmarkPicturesContentProvider : CommonsDaggerContentProvider() {
         uri: Uri, projection: Array<String>?, selection: String?,
         selectionArgs: Array<String>?, sortOrder: String?
     ): Cursor {
-        val queryBuilder = SQLiteQueryBuilder().apply {
-            tables = TABLE_NAME
+        return requireDb().query(
+            SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                .columns(projection)
+                .selection(selection, selectionArgs)
+                .orderBy(sortOrder)
+                .create()
+        ).apply {
+            setNotificationUri(context?.contentResolver, uri)
         }
-
-        val cursor = queryBuilder.query(
-            requireDb(), projection, selection,
-            selectionArgs, null, null, sortOrder
-        )
-        cursor.setNotificationUri(context?.contentResolver, uri)
-
-        return cursor
     }
 
     /**
@@ -56,8 +55,8 @@ class BookmarkPicturesContentProvider : CommonsDaggerContentProvider() {
         if (selection.isNullOrEmpty()) {
             val id = uri.lastPathSegment!!.toInt()
             rowsUpdated = requireDb().update(
-                TABLE_NAME,
-                contentValues,
+                TABLE_NAME, CONFLICT_REPLACE,
+                contentValues!!,
                 "$COLUMN_MEDIA_NAME = ?",
                 arrayOf(id.toString())
             )
@@ -74,7 +73,7 @@ class BookmarkPicturesContentProvider : CommonsDaggerContentProvider() {
      * Handles the insertion of new bookmark pictures record to local SQLite Database
      */
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri {
-        val id = requireDb().insert(TABLE_NAME, null, contentValues)
+        val id = requireDb().insert(TABLE_NAME, CONFLICT_REPLACE, contentValues!!)
         context?.contentResolver?.notifyChange(uri, null)
         return "$BASE_URI/$id".toUri()
     }

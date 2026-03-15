@@ -1,19 +1,17 @@
 package fr.free.nrw.commons.data
 
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
-import android.database.sqlite.SQLiteOpenHelper
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable
 import fr.free.nrw.commons.category.CategoryTable
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesTable
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable
 
-
-class DBOpenHelper(
-    context: Context
-): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DBOpenHelper(val helper: SupportSQLiteOpenHelper) {
 
     companion object {
         private const val DATABASE_NAME = "commons.db"
@@ -21,41 +19,50 @@ class DBOpenHelper(
         const val CONTRIBUTIONS_TABLE = "contributions"
         const val BOOKMARKS_LOCATIONS = "bookmarksLocations"
         private const val DROP_TABLE_STATEMENT = "DROP TABLE IF EXISTS %s"
+
+        fun createHelper(context: Context): SupportSQLiteOpenHelper {
+            return FrameworkSQLiteOpenHelperFactory().create(
+                SupportSQLiteOpenHelper.Configuration.builder(context)
+                    .name(DATABASE_NAME)
+                    .callback(CommonsDatabaseCallback(DATABASE_VERSION))
+                    .build()
+            )
+        }
+
+        /**
+         * Delete table in the given db
+         * @param tableName
+         */
+        fun SupportSQLiteDatabase.deleteTable(tableName: String) {
+            try {
+                execSQL(String.format(DROP_TABLE_STATEMENT, tableName))
+            } catch (e: SQLiteException) {
+                e.printStackTrace()
+            }
+        }
     }
 
-    /**
-     * Do not use directly - @Inject an instance where it's needed and let
-     * dependency injection take care of managing this as a singleton.
-     */
-    override fun onCreate(db: SQLiteDatabase) {
-        CategoryTable.onCreate(db)
-        BookmarksTable.onCreate(db)
-        BookmarkItemsTable.onCreate(db)
-        RecentSearchesTable.onCreate(db)
-        RecentLanguagesTable.onCreate(db)
-    }
 
-    override fun onUpgrade(db: SQLiteDatabase, from: Int, to: Int) {
-        CategoryTable.onUpdate(db, from, to)
-        BookmarksTable.onUpdate(db, from, to)
-        BookmarkItemsTable.onUpdate(db, from, to)
-        RecentSearchesTable.onUpdate(db, from, to)
-        RecentLanguagesTable.onUpdate(db, from, to)
-        deleteTable(db, CONTRIBUTIONS_TABLE)
-        deleteTable(db, BOOKMARKS_LOCATIONS)
-    }
+    val readableDatabase: SupportSQLiteDatabase get() = helper.readableDatabase
+    val writableDatabase: SupportSQLiteDatabase get() = helper.writableDatabase
 
-    /**
-     * Delete table in the given db
-     * @param db
-     * @param tableName
-     */
-    fun deleteTable(db: SQLiteDatabase, tableName: String) {
-        try {
-            db.execSQL(String.format(DROP_TABLE_STATEMENT, tableName))
-            onCreate(db)
-        } catch (e: SQLiteException) {
-            e.printStackTrace()
+    class CommonsDatabaseCallback(version: Int) : SupportSQLiteOpenHelper.Callback(version) {
+        override fun onCreate(db: SupportSQLiteDatabase) {
+            CategoryTable.onCreate(db)
+            BookmarksTable.onCreate(db)
+            BookmarkItemsTable.onCreate(db)
+            RecentSearchesTable.onCreate(db)
+            RecentLanguagesTable.onCreate(db)
+        }
+
+        override fun onUpgrade(db: SupportSQLiteDatabase, from: Int, to: Int) {
+            CategoryTable.onUpdate(db, from, to)
+            BookmarksTable.onUpdate(db, from, to)
+            BookmarkItemsTable.onUpdate(db, from, to)
+            RecentSearchesTable.onUpdate(db, from, to)
+            RecentLanguagesTable.onUpdate(db, from, to)
+            db.deleteTable(CONTRIBUTIONS_TABLE)
+            db.deleteTable(BOOKMARKS_LOCATIONS)
         }
     }
 }

@@ -3,9 +3,11 @@ package fr.free.nrw.commons.explore.recentsearches
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import androidx.core.net.toUri
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.di.CommonsDaggerContentProvider
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesTable.ALL_FIELDS
@@ -32,19 +34,20 @@ class RecentSearchesContentProvider : CommonsDaggerContentProvider() {
         val uriType = uriMatcher.match(uri)
 
         val cursor = when (uriType) {
-            RECENT_SEARCHES -> queryBuilder.query(
-                requireDb(), projection, selection, selectionArgs,
-                null, null, sortOrder
+            RECENT_SEARCHES -> requireDb().query(
+                SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                    .columns(projection)
+                    .selection(selection, selectionArgs)
+                    .orderBy(sortOrder)
+                    .create()
             )
 
-            RECENT_SEARCHES_ID -> queryBuilder.query(
-                requireDb(),
-                ALL_FIELDS,
-                "$COLUMN_ID = ?",
-                arrayOf(uri.lastPathSegment),
-                null,
-                null,
-                sortOrder
+            RECENT_SEARCHES_ID -> requireDb().query(
+                SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                    .columns(ALL_FIELDS)
+                    .selection("_id = ?", arrayOf(uri.lastPathSegment))
+                    .orderBy(sortOrder)
+                    .create()
             )
 
             else -> throw IllegalArgumentException("Unknown URI$uri")
@@ -63,7 +66,7 @@ class RecentSearchesContentProvider : CommonsDaggerContentProvider() {
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri? {
         val uriType = uriMatcher.match(uri)
         val id: Long = when (uriType) {
-            RECENT_SEARCHES -> requireDb().insert(TABLE_NAME, null, contentValues)
+            RECENT_SEARCHES -> requireDb().insert(TABLE_NAME, CONFLICT_REPLACE, contentValues!!)
 
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
@@ -101,7 +104,7 @@ class RecentSearchesContentProvider : CommonsDaggerContentProvider() {
         sqlDB.beginTransaction()
         when (uriType) {
             RECENT_SEARCHES -> for (value in values) {
-                sqlDB.insert(TABLE_NAME, null, value)
+                sqlDB.insert(TABLE_NAME, CONFLICT_REPLACE, value)
             }
 
             else -> throw IllegalArgumentException("Unknown URI: $uri")
@@ -134,8 +137,8 @@ class RecentSearchesContentProvider : CommonsDaggerContentProvider() {
             RECENT_SEARCHES_ID -> if (selection.isNullOrEmpty()) {
                 val id = uri.lastPathSegment!!.toInt()
                 rowsUpdated = requireDb().update(
-                    TABLE_NAME,
-                    contentValues,
+                    TABLE_NAME,CONFLICT_REPLACE,
+                    contentValues!!,
                     "$COLUMN_ID = ?",
                     arrayOf(id.toString())
                 )

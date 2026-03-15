@@ -1,6 +1,6 @@
 package fr.free.nrw.commons.explore.recentsearches
 
-import android.database.sqlite.SQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * This class contains the database table architechture for recent searches, It also contains
@@ -29,14 +29,14 @@ object RecentSearchesTable {
      *
      * @param db SQLiteDatabase
      */
-    fun onCreate(db: SQLiteDatabase) = db.execSQL(CREATE_TABLE_STATEMENT)
+    fun onCreate(db: SupportSQLiteDatabase) = db.execSQL(CREATE_TABLE_STATEMENT)
 
     /**
      * This method deletes RecentSearchesTable from SQLiteDatabase
      *
      * @param db SQLiteDatabase
      */
-    fun onDelete(db: SQLiteDatabase) {
+    fun onDelete(db: SupportSQLiteDatabase) {
         db.execSQL(DROP_TABLE_STATEMENT)
         onCreate(db)
     }
@@ -48,7 +48,7 @@ object RecentSearchesTable {
      * @param from Version from which we are migrating
      * @param to   Version to which we are migrating
      */
-    fun onUpdate(db: SQLiteDatabase, from: Int, to: Int) {
+    fun onUpdate(db: SupportSQLiteDatabase, from: Int, to: Int) {
         if (from == to) {
             return
         }

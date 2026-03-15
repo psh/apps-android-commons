@@ -17,12 +17,12 @@ import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable
-import fr.free.nrw.commons.category.CategoryDao
 import fr.free.nrw.commons.category.CategoryTable
 import fr.free.nrw.commons.concurrency.BackgroundPoolExceptionHandler
 import fr.free.nrw.commons.concurrency.ThreadPoolService
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.data.DBOpenHelper
+import fr.free.nrw.commons.data.DBOpenHelper.Companion.deleteTable
 import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.language.AppLanguageLookUpTable
@@ -242,15 +242,11 @@ class CommonsApplication : MultiDexApplication() {
         val db = dbOpenHelper.writableDatabase
 
         CategoryTable.onDelete(db)
-        dbOpenHelper.deleteTable(
-            db,
-            DBOpenHelper.CONTRIBUTIONS_TABLE
-        ) //Delete the contributions table in the existing db on older versions
 
-        dbOpenHelper.deleteTable(
-            db,
-            DBOpenHelper.BOOKMARKS_LOCATIONS
-        )
+        //Delete the contributions table in the existing db on older versions
+        db.deleteTable(DBOpenHelper.CONTRIBUTIONS_TABLE)
+
+        db.deleteTable(DBOpenHelper.BOOKMARKS_LOCATIONS)
 
         try {
             contributionDao.deleteAll()
@@ -415,4 +411,3 @@ class CommonsApplication : MultiDexApplication() {
         }
     }
 }
-

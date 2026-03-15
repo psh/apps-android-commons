@@ -3,13 +3,14 @@ package fr.free.nrw.commons.recentlanguages
 
 import android.content.ContentValues
 import android.database.Cursor
-import android.database.sqlite.SQLiteQueryBuilder
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.net.Uri
+import androidx.core.net.toUri
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.di.CommonsDaggerContentProvider
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable.COLUMN_NAME
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable.TABLE_NAME
-import androidx.core.net.toUri
 
 
 /**
@@ -45,22 +46,16 @@ class RecentLanguagesContentProvider : CommonsDaggerContentProvider() {
         selection: String?,
         selectionArgs: Array<String>?,
         sortOrder: String?
-    ): Cursor? {
-        val queryBuilder = SQLiteQueryBuilder().apply {
-            tables = TABLE_NAME
+    ): Cursor {
+        return requireDb().query(
+            SupportSQLiteQueryBuilder.builder(TABLE_NAME)
+                .columns(projection)
+                .selection(selection, selectionArgs)
+                .orderBy(sortOrder)
+                .create()
+        ).apply {
+            setNotificationUri(context?.contentResolver, uri)
         }
-
-        val cursor = queryBuilder.query(
-            requireDb(),
-            projection,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            sortOrder
-        )
-        cursor.setNotificationUri(context?.contentResolver, uri)
-        return cursor
     }
 
     /**
@@ -81,8 +76,8 @@ class RecentLanguagesContentProvider : CommonsDaggerContentProvider() {
             val id = uri.lastPathSegment?.toInt()
                 ?: throw IllegalArgumentException("Invalid URI: $uri")
             rowsUpdated = requireDb().update(
-                TABLE_NAME,
-                contentValues,
+                TABLE_NAME, CONFLICT_REPLACE,
+                contentValues!!,
                 "$COLUMN_NAME = ?",
                 arrayOf(id.toString())
             )
@@ -101,9 +96,8 @@ class RecentLanguagesContentProvider : CommonsDaggerContentProvider() {
      */
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri? {
         val id = requireDb().insert(
-            TABLE_NAME,
-            null,
-            contentValues
+            TABLE_NAME,CONFLICT_REPLACE,
+            contentValues!!
         )
         context?.contentResolver?.notifyChange(uri, null)
         return "$BASE_URI/$id".toUri()
