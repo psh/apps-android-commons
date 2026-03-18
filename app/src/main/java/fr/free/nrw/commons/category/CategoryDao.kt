@@ -5,7 +5,6 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.Cursor
 import android.os.RemoteException
-import fr.free.nrw.commons.category.CategoryContentProvider.Companion.uriForId
 import fr.free.nrw.commons.category.CategoryTable.ALL_FIELDS
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_DESCRIPTION
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_ID
@@ -13,6 +12,7 @@ import fr.free.nrw.commons.category.CategoryTable.COLUMN_LAST_USED
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_NAME
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_THUMBNAIL
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_TIMES_USED
+import fr.free.nrw.commons.explore.recentsearches.RecentSearchesContentProvider.Companion.uriForId
 
 import java.util.ArrayList
 import java.util.Date
