@@ -48,14 +48,18 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
+@InstallIn(SingletonComponent::class)
 @Suppress("unused")
 class NetworkingModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        context: Context,
+        @ApplicationContext context: Context,
         httpLoggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(120, TimeUnit.SECONDS)

@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.contributions.ChunkInfo
-import fr.free.nrw.commons.di.ApplicationlessInjection
+
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.nearby.Sitelinks
 import fr.free.nrw.commons.upload.WikidataPlace
@@ -19,9 +19,8 @@ import java.util.Date
 object Converters {
 
     fun getGson(): Gson {
-        return ApplicationlessInjection
-            .getInstance(CommonsApplication.instance)
-            .commonsApplicationComponent
+        return dagger.hilt.android.EntryPointAccessors
+            .fromApplication(CommonsApplication.instance, fr.free.nrw.commons.CommonsApplication.GsonEntryPoint::class.java)
             .gson()
     }
 

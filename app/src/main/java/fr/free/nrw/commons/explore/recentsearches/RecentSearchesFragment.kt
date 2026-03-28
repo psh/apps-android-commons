@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemLongClickListener
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.databinding.FragmentSearchHistoryBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
@@ -22,6 +23,7 @@ import javax.inject.Inject
 /**
  * Displays the recent searches screen.
  */
+@AndroidEntryPoint
 class RecentSearchesFragment : CommonsDaggerSupportFragment() {
     @JvmField
     @Inject

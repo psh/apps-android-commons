@@ -2,6 +2,8 @@ package fr.free.nrw.commons.explore
 
 import dagger.Binds
 import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import fr.free.nrw.commons.explore.categories.search.SearchCategoriesFragmentPresenter
 import fr.free.nrw.commons.explore.categories.search.SearchCategoriesFragmentPresenterImpl
 import fr.free.nrw.commons.explore.depictions.search.SearchDepictionsFragmentPresenter
@@ -13,13 +15,14 @@ import fr.free.nrw.commons.explore.media.SearchMediaFragmentPresenterImpl
  * The Dagger Module for explore:depictions related presenters and (some other objects maybe in future)
  */
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class SearchModule {
     @Binds
-    abstract fun SearchDepictionsFragmentPresenterImpl.bindsSearchDepictionsFragmentPresenter(): SearchDepictionsFragmentPresenter
+    abstract fun bindsSearchDepictionsFragmentPresenter(presenter: SearchDepictionsFragmentPresenterImpl): SearchDepictionsFragmentPresenter
 
     @Binds
-    abstract fun SearchCategoriesFragmentPresenterImpl.bindsSearchCategoriesFragmentPresenter(): SearchCategoriesFragmentPresenter
+    abstract fun bindsSearchCategoriesFragmentPresenter(presenter: SearchCategoriesFragmentPresenterImpl): SearchCategoriesFragmentPresenter
 
     @Binds
-    abstract fun SearchMediaFragmentPresenterImpl.bindsSearchMediaFragmentPresenter(): SearchMediaFragmentPresenter
+    abstract fun bindsSearchMediaFragmentPresenter(presenter: SearchMediaFragmentPresenterImpl): SearchMediaFragmentPresenter
 }

@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
@@ -54,6 +55,7 @@ import java.util.concurrent.Callable
 import javax.inject.Inject
 import androidx.core.net.toUri
 
+@AndroidEntryPoint
 class MediaDetailPagerFragment : CommonsDaggerSupportFragment(), OnPageChangeListener,
     MediaDetailFragment.Callback {
     @JvmField
@@ -398,7 +400,7 @@ ${m.pageTitle.canonicalUri}"""
         setAvatarFromImageUrl(
             requireActivity(), media.imageUrl!!,
             sessionManager!!.currentAccount!!.name,
-            okHttpJsonApiClient!!, Companion.compositeDisposable
+            okHttpJsonApiClient!!, compositeDisposable
         )
     }
 
@@ -605,7 +607,7 @@ ${m.pageTitle.canonicalUri}"""
     }
 
     companion object {
-        private val compositeDisposable = CompositeDisposable()
+
 
         /**
          * Use this factory method to create a new instance of this fragment using the provided

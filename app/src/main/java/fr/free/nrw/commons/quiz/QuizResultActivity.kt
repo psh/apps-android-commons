@@ -17,6 +17,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import dagger.hilt.android.AndroidEntryPoint
 
 import fr.free.nrw.commons.databinding.ActivityQuizResultBinding
 import java.io.File
@@ -30,6 +31,7 @@ import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 /**
  * Displays the final score of quiz and congratulates the user
  */
+@AndroidEntryPoint
 class QuizResultActivity : AppCompatActivity() {
 
     private var binding: ActivityQuizResultBinding? = null

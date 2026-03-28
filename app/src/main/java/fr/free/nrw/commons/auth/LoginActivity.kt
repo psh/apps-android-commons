@@ -31,7 +31,6 @@ import fr.free.nrw.commons.auth.login.LoginClient
 import fr.free.nrw.commons.auth.login.LoginResult
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.databinding.ActivityLoginBinding
-import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 import fr.free.nrw.commons.utils.AbstractTextWatcher
@@ -47,18 +46,29 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.EntryPointAccessors
+
 class LoginActivity : AccountAuthenticatorActivity() {
-    @Inject
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface LoginActivityEntryPoint {
+        fun sessionManager(): SessionManager
+        @Named("default_preferences")
+        fun applicationKvStore(): JsonKvStore
+        fun loginClient(): LoginClient
+        fun systemThemeUtils(): SystemThemeUtils
+    }
+
     lateinit var sessionManager: SessionManager
 
-    @Inject
-    @field:Named("default_preferences")
     lateinit var applicationKvStore: JsonKvStore
 
-    @Inject
     lateinit var loginClient: LoginClient
 
-    @Inject
     lateinit var systemThemeUtils: SystemThemeUtils
 
     private var binding: ActivityLoginBinding? = null
@@ -72,10 +82,11 @@ class LoginActivity : AccountAuthenticatorActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ApplicationlessInjection
-            .getInstance(this.applicationContext)
-            .commonsApplicationComponent
-            .inject(this)
+        val entryPoint = EntryPointAccessors.fromApplication(applicationContext, LoginActivityEntryPoint::class.java)
+        sessionManager = entryPoint.sessionManager()
+        applicationKvStore = entryPoint.applicationKvStore()
+        loginClient = entryPoint.loginClient()
+        systemThemeUtils = entryPoint.systemThemeUtils()
 
         val isDarkTheme = systemThemeUtils.isDeviceInNightMode()
         setTheme(if (isDarkTheme) R.style.DarkAppTheme else R.style.LightAppTheme)

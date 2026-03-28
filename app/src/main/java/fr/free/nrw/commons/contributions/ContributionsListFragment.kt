@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import androidx.recyclerview.widget.SimpleItemAnimator
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.MediaDataExtractor
 import fr.free.nrw.commons.R
@@ -50,6 +51,7 @@ import javax.inject.Named
 /**
  * Created by root on 01.06.2018.
  */
+@AndroidEntryPoint
 class ContributionsListFragment : CommonsDaggerSupportFragment(), ContributionsListContract.View,
     ContributionsListAdapter.Callback, WikipediaInstructionsDialogFragment.Callback {
     @JvmField

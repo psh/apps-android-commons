@@ -24,7 +24,7 @@ import fr.free.nrw.commons.customselector.database.UploadedStatusDao
 import fr.free.nrw.commons.customselector.ui.selector.ImageFileLoader
 import fr.free.nrw.commons.data.DBOpenHelper
 import fr.free.nrw.commons.db.AppDatabase
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.appContext
+
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.nearby.PlaceDao
@@ -43,6 +43,9 @@ import timber.log.Timber
 import java.util.Objects
 import javax.inject.Named
 import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * The Dependency Provider class for Commons Android.
@@ -51,28 +54,24 @@ import javax.inject.Singleton
  * Location manager etc
  */
 @Module
+@InstallIn(SingletonComponent::class)
 @Suppress("unused")
-open class CommonsApplicationModule(private val applicationContext: Context) {
-
-    init {
-        appContext = applicationContext
-    }
+open class CommonsApplicationModule {
 
     @Provides
-    fun providesImageFileLoader(context: Context): ImageFileLoader =
+    fun provideContext(@ApplicationContext context: Context): Context = context
+
+    @Provides
+    fun providesImageFileLoader(@ApplicationContext context: Context): ImageFileLoader =
         ImageFileLoader(context)
 
     @Provides
-    fun providesApplicationContext(): Context =
-        applicationContext
-
-    @Provides
-    fun provideInputMethodManager(): InputMethodManager =
-        applicationContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    fun provideInputMethodManager(@ApplicationContext context: Context): InputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
     @Provides
     @Named("licenses")
-    fun provideLicenses(context: Context): List<String> = listOf(
+    fun provideLicenses(@ApplicationContext context: Context): List<String> = listOf(
         context.getString(R.string.license_name_cc0),
         context.getString(R.string.license_name_cc_by),
         context.getString(R.string.license_name_cc_by_sa),
@@ -82,7 +81,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
 
     @Provides
     @Named("licenses_by_name")
-    fun provideLicensesByName(context: Context): Map<String, String> = mapOf(
+    fun provideLicensesByName(@ApplicationContext context: Context): Map<String, String> = mapOf(
         context.getString(R.string.license_name_cc0) to Prefs.Licenses.CC0,
         context.getString(R.string.license_name_cc_by) to Prefs.Licenses.CC_BY_3,
         context.getString(R.string.license_name_cc_by_sa) to Prefs.Licenses.CC_BY_SA_3,
@@ -96,32 +95,32 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
      */
     @Provides
     @Named("category")
-    open fun provideCategoryContentProviderClient(context: Context): ContentProviderClient? =
+    open fun provideCategoryContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.CATEGORY_AUTHORITY)
 
     @Provides
     @Named("recentsearch")
-    fun provideRecentSearchContentProviderClient(context: Context): ContentProviderClient? =
+    fun provideRecentSearchContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_SEARCH_AUTHORITY)
 
     @Provides
     @Named("contribution")
-    open fun provideContributionContentProviderClient(context: Context): ContentProviderClient? =
+    open fun provideContributionContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.CONTRIBUTION_AUTHORITY)
 
     @Provides
     @Named("modification")
-    open fun provideModificationContentProviderClient(context: Context): ContentProviderClient? =
+    open fun provideModificationContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.MODIFICATION_AUTHORITY)
 
     @Provides
     @Named("bookmarks")
-    fun provideBookmarkContentProviderClient(context: Context): ContentProviderClient? =
+    fun provideBookmarkContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_AUTHORITY)
 
     @Provides
     @Named("bookmarksItem")
-    fun provideBookmarkItemContentProviderClient(context: Context): ContentProviderClient? =
+    fun provideBookmarkItemContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_ITEMS_AUTHORITY)
 
     /**
@@ -132,7 +131,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
      */
     @Provides
     @Named("recent_languages")
-    fun provideRecentLanguagesContentProviderClient(context: Context): ContentProviderClient? =
+    fun provideRecentLanguagesContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
         context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_LANGUAGE_AUTHORITY)
 
     /**
@@ -142,24 +141,24 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
      */
     @Provides
     @Named("default_preferences")
-    open fun providesDefaultKvStore(context: Context, gson: Gson): JsonKvStore =
+    open fun providesDefaultKvStore(@ApplicationContext context: Context, gson: Gson): JsonKvStore =
         JsonKvStore(context, "${context.packageName}_preferences", gson)
 
     @Provides
     fun providesUploadController(
         sessionManager: SessionManager,
         @Named("default_preferences") kvStore: JsonKvStore,
-        context: Context
+        @ApplicationContext context: Context
     ): UploadController = UploadController(sessionManager, context, kvStore)
 
     @Provides
     @Singleton
-    open fun provideLocationServiceManager(context: Context): LocationServiceManager =
+    open fun provideLocationServiceManager(@ApplicationContext context: Context): LocationServiceManager =
         LocationServiceManager(context)
 
     @Provides
     @Singleton
-    open fun provideDBOpenHelper(context: Context): DBOpenHelper =
+    open fun provideDBOpenHelper(@ApplicationContext context: Context): DBOpenHelper =
         DBOpenHelper(context)
 
     @Provides
@@ -196,8 +195,8 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
 
     @Provides
     @Singleton
-    fun provideAppDataBase(): AppDatabase = databaseBuilder(
-        applicationContext,
+    fun provideAppDataBase(@ApplicationContext context: Context): AppDatabase = databaseBuilder(
+        context,
         AppDatabase::class.java,
         "commons_room.db"
     ).addMigrations(
@@ -239,7 +238,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         appDatabase.bookmarkCategoriesDao()
 
     @Provides
-    fun providesContentResolver(context: Context): ContentResolver =
+    fun providesContentResolver(@ApplicationContext context: Context): ContentResolver =
         context.contentResolver
 
     @Provides
@@ -251,8 +250,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
         const val IO_THREAD: String = "io_thread"
         const val MAIN_THREAD: String = "main_thread"
 
-        lateinit var appContext: Context
-            private set
+
 
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -285,7 +283,7 @@ open class CommonsApplicationModule(private val applicationContext: Context) {
             """
                 )
 
-                val oldDbPath = appContext.getDatabasePath("commons.db").path
+                val oldDbPath = fr.free.nrw.commons.CommonsApplication.instance.applicationContext.getDatabasePath("commons.db").path
                 val oldDb = SQLiteDatabase
                     .openDatabase(oldDbPath, null, SQLiteDatabase.OPEN_READONLY)
 
@@ -423,7 +421,7 @@ val MIGRATION_21_22 = object : Migration(21, 22) {
         )
         // copying data from old "commons.db"  to new "commons_room.db".
         try {
-            val legacyDbFile = appContext.getDatabasePath("commons.db")
+            val legacyDbFile = fr.free.nrw.commons.CommonsApplication.instance.applicationContext.getDatabasePath("commons.db")
             if (!legacyDbFile.exists()) {
                 return
             }

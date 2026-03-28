@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import dagger.hilt.android.AndroidEntryPoint
 
 import com.facebook.drawee.drawable.ProgressBarDrawable
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder
@@ -20,6 +21,7 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 
 
+@AndroidEntryPoint
 class QuizActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQuizBinding

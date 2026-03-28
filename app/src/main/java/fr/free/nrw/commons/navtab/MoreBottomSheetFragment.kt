@@ -20,7 +20,6 @@ import fr.free.nrw.commons.CommonsApplication.ActivityLogoutListener
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
 import fr.free.nrw.commons.databinding.FragmentMoreBottomSheetBinding
-import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.feedback.FeedbackContentCreator
 import fr.free.nrw.commons.feedback.FeedbackDialog
 import fr.free.nrw.commons.feedback.OnFeedbackSubmitCallback
@@ -40,6 +39,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
+@dagger.hilt.android.AndroidEntryPoint
 class MoreBottomSheetFragment : BottomSheetDialogFragment() {
 
     @Inject
@@ -95,10 +95,6 @@ class MoreBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        ApplicationlessInjection
-            .getInstance(requireActivity().applicationContext)
-            .commonsApplicationComponent
-            .inject(this)
     }
 
     override fun onDestroyView() {

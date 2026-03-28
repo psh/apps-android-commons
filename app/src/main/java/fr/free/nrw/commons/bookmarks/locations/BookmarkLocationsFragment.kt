@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestMultiple
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.android.support.DaggerFragment
+import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.contributions.ContributionController
 import fr.free.nrw.commons.databinding.FragmentBookmarksLocationsBinding
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class BookmarkLocationsFragment : DaggerFragment() {
+class BookmarkLocationsFragment : CommonsDaggerSupportFragment() {
 
     private var binding: FragmentBookmarksLocationsBinding? = null
 

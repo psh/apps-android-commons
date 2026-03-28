@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import javax.inject.Inject
 import javax.inject.Named
 import fr.free.nrw.commons.R
-import fr.free.nrw.commons.di.CommonsDaggerAppCompatActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.utils.SystemThemeUtils
 import io.reactivex.disposables.CompositeDisposable
+import dagger.hilt.android.AndroidEntryPoint
 
 
-abstract class BaseActivity : CommonsDaggerAppCompatActivity() {
+@AndroidEntryPoint
+abstract class BaseActivity : AppCompatActivity() {
 
     @Inject
     @field:Named("default_preferences")

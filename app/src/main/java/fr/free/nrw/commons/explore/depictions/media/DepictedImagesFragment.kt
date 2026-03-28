@@ -2,9 +2,11 @@ package fr.free.nrw.commons.explore.depictions.media
 
 import android.os.Bundle
 import android.view.View
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.explore.media.PageableMediaFragment
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class DepictedImagesFragment : PageableMediaFragment() {
     @Inject
     lateinit var presenter: DepictedImagesPresenter

@@ -17,7 +17,6 @@ import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.databinding.FragmentMoreBottomSheetLoggedOutBinding
-import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.logging.CommonsLogSender
 import fr.free.nrw.commons.settings.SettingsActivity
@@ -26,6 +25,7 @@ import javax.inject.Named
 import timber.log.Timber
 
 
+@dagger.hilt.android.AndroidEntryPoint
 class MoreBottomSheetLoggedOutFragment : BottomSheetDialogFragment() {
 
     private var binding: FragmentMoreBottomSheetLoggedOutBinding? = null
@@ -69,10 +69,6 @@ class MoreBottomSheetLoggedOutFragment : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        ApplicationlessInjection
-            .getInstance(requireActivity().applicationContext)
-            .commonsApplicationComponent
-            .inject(this)
     }
 
     fun onLogoutClicked() {

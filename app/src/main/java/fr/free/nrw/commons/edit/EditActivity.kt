@@ -18,6 +18,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.rotationMatrix
 import androidx.core.graphics.scaleMatrix
+import dagger.hilt.android.AndroidEntryPoint
 import androidx.core.net.toUri
 import androidx.core.view.WindowInsetsCompat
 import androidx.exifinterface.media.ExifInterface
@@ -39,6 +40,7 @@ import kotlin.math.roundToInt
  * for initializing the UI, animating image rotations, copying EXIF data, and handling
  * the image-saving process.
  */
+@AndroidEntryPoint
 class EditActivity : AppCompatActivity() {
     private var imageUri = ""
     private lateinit var vm: EditViewModel

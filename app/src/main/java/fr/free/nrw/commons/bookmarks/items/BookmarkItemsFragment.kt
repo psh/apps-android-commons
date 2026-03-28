@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import dagger.android.support.DaggerFragment
+import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.databinding.FragmentBookmarksItemsBinding
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import javax.inject.Inject
 /**
  * Tab fragment to show list of bookmarked Wikidata Items
  */
-class BookmarkItemsFragment : DaggerFragment() {
+class BookmarkItemsFragment : CommonsDaggerSupportFragment() {
     private var binding: FragmentBookmarksItemsBinding? = null
 
     @JvmField

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dagger.android.support.DaggerFragment
+import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.category.CategoryDetailsActivity
 import javax.inject.Inject
@@ -42,7 +42,7 @@ import javax.inject.Inject
 /**
  * Tab fragment to show list of bookmarked Categories
  */
-class BookmarkCategoriesFragment : DaggerFragment() {
+class BookmarkCategoriesFragment : CommonsDaggerSupportFragment() {
 
     @Inject
     lateinit var bookmarkCategoriesDao: BookmarkCategoriesDao

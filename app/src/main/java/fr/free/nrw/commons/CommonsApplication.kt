@@ -13,17 +13,16 @@ import android.util.Log
 import androidx.multidex.MultiDexApplication
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.core.ImagePipelineConfig
+import dagger.hilt.android.HiltAndroidApp
 import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable
-import fr.free.nrw.commons.category.CategoryDao
 import fr.free.nrw.commons.category.CategoryTable
 import fr.free.nrw.commons.concurrency.BackgroundPoolExceptionHandler
 import fr.free.nrw.commons.concurrency.ThreadPoolService
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.data.DBOpenHelper
-import fr.free.nrw.commons.di.ApplicationlessInjection
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.language.AppLanguageLookUpTable
 import fr.free.nrw.commons.logging.FileLoggingTree
@@ -67,7 +66,14 @@ import javax.inject.Named
     resCommentPrompt = R.string.crash_dialog_comment_prompt
 )
 
+@HiltAndroidApp
 class CommonsApplication : MultiDexApplication() {
+
+    @dagger.hilt.EntryPoint
+    @dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
+    interface GsonEntryPoint {
+        fun gson(): com.google.gson.Gson
+    }
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -99,11 +105,6 @@ class CommonsApplication : MultiDexApplication() {
 
         instance = this
         init(this)
-
-        ApplicationlessInjection
-            .getInstance(this)
-            .commonsApplicationComponent
-            .inject(this)
 
         initTimber()
 

@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.customselector.helper.ImageHelper
 import fr.free.nrw.commons.customselector.listeners.FolderClickListener
 import fr.free.nrw.commons.customselector.model.CallbackStatus
@@ -24,6 +25,7 @@ import javax.inject.Inject
 /**
  * Custom selector folder fragment.
  */
+@AndroidEntryPoint
 class FolderFragment : CommonsDaggerSupportFragment() {
     /**
      * ViewBinding

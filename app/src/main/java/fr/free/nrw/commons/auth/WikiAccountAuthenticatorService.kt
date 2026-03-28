@@ -3,13 +3,12 @@ package fr.free.nrw.commons.auth
 import android.accounts.AbstractAccountAuthenticator
 import android.content.Intent
 import android.os.IBinder
-import fr.free.nrw.commons.di.CommonsDaggerService
+import android.app.Service
 
 /**
  * Handles the Auth service of the App, see AndroidManifests for details
- * (Uses Dagger 2 as injector)
  */
-class WikiAccountAuthenticatorService : CommonsDaggerService() {
+class WikiAccountAuthenticatorService : Service() {
     private var authenticator: AbstractAccountAuthenticator? = null
 
     override fun onCreate() {

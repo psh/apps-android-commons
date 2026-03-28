@@ -2,6 +2,8 @@ package fr.free.nrw.commons.contributions
 
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.wikidata.model.WikiSite
 import javax.inject.Named
@@ -10,6 +12,7 @@ import javax.inject.Named
  * The Dagger Module for contributions-related providers
  */
 @Module
+@InstallIn(SingletonComponent::class)
 class ContributionsProvidesModule {
 
     @Provides

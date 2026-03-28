@@ -20,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
@@ -55,6 +56,7 @@ import kotlin.collections.ArrayList
 /**
  * Custom Selector Image Fragment.
  */
+@AndroidEntryPoint
 class ImageFragment :
     CommonsDaggerSupportFragment(),
     RefreshUIListener,

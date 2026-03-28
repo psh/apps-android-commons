@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.explore.categories.search
 
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.explore.categories.PageableCategoryFragment
 import javax.inject.Inject
@@ -7,6 +8,7 @@ import javax.inject.Inject
 /**
  * Displays the category search screen.
  */
+@AndroidEntryPoint
 class SearchCategoryFragment : PageableCategoryFragment() {
     @Inject
     lateinit var presenter: SearchCategoriesFragmentPresenter

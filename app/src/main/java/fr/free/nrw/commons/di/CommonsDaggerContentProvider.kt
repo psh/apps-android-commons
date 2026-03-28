@@ -3,12 +3,20 @@ package fr.free.nrw.commons.di
 import android.content.ContentProvider
 import androidx.sqlite.db.SupportSQLiteDatabase
 import fr.free.nrw.commons.data.DBOpenHelper
-import fr.free.nrw.commons.di.ApplicationlessInjection.Companion.getInstance
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.EntryPointAccessors
 import javax.inject.Inject
 
 abstract class CommonsDaggerContentProvider : ContentProvider() {
-    @JvmField
-    @Inject
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface ContentProviderEntryPoint {
+        fun getDBOpenHelper(): DBOpenHelper
+    }
+
     var dbOpenHelper: DBOpenHelper? = null
 
     override fun onCreate(): Boolean {
@@ -21,11 +29,7 @@ abstract class CommonsDaggerContentProvider : ContentProvider() {
     fun requireDb(): SupportSQLiteDatabase = requireDbOpenHelper().writableDatabase!!
 
     private fun inject() {
-        val injection = getInstance(context!!)
-
-        val serviceInjector = injection.contentProviderInjector()
-            ?: throw NullPointerException("ApplicationlessInjection.contentProviderInjector() returned null")
-
-        serviceInjector.inject(this)
+        val entryPoint = EntryPointAccessors.fromApplication(context!!.applicationContext, ContentProviderEntryPoint::class.java)
+        dbOpenHelper = entryPoint.getDBOpenHelper()
     }
 }

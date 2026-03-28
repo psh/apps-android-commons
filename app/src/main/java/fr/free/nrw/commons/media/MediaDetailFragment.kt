@@ -70,6 +70,7 @@ import com.facebook.drawee.controller.ControllerListener
 import com.facebook.drawee.interfaces.DraweeController
 import com.facebook.imagepipeline.image.ImageInfo
 import com.facebook.imagepipeline.request.ImageRequest
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.CameraPosition
 import fr.free.nrw.commons.CommonsApplication
@@ -138,6 +139,7 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 import javax.inject.Named
 
+@AndroidEntryPoint
 class MediaDetailFragment : CommonsDaggerSupportFragment(), CategoryEditHelper.Callback {
     private var editable: Boolean = false
     private var isCategoryImage: Boolean = false

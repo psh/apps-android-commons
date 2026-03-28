@@ -44,8 +44,10 @@ import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Named
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener {
     @JvmField
     @Inject
