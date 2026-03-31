@@ -10,13 +10,14 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.test.core.app.ApplicationProvider
-import com.google.android.material.tabs.TabLayout
 import com.nhaarman.mockitokotlin2.eq
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -39,7 +40,7 @@ import org.robolectric.fakes.RoboMenuItem
 
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ExploreFragmentUnitTest {
     private lateinit var fragment: ExploreFragment
@@ -50,14 +51,19 @@ class ExploreFragmentUnitTest {
     private lateinit var viewPager: ParentViewPager
     private lateinit var activity: MainActivity
 
-    @Mock
-    private lateinit var tabLayout: TabLayout
+
 
     @Mock
     private lateinit var exploreRootFragment: ExploreListRootFragment
 
     @Mock
     private lateinit var inflater: MenuInflater
+
+    @Mock
+    private lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
 
     @Before
     fun setUp() {
@@ -66,8 +72,14 @@ class ExploreFragmentUnitTest {
 
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        activity = Robolectric.buildActivity(MainActivity::class.java).create().get()
+        val controller = Robolectric.buildActivity(MainActivity::class.java)
+        activity = controller.get()
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        controller.create()
+
         fragment = ExploreFragment()
+        Whitebox.setInternalState(fragment, "applicationKvStore", defaultKvStore)
         fragmentManager = activity.supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(fragment, null)
@@ -102,17 +114,16 @@ class ExploreFragmentUnitTest {
     @Throws(Exception::class)
     fun testOnBackPressedCaseTrueSelectedTabZero() {
         Whitebox.setInternalState(fragment, "featuredRootFragment", exploreRootFragment)
-        `when`(tabLayout.selectedTabPosition).thenReturn(0)
+        fragment.binding!!.tabLayout.getTabAt(0)!!.select()
         `when`(exploreRootFragment.backPressed()).thenReturn(true)
         Assert.assertEquals(fragment.onBackPressed(), true)
     }
 
     @Test
-    @Ignore("TODO fix this test")
     @Throws(Exception::class)
     fun testOnBackPressedCaseTrueSelectedTabNonZero() {
         Whitebox.setInternalState(fragment, "mobileRootFragment", exploreRootFragment)
-        `when`(tabLayout.selectedTabPosition).thenReturn(1)
+        fragment.binding!!.tabLayout.getTabAt(1)!!.select()
         `when`(exploreRootFragment.backPressed()).thenReturn(true)
         Assert.assertEquals(fragment.onBackPressed(), true)
     }
@@ -121,7 +132,7 @@ class ExploreFragmentUnitTest {
     @Throws(Exception::class)
     fun testOnBackPressedCaseFalseSelectedTabZero() {
         Whitebox.setInternalState(fragment, "featuredRootFragment", exploreRootFragment)
-        `when`(tabLayout.selectedTabPosition).thenReturn(0)
+        fragment.binding!!.tabLayout.getTabAt(0)!!.select()
         `when`(exploreRootFragment.backPressed()).thenReturn(false)
         Assert.assertEquals(fragment.onBackPressed(), false)
     }
@@ -130,7 +141,7 @@ class ExploreFragmentUnitTest {
     @Throws(Exception::class)
     fun testOnBackPressedCaseFalseSelectedTabNonZero() {
         Whitebox.setInternalState(fragment, "mobileRootFragment", exploreRootFragment)
-        `when`(tabLayout.selectedTabPosition).thenReturn(1)
+        fragment.binding!!.tabLayout.getTabAt(1)!!.select()
         `when`(exploreRootFragment.backPressed()).thenReturn(false)
         Assert.assertEquals(fragment.onBackPressed(), false)
     }

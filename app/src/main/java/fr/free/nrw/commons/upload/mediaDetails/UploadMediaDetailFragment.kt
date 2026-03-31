@@ -26,6 +26,7 @@ import fr.free.nrw.commons.CameraPosition
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.databinding.FragmentUploadMediaDetailFragmentBinding
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.edit.EditActivity
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.kvstore.BasicKvStore
@@ -54,11 +55,9 @@ import fr.free.nrw.commons.utils.ViewUtil.showLongToast
 import fr.free.nrw.commons.utils.handleKeyboardInsets
 import timber.log.Timber
 import java.io.File
-import java.util.ArrayList
 import java.util.Locale
 import java.util.Objects
 import javax.inject.Inject
-import javax.inject.Named
 
 class UploadMediaDetailFragment : UploadBaseFragment(), UploadMediaDetailsContract.View,
     UploadMediaDetailAdapter.EventListener {
@@ -71,7 +70,7 @@ class UploadMediaDetailFragment : UploadBaseFragment(), UploadMediaDetailsContra
     lateinit var presenter: UploadMediaDetailsContract.UserActionListener
 
     @Inject
-    @field:Named("default_preferences")
+    @DefaultKvStore
     lateinit var defaultKvStore: JsonKvStore
 
     @Inject

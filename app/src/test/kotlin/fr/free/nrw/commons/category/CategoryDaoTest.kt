@@ -43,7 +43,7 @@ import org.robolectric.annotation.Config
 import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class CategoryDaoTest {
     private val columns =
         arrayOf(

@@ -4,7 +4,9 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import androidx.exifinterface.media.ExifInterface
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.mwapi.CategoryApi
@@ -20,7 +22,6 @@ import java.io.File
 import java.io.IOException
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Processing of the image filePath that is about to be uploaded via ShareActivity is done here
@@ -34,11 +35,11 @@ private const val MIN_NEARBY_RESULTS = 5
 class FileProcessor
     @Inject
     constructor(
-        private val context: Context,
+        @ApplicationContext private val context: Context,
         private val contentResolver: ContentResolver,
         private val gpsCategoryModel: GpsCategoryModel,
         private val depictsModel: DepictModel,
-        @param:Named("default_preferences") private val defaultKvStore: JsonKvStore,
+        @DefaultKvStore private val defaultKvStore: JsonKvStore,
         private val apiCall: CategoryApi,
         private val okHttpJsonApiClient: OkHttpJsonApiClient,
     ) {

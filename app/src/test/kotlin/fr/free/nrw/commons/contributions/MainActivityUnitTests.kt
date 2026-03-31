@@ -1,7 +1,6 @@
 package fr.free.nrw.commons.contributions
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.view.MenuItem
@@ -40,7 +39,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class MainActivityUnitTests {
     private lateinit var activity: MainActivity

@@ -2,6 +2,7 @@ package fr.free.nrw.commons.upload
 
 import android.content.Context
 import android.net.Uri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.media.MediaClient
 import fr.free.nrw.commons.nearby.Place
@@ -29,7 +30,7 @@ class ImageProcessingService @Inject constructor(
     private val readFBMD: ReadFBMD,
     private val exifReader: EXIFReader,
     private val mediaClient: MediaClient,
-    private val appContext: Context
+    @ApplicationContext private val appContext: Context
 ) {
     /**
      * Check image quality before upload - checks duplicate image - checks dark image - checks

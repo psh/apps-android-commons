@@ -2,17 +2,16 @@ package fr.free.nrw.commons.utils
 
 import android.content.Context
 import android.content.res.Configuration
-
-import javax.inject.Inject
-import javax.inject.Named
-
+import dagger.hilt.android.qualifiers.ApplicationContext
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.settings.Prefs
+import javax.inject.Inject
 
 
 class SystemThemeUtils @Inject constructor(
-    private val context: Context,
-    @Named("default_preferences") private val applicationKvStore: JsonKvStore
+    @ApplicationContext private val context: Context,
+    @DefaultKvStore private val applicationKvStore: JsonKvStore
 ) {
 
     companion object {

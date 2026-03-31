@@ -1,21 +1,19 @@
 package fr.free.nrw.commons.upload.license
 
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.repository.UploadRepository
 import fr.free.nrw.commons.settings.Prefs
-import fr.free.nrw.commons.utils.toLicenseName
-import timber.log.Timber
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Added JavaDocs for MediaLicensePresenter
  */
 class MediaLicensePresenter @Inject constructor(
     private val repository: UploadRepository,
-    @param:Named("default_preferences") private val defaultKVStore: JsonKvStore
+    @DefaultKvStore private val defaultKVStore: JsonKvStore
 ) : MediaLicenseContract.UserActionListener {
     private var view = DUMMY
 

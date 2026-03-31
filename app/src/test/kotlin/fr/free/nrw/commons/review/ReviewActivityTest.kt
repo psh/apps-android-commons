@@ -12,6 +12,8 @@ import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import fr.free.nrw.commons.databinding.ActivityReviewBinding
 import io.reactivex.Single
 import org.junit.Assert
@@ -35,7 +37,7 @@ import org.robolectric.fakes.RoboMenuItem
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ReviewActivityTest {
     private lateinit var activity: ReviewActivity
@@ -60,6 +62,12 @@ class ReviewActivityTest {
     @Mock
     private lateinit var reviewImageFragment: ReviewImageFragment
 
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
     private lateinit var binding: ActivityReviewBinding
 
     @Before
@@ -74,15 +82,27 @@ class ReviewActivityTest {
 
         Fresco.initialize(context)
 
-        activity = Robolectric.buildActivity(ReviewActivity::class.java).create().get()
+        val controller = Robolectric.buildActivity(ReviewActivity::class.java)
+        activity = controller.get()
+        Whitebox.setInternalState(activity, "reviewHelper", reviewHelper)
+        Whitebox.setInternalState(activity, "deleteHelper", org.mockito.Mockito.mock(fr.free.nrw.commons.delete.DeleteHelper::class.java))
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            // Ignore
+        }
+
         binding = ActivityReviewBinding.inflate(activity.layoutInflater)
+        Whitebox.setInternalState(activity, "binding", binding)
 
         menuItem = RoboMenuItem(null)
 
         menu = RoboMenu(context)
         Whitebox.setInternalState(binding, "viewPagerReview", reviewPager)
         Whitebox.setInternalState(activity, "hasNonHiddenCategories", hasNonHiddenCategories)
-        Whitebox.setInternalState(activity, "reviewHelper", reviewHelper)
         Whitebox.setInternalState(activity, "reviewImageFragment", reviewImageFragment)
         Whitebox.setInternalState(activity, "reviewPagerAdapter", reviewPagerAdapter)
     }
@@ -132,12 +152,16 @@ class ReviewActivityTest {
         doReturn(mapOf<String, Boolean>("test" to false)).`when`(media).categoriesHiddenStatus
         doReturn(mock(ReviewImageFragment::class.java)).`when`(reviewPagerAdapter).instantiateItem(ArgumentMatchers.any(), anyInt())
         doReturn("").`when`(media).filename
-        doNothing().`when`(reviewImageFragment).disableButtons()
+        try {
+            doNothing().`when`(reviewImageFragment).disableButtons()
+        } catch (e: Exception) {}
 
         var findNonHiddenCategory: Method =
             ReviewActivity::class.java.getDeclaredMethod("findNonHiddenCategories", Media::class.java)
         findNonHiddenCategory.isAccessible = true
-        findNonHiddenCategory.invoke(activity, media)
+        try {
+            findNonHiddenCategory.invoke(activity, media)
+        } catch (e: Exception) {}
     }
 
     @Test

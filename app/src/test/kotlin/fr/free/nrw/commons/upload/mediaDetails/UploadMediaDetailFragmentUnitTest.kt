@@ -21,20 +21,26 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.chrisbanes.photoview.PhotoView
 import com.nhaarman.mockitokotlin2.mock
 import fr.free.nrw.commons.CameraPosition
-import fr.free.nrw.commons.locationpicker.LocationPicker
-import fr.free.nrw.commons.locationpicker.LocationPickerActivity
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
+import fr.free.nrw.commons.locationpicker.LocationPicker
+import fr.free.nrw.commons.locationpicker.LocationPickerActivity
 import fr.free.nrw.commons.nearby.Place
+import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.upload.ImageCoordinates
 import fr.free.nrw.commons.upload.UploadActivity
 import fr.free.nrw.commons.upload.UploadItem
 import fr.free.nrw.commons.upload.UploadMediaDetailAdapter
+import fr.free.nrw.commons.recentlanguages.RecentLanguagesDao
+import fr.free.nrw.commons.databinding.FragmentUploadMediaDetailFragmentBinding
+import androidx.lifecycle.MutableLiveData
+import fr.free.nrw.commons.upload.UploadMediaDetail
 import fr.free.nrw.commons.upload.mediaDetails.UploadMediaDetailFragment.Companion.LAST_ZOOM
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -55,7 +61,7 @@ import org.robolectric.shadows.ShadowIntent
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class UploadMediaDetailFragmentUnitTest {
     private lateinit var fragment: UploadMediaDetailFragment
@@ -108,7 +114,13 @@ class UploadMediaDetailFragmentUnitTest {
     @Mock
     private lateinit var imageCoordinates: ImageCoordinates
 
-    private lateinit var activity: UploadActivity
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
+
+    private lateinit var uploadActivity: UploadActivity
+
+    @Mock
+    private lateinit var recentLanguagesDao: RecentLanguagesDao
 
     @Before
     fun setUp() {
@@ -117,36 +129,55 @@ class UploadMediaDetailFragmentUnitTest {
         context = ApplicationProvider.getApplicationContext()
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        activity = Robolectric.buildActivity(UploadActivity::class.java).create().get()
-        layoutInflater = LayoutInflater.from(activity)
+        val controller = Robolectric.buildActivity(UploadActivity::class.java)
+        uploadActivity = controller.get()
+        Whitebox.setInternalState(uploadActivity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(uploadActivity, "systemThemeUtils", systemThemeUtils)
 
-        view =
-            LayoutInflater
-                .from(activity)
-                .inflate(R.layout.fragment_upload_media_detail_fragment, null) as View
+        Whitebox.setInternalState(uploadActivity, "contributionController", Mockito.mock(fr.free.nrw.commons.contributions.ContributionController::class.java))
+        Whitebox.setInternalState(uploadActivity, "locationManager", Mockito.mock(fr.free.nrw.commons.location.LocationServiceManager::class.java))
+
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            // Ignore
+        }
+
+        layoutInflater = LayoutInflater.from(uploadActivity)
 
         fragment = UploadMediaDetailFragment()
-        fragmentManager = activity.supportFragmentManager
+        fragment.fragmentCallback = callback
+        
+        Whitebox.setInternalState(fragment, "presenter", presenter)
+        Whitebox.setInternalState(fragment, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(fragment, "recentLanguagesDao", recentLanguagesDao)
+
+        val binding = FragmentUploadMediaDetailFragmentBinding.inflate(layoutInflater)
+        Whitebox.setInternalState(fragment, "_binding", binding)
+        view = binding.root
+        
+        // Initialize internal views that are used in tests
+        tvTitle = binding.tvTitle
+        tooltip = binding.tooltip
+        rvDescriptions = binding.rvDescriptions
+        btnPrevious = binding.btnPrevious
+        btnNext = binding.btnNext
+        btnCopyToSubsequentMedia = binding.btnCopySubsequentMedia
+        photoViewBackgroundImage = binding.backgroundImage
+        locationStatusLl = binding.llLocationStatus
+        locationImageView = binding.locationImageView
+        locationTextView = binding.locationTextView
+        llContainerMediaDetail = binding.llContainerMediaDetail
+        ibExpandCollapse = binding.ibExpandCollapse
+
+        fragmentManager = uploadActivity.supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(fragment, null)
-        fragmentTransaction.commit()
-
-        tvTitle = view.findViewById(R.id.tv_title)
-        tooltip = view.findViewById(R.id.tooltip)
-        rvDescriptions = view.findViewById(R.id.rv_descriptions)
-        btnPrevious = view.findViewById(R.id.btn_previous)
-        btnNext = view.findViewById(R.id.btn_next)
-        btnCopyToSubsequentMedia = view.findViewById(R.id.btn_copy_subsequent_media)
-        photoViewBackgroundImage = view.findViewById(R.id.backgroundImage)
-        locationStatusLl = view.findViewById(R.id.ll_location_status)
-        locationImageView = view.findViewById(R.id.location_image_view)
-        locationTextView = view.findViewById(R.id.location_text_view)
-        llContainerMediaDetail = view.findViewById(R.id.ll_container_media_detail)
-        ibExpandCollapse = view.findViewById(R.id.ib_expand_collapse)
+        fragmentTransaction.commitNow()
 
         Whitebox.setInternalState(fragment, "uploadMediaDetailAdapter", uploadMediaDetailAdapter)
-        Whitebox.setInternalState(fragment, "defaultKvStore", defaultKvStore)
-        `when`(defaultKvStore.getString("description_language", "")).thenReturn("en")
+        `when`(uploadMediaDetailAdapter.items).thenReturn(mutableListOf(UploadMediaDetail()))
+        `when`(defaultKvStore.getString(Mockito.anyString(), Mockito.anyString())).thenReturn("en")
     }
 
     @Test
@@ -319,7 +350,7 @@ class UploadMediaDetailFragmentUnitTest {
         handleResultMethod.isAccessible = true
 
         handleResultMethod.invoke(fragment, activityResult)
-        Mockito.verify(presenter, Mockito.times(0)).getImageQuality(0, location, activity)
+        Mockito.verify(presenter, Mockito.times(0)).getImageQuality(0, location, uploadActivity)
     }
 
     @Test
@@ -402,7 +433,7 @@ class UploadMediaDetailFragmentUnitTest {
         fragment.showExternalMap(uploadItem)
         Mockito.verify(uploadItem, Mockito.times(1)).gpsCoords
         Mockito.verify(defaultKvStore, Mockito.times(2)).getString(LAST_ZOOM)
-        val shadowActivity: ShadowActivity = shadowOf(activity)
+        val shadowActivity: ShadowActivity = shadowOf(uploadActivity)
         val startedIntent = shadowActivity.nextStartedActivity
         val shadowIntent: ShadowIntent = shadowOf(startedIntent)
         Assert.assertEquals(shadowIntent.intentClass, LocationPickerActivity::class.java)
@@ -419,7 +450,7 @@ class UploadMediaDetailFragmentUnitTest {
         `when`(defaultKvStore.getString(LAST_ZOOM)).thenReturn(null)
         fragment.showExternalMap(uploadItem)
         Mockito.verify(uploadItem.gpsCoords, Mockito.times(1))?.zoomLevel
-        val shadowActivity: ShadowActivity = shadowOf(activity)
+        val shadowActivity: ShadowActivity = shadowOf(uploadActivity)
         val startedIntent = shadowActivity.nextStartedActivity
         val shadowIntent: ShadowIntent = shadowOf(startedIntent)
         Assert.assertEquals(shadowIntent.intentClass, LocationPickerActivity::class.java)

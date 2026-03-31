@@ -12,12 +12,13 @@ import fr.free.nrw.commons.BuildConfig;
 import fr.free.nrw.commons.R;
 import fr.free.nrw.commons.actions.PageEditClient;
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException;
+import fr.free.nrw.commons.di.LoggedInUsername;
+import fr.free.nrw.commons.di.WikidataPageEdit;
 import fr.free.nrw.commons.notification.NotificationHelper;
 import fr.free.nrw.commons.utils.ViewUtilWrapper;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import timber.log.Timber;
 
@@ -42,9 +43,9 @@ public class PageEditHelper {
 
     @Inject
     public PageEditHelper(NotificationHelper notificationHelper,
-        @Named("wikidata-page-edit") PageEditClient pageEditClient,
+        @WikidataPageEdit PageEditClient pageEditClient,
         ViewUtilWrapper viewUtil,
-        @Named("username") String username) {
+        @LoggedInUsername String username) {
         this.notificationHelper = notificationHelper;
         this.pageEditClient = pageEditClient;
         this.viewUtil = viewUtil;

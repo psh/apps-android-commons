@@ -5,12 +5,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
+import fr.free.nrw.commons.databinding.ActivityCustomSelectorBinding
+import fr.free.nrw.commons.databinding.CustomSelectorBottomLayoutBinding
+import fr.free.nrw.commons.databinding.CustomSelectorToolbarBinding
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.model.Image
 import fr.free.nrw.commons.customselector.ui.adapter.ImageAdapter
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
+import fr.free.nrw.commons.upload.FileUtilsWrapper
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -30,7 +37,7 @@ import java.lang.reflect.Method
  * Custom Selector Activity Test
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class CustomSelectorActivityTest {
     private lateinit var activity: CustomSelectorActivity
 
@@ -45,6 +52,21 @@ class CustomSelectorActivityTest {
     @Mock
     lateinit var contributionDao: ContributionDao
 
+    @Mock
+    lateinit var customSelectorViewModelFactory: CustomSelectorViewModelFactory
+
+    @Mock
+    lateinit var notForUploadStatusDao: NotForUploadStatusDao
+
+    @Mock
+    lateinit var fileUtilsWrapper: FileUtilsWrapper
+
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
     /**
      * Set up the tests.
      */
@@ -53,13 +75,29 @@ class CustomSelectorActivityTest {
         MockitoAnnotations.openMocks(this)
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        activity =
-            Robolectric
-                .buildActivity(CustomSelectorActivity::class.java)
-                .get()
-        val onCreate = activity.javaClass.getDeclaredMethod("onCreate", Bundle::class.java)
-        onCreate.isAccessible = true
-        onCreate.invoke(activity, null)
+        val controller = Robolectric.buildActivity(CustomSelectorActivity::class.java)
+        activity = controller.get()
+        Whitebox.setInternalState(activity, "customSelectorViewModelFactory", customSelectorViewModelFactory)
+        Whitebox.setInternalState(activity, "notForUploadStatusDao", notForUploadStatusDao)
+        Whitebox.setInternalState(activity, "fileUtilsWrapper", fileUtilsWrapper)
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            // Ignore for tests
+        }
+
+        val binding = ActivityCustomSelectorBinding.inflate(activity.layoutInflater)
+        Whitebox.setInternalState(activity, "binding", binding)
+        Whitebox.setInternalState(activity, "toolbarBinding", CustomSelectorToolbarBinding.bind(binding.root))
+        Whitebox.setInternalState(activity, "bottomSheetBinding", CustomSelectorBottomLayoutBinding.bind(binding.root))
+        Whitebox.setInternalState(activity, "viewModel", Mockito.mock(CustomSelectorViewModel::class.java))
+        val mockViewModel = Whitebox.getInternalState(activity, "viewModel") as CustomSelectorViewModel
+        val mockLiveData = Mockito.mock(androidx.lifecycle.MutableLiveData::class.java) as androidx.lifecycle.MutableLiveData<ArrayList<Image>>
+        Mockito.`when`(mockViewModel.selectedImages).thenReturn(mockLiveData)
+        Whitebox.setInternalState(activity, "prefs", activity.getSharedPreferences("CustomSelector", Activity.MODE_PRIVATE))
+
         imageFragment = ImageFragment.newInstance(1, 0)
         image = Image(1, "image", uri, "abc/abc", 1, "bucket1")
         images = ArrayList()

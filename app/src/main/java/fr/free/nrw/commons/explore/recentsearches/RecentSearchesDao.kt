@@ -1,11 +1,11 @@
 package fr.free.nrw.commons.explore.recentsearches
 
-import android.annotation.SuppressLint
 import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.Cursor
 import android.os.RemoteException
 import androidx.core.content.contentValuesOf
+import fr.free.nrw.commons.di.RecentSearchClient
 import fr.free.nrw.commons.explore.models.RecentSearch
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesContentProvider.Companion.BASE_URI
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesContentProvider.Companion.uriForId
@@ -18,7 +18,6 @@ import fr.free.nrw.commons.utils.getLong
 import fr.free.nrw.commons.utils.getString
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
 
 /**
@@ -26,7 +25,7 @@ import javax.inject.Provider
  * inserting, deleting, searching data from recent searches database.
  */
 class RecentSearchesDao @Inject constructor(
-    @param:Named("recentsearch") private val clientProvider: Provider<ContentProviderClient>
+    @RecentSearchClient private val clientProvider: Provider<ContentProviderClient>
 ) {
     /**
      * This method is called on click of media/ categories for storing them in recent searches

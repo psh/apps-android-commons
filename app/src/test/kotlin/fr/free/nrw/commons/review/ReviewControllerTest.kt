@@ -13,6 +13,8 @@ import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import fr.free.nrw.commons.delete.DeleteHelper
 import fr.free.nrw.commons.wikidata.mwapi.MwQueryPage
 import media
@@ -35,7 +37,7 @@ import java.lang.reflect.Method
 import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ReviewControllerTest {
     private lateinit var controller: ReviewController
@@ -52,6 +54,12 @@ class ReviewControllerTest {
     @Mock
     private lateinit var firstRevision: MwQueryPage.Revision
 
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
     @Before
     @Throws(Exception::class)
     fun setUp() {
@@ -60,7 +68,15 @@ class ReviewControllerTest {
         OkHttpConnectionFactory.CLIENT = createTestClient()
         SoLoader.setInTestMode()
         Fresco.initialize(context)
-        activity = Robolectric.buildActivity(ReviewActivity::class.java).create().get()
+        val activityController = Robolectric.buildActivity(ReviewActivity::class.java)
+        activity = activityController.get()
+        val mockReviewHelper = org.mockito.Mockito.mock(fr.free.nrw.commons.review.ReviewHelper::class.java)
+        org.mockito.Mockito.`when`(mockReviewHelper.getRandomMedia()).thenReturn(io.reactivex.Single.never())
+        Whitebox.setInternalState(activity, "reviewHelper", mockReviewHelper)
+        Whitebox.setInternalState(activity, "deleteHelper", deleteHelper)
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        activityController.create()
         controller = ReviewController(deleteHelper, context)
         media = media(filename = "test_file", dateUploaded = Date())
         Whitebox.setInternalState(controller, "media", media)

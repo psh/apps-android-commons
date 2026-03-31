@@ -5,11 +5,10 @@ import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import fr.free.nrw.commons.di.CommonsApplicationModule
+import fr.free.nrw.commons.di.IoScheduler
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * The presenter class for Contributions
@@ -18,7 +17,7 @@ class ContributionsListPresenter @Inject internal constructor(
     private val contributionBoundaryCallback: ContributionBoundaryCallback,
     private val contributionsRemoteDataSource: ContributionsRemoteDataSource,
     private val repository: ContributionsRepository,
-    @param:Named(CommonsApplicationModule.IO_THREAD) private val ioThreadScheduler: Scheduler
+    @param:IoScheduler private val ioThreadScheduler: Scheduler
 ) : ContributionsListContract.UserActionListener {
     private val compositeDisposable = CompositeDisposable()
 

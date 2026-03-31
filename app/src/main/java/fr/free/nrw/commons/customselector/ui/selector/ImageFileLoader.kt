@@ -4,6 +4,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
 import android.text.format.DateFormat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.customselector.listeners.ImageLoaderListener
 import fr.free.nrw.commons.customselector.model.Image
 import kotlinx.coroutines.CoroutineScope
@@ -14,14 +15,17 @@ import java.io.File
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 /**
  * Custom Selector Image File Loader.
  * Loads device images.
  */
-class ImageFileLoader(
-    val context: Context,
+@Singleton
+class ImageFileLoader @Inject constructor(
+    @ApplicationContext val context: Context,
 ) : CoroutineScope {
     /**
      * Coroutine context for fetching images.

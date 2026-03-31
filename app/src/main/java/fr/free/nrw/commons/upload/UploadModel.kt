@@ -2,9 +2,13 @@ package fr.free.nrw.commons.upload
 
 import android.content.Context
 import android.net.Uri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.Contribution
+import fr.free.nrw.commons.di.DefaultKvStore
+import fr.free.nrw.commons.di.Licenses
+import fr.free.nrw.commons.di.LicensesByName
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
@@ -18,15 +22,14 @@ import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class UploadModel @Inject internal constructor(
-    @param:Named("licenses") val licenses: List<String>,
-    @param:Named("default_preferences") val store: JsonKvStore,
-    @param:Named("licenses_by_name") val licensesByName: Map<String, String>,
-    val context: Context,
+    @Licenses val licenses: List<String>,
+    @DefaultKvStore val store: JsonKvStore,
+    @LicensesByName val licensesByName: Map<String, String>,
+    @ApplicationContext val context: Context,
     val sessionManager: SessionManager,
     val fileProcessor: FileProcessor,
     val imageProcessingService: ImageProcessingService

@@ -51,7 +51,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
             else -> throw IllegalArgumentException("Unknown URI $uri")
         }
 
-        cursor?.setNotificationUri(requireContext().contentResolver, uri)
+        cursor?.setNotificationUri(context?.contentResolver, uri)
         return cursor
     }
 
@@ -69,7 +69,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return "${BASE_URI}/$id".toUri()
     }
 
@@ -91,7 +91,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
             else -> throw IllegalArgumentException("Unknown URI: $uri")
         }
         sqlDB.endTransaction()
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return values.size
     }
 
@@ -121,7 +121,7 @@ class CategoryContentProvider : CommonsDaggerContentProvider() {
             }
             else -> throw IllegalArgumentException("Unknown URI: $uri with type $uriType")
         }
-        requireContext().contentResolver?.notifyChange(uri, null)
+        context?.contentResolver?.notifyChange(uri, null)
         return rowsUpdated
     }
 

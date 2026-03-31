@@ -3,7 +3,7 @@ package fr.free.nrw.commons
 import android.app.Application
 import android.content.Context
 
-class TestCommonsApplication : Application() {
+class TestCommonsApplication : CommonsApplication() {
 
     override fun onCreate() {
         super.onCreate()

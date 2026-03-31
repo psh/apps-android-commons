@@ -36,7 +36,7 @@ import org.robolectric.shadows.ShadowToast
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class LeaderboardFragmentUnitTests {
     private lateinit var fragment: LeaderboardFragment
@@ -80,6 +80,8 @@ class LeaderboardFragmentUnitTests {
 
         Whitebox.setInternalState(fragment, "viewModel", viewModel)
         Whitebox.setInternalState(fragment, "mView", parentView)
+        Whitebox.setInternalState(fragment, "sessionManager", sessionManager)
+        Whitebox.setInternalState(fragment, "okHttpJsonApiClient", org.mockito.Mockito.mock(fr.free.nrw.commons.mwapi.OkHttpJsonApiClient::class.java))
     }
 
     @Test

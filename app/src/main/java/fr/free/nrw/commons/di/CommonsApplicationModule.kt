@@ -11,8 +11,12 @@ import androidx.room.Room.databaseBuilder
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.Gson
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
@@ -21,18 +25,14 @@ import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.database.UploadedStatusDao
-import fr.free.nrw.commons.customselector.ui.selector.ImageFileLoader
-import fr.free.nrw.commons.data.DBOpenHelper
 import fr.free.nrw.commons.db.AppDatabase
-
 import fr.free.nrw.commons.kvstore.JsonKvStore
-import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.nearby.PlaceDao
 import fr.free.nrw.commons.review.ReviewDao
 import fr.free.nrw.commons.settings.Prefs
-import fr.free.nrw.commons.upload.UploadController
 import fr.free.nrw.commons.upload.depicts.DepictsDao
 import fr.free.nrw.commons.utils.ConfigUtils.isBetaFlavour
+import fr.free.nrw.commons.utils.SystemTimeProvider
 import fr.free.nrw.commons.utils.TimeProvider
 import fr.free.nrw.commons.wikidata.WikidataEditListener
 import fr.free.nrw.commons.wikidata.WikidataEditListenerImpl
@@ -41,11 +41,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Objects
-import javax.inject.Named
 import javax.inject.Singleton
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * The Dependency Provider class for Commons Android.
@@ -56,200 +52,171 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 @Module
 @InstallIn(SingletonComponent::class)
 @Suppress("unused")
-open class CommonsApplicationModule {
+abstract class CommonsApplicationModule {
 
-    @Provides
-    fun provideContext(@ApplicationContext context: Context): Context = context
-
-    @Provides
-    fun providesImageFileLoader(@ApplicationContext context: Context): ImageFileLoader =
-        ImageFileLoader(context)
-
-    @Provides
-    fun provideInputMethodManager(@ApplicationContext context: Context): InputMethodManager =
-        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-
-    @Provides
-    @Named("licenses")
-    fun provideLicenses(@ApplicationContext context: Context): List<String> = listOf(
-        context.getString(R.string.license_name_cc0),
-        context.getString(R.string.license_name_cc_by),
-        context.getString(R.string.license_name_cc_by_sa),
-        context.getString(R.string.license_name_cc_by_four),
-        context.getString(R.string.license_name_cc_by_sa_four)
-    )
-
-    @Provides
-    @Named("licenses_by_name")
-    fun provideLicensesByName(@ApplicationContext context: Context): Map<String, String> = mapOf(
-        context.getString(R.string.license_name_cc0) to Prefs.Licenses.CC0,
-        context.getString(R.string.license_name_cc_by) to Prefs.Licenses.CC_BY_3,
-        context.getString(R.string.license_name_cc_by_sa) to Prefs.Licenses.CC_BY_SA_3,
-        context.getString(R.string.license_name_cc_by_four) to Prefs.Licenses.CC_BY_4,
-        context.getString(R.string.license_name_cc_by_sa_four) to Prefs.Licenses.CC_BY_SA_4
-    )
-
-    /**
-     * Provides an instance of CategoryContentProviderClient i.e. the categories
-     * that are there in local storage
-     */
-    @Provides
-    @Named("category")
-    open fun provideCategoryContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.CATEGORY_AUTHORITY)
-
-    @Provides
-    @Named("recentsearch")
-    fun provideRecentSearchContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_SEARCH_AUTHORITY)
-
-    @Provides
-    @Named("contribution")
-    open fun provideContributionContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.CONTRIBUTION_AUTHORITY)
-
-    @Provides
-    @Named("modification")
-    open fun provideModificationContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.MODIFICATION_AUTHORITY)
-
-    @Provides
-    @Named("bookmarks")
-    fun provideBookmarkContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_AUTHORITY)
-
-    @Provides
-    @Named("bookmarksItem")
-    fun provideBookmarkItemContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_ITEMS_AUTHORITY)
-
-    /**
-     * This method is used to provide instance of RecentLanguagesContentProvider
-     * which provides content of recent used languages from database
-     * @param context Context
-     * @return returns RecentLanguagesContentProvider
-     */
-    @Provides
-    @Named("recent_languages")
-    fun provideRecentLanguagesContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
-        context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_LANGUAGE_AUTHORITY)
-
-    /**
-     * Provides a Json store instance(JsonKvStore) which keeps
-     * the provided Gson in it's instance
-     * @param gson stored inside the store instance
-     */
-    @Provides
-    @Named("default_preferences")
-    open fun providesDefaultKvStore(@ApplicationContext context: Context, gson: Gson): JsonKvStore =
-        JsonKvStore(context, "${context.packageName}_preferences", gson)
-
-    @Provides
-    fun providesUploadController(
-        sessionManager: SessionManager,
-        @Named("default_preferences") kvStore: JsonKvStore,
-        @ApplicationContext context: Context
-    ): UploadController = UploadController(sessionManager, context, kvStore)
-
-    @Provides
+    @Binds
     @Singleton
-    open fun provideLocationServiceManager(@ApplicationContext context: Context): LocationServiceManager =
-        LocationServiceManager(context)
+    abstract fun bindWikidataEditListener(wikidataEditListenerImpl: WikidataEditListenerImpl): WikidataEditListener
 
-    @Provides
+    @Binds
     @Singleton
-    open fun provideDBOpenHelper(@ApplicationContext context: Context): DBOpenHelper =
-        DBOpenHelper(context)
-
-    @Provides
-    @Singleton
-    @Named("thumbnail-cache")
-    open fun provideLruCache(): LruCache<String, String> =
-        LruCache(1024)
-
-    @Provides
-    @Singleton
-    fun provideWikidataEditListener(): WikidataEditListener =
-        WikidataEditListenerImpl()
-
-    @Named("isBeta")
-    @Provides
-    @Singleton
-    fun provideIsBetaVariant(): Boolean =
-        isBetaFlavour
-
-    @Named(IO_THREAD)
-    @Provides
-    fun providesIoThread(): Scheduler =
-        Schedulers.io()
-
-    @Named(MAIN_THREAD)
-    @Provides
-    fun providesMainThread(): Scheduler =
-        AndroidSchedulers.mainThread()
-
-    @Named("username")
-    @Provides
-    fun provideLoggedInUsername(sessionManager: SessionManager): String =
-        Objects.toString(sessionManager.userName, "")
-
-    @Provides
-    @Singleton
-    fun provideAppDataBase(@ApplicationContext context: Context): AppDatabase = databaseBuilder(
-        context,
-        AppDatabase::class.java,
-        "commons_room.db"
-    ).addMigrations(
-        MIGRATION_1_2,
-        MIGRATION_19_TO_20,
-        MIGRATION_21_22
-    ).fallbackToDestructiveMigration().build()
-
-    @Provides
-    fun providesContributionsDao(appDatabase: AppDatabase): ContributionDao =
-        appDatabase.contributionDao()
-
-    @Provides
-    fun providesPlaceDao(appDatabase: AppDatabase): PlaceDao =
-        appDatabase.PlaceDao()
-
-    @Provides
-    fun providesBookmarkLocationsDao(appDatabase: AppDatabase): BookmarkLocationsDao =
-        appDatabase.bookmarkLocationsDao()
-
-    @Provides
-    fun providesDepictDao(appDatabase: AppDatabase): DepictsDao =
-        appDatabase.DepictsDao()
-
-    @Provides
-    fun providesUploadedStatusDao(appDatabase: AppDatabase): UploadedStatusDao =
-        appDatabase.UploadedStatusDao()
-
-    @Provides
-    fun providesNotForUploadStatusDao(appDatabase: AppDatabase): NotForUploadStatusDao =
-        appDatabase.NotForUploadStatusDao()
-
-    @Provides
-    fun providesReviewDao(appDatabase: AppDatabase): ReviewDao =
-        appDatabase.ReviewDao()
-
-    @Provides
-    fun providesBookmarkCategoriesDao (appDatabase: AppDatabase): BookmarkCategoriesDao =
-        appDatabase.bookmarkCategoriesDao()
-
-    @Provides
-    fun providesContentResolver(@ApplicationContext context: Context): ContentResolver =
-        context.contentResolver
-
-    @Provides
-    fun provideTimeProvider(): TimeProvider {
-        return TimeProvider(System::currentTimeMillis)
-    }
+    abstract fun bindTimeProvider(systemTimeProvider: SystemTimeProvider): TimeProvider
 
     companion object {
-        const val IO_THREAD: String = "io_thread"
-        const val MAIN_THREAD: String = "main_thread"
+        @Provides
+        fun providesInputMethodManager(@ApplicationContext context: Context): InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
+        @Provides
+        @Licenses
+        fun provideLicenses(@ApplicationContext context: Context): List<String> = listOf(
+            context.getString(R.string.license_name_cc0),
+            context.getString(R.string.license_name_cc_by),
+            context.getString(R.string.license_name_cc_by_sa),
+            context.getString(R.string.license_name_cc_by_four),
+            context.getString(R.string.license_name_cc_by_sa_four)
+        )
+
+        @Provides
+        @LicensesByName
+        fun provideLicensesByName(@ApplicationContext context: Context): Map<String, String> = mapOf(
+            context.getString(R.string.license_name_cc0) to Prefs.Licenses.CC0,
+            context.getString(R.string.license_name_cc_by) to Prefs.Licenses.CC_BY_3,
+            context.getString(R.string.license_name_cc_by_sa) to Prefs.Licenses.CC_BY_SA_3,
+            context.getString(R.string.license_name_cc_by_four) to Prefs.Licenses.CC_BY_4,
+            context.getString(R.string.license_name_cc_by_sa_four) to Prefs.Licenses.CC_BY_SA_4
+        )
+
+        /**
+         * Provides an instance of CategoryContentProviderClient i.e. the categories
+         * that are there in local storage
+         */
+        @Provides
+        @CategoryClient
+        fun provideCategoryContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.CATEGORY_AUTHORITY)
+
+        @Provides
+        @RecentSearchClient
+        fun provideRecentSearchContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_SEARCH_AUTHORITY)
+
+        @Provides
+        @ContributionClient
+        fun provideContributionContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.CONTRIBUTION_AUTHORITY)
+
+        @Provides
+        @ModificationClient
+        fun provideModificationContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.MODIFICATION_AUTHORITY)
+
+        @Provides
+        @BookmarksClient
+        fun provideBookmarkContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_AUTHORITY)
+
+        @Provides
+        @BookmarksItemClient
+        fun provideBookmarkItemContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.BOOKMARK_ITEMS_AUTHORITY)
+
+        /**
+         * This method is used to provide instance of RecentLanguagesContentProvider
+         * which provides content of recent used languages from database
+         * @param context Context
+         * @return returns RecentLanguagesContentProvider
+         */
+        @Provides
+        @RecentLanguagesClient
+        fun provideRecentLanguagesContentProviderClient(@ApplicationContext context: Context): ContentProviderClient? =
+            context.contentResolver.acquireContentProviderClient(BuildConfig.RECENT_LANGUAGE_AUTHORITY)
+
+        /**
+         * Provides a Json store instance(JsonKvStore) which keeps
+         * the provided Gson in it's instance
+         * @param gson stored inside the store instance
+         */
+        @Provides
+        @DefaultKvStore
+        fun providesDefaultKvStore(@ApplicationContext context: Context, gson: Gson): JsonKvStore =
+            JsonKvStore(context, "${context.packageName}_preferences", gson)
+
+
+        @Provides
+        @Singleton
+        @ThumbnailCache
+        fun provideLruCache(): LruCache<String, String> =
+            LruCache(1024)
+
+        @IsBeta
+        @Provides
+        @Singleton
+        fun provideIsBetaVariant(): Boolean =
+            isBetaFlavour
+
+        @IoScheduler
+        @Provides
+        fun providesIoThread(): Scheduler =
+            Schedulers.io()
+
+        @MainThreadScheduler
+        @Provides
+        fun providesMainThread(): Scheduler =
+            AndroidSchedulers.mainThread()
+
+        @LoggedInUsername
+        @Provides
+        fun provideLoggedInUsername(sessionManager: SessionManager): String =
+            Objects.toString(sessionManager.userName, "")
+
+        @Provides
+        @Singleton
+        fun provideAppDataBase(@ApplicationContext context: Context): AppDatabase = databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "commons_room.db"
+        ).addMigrations(
+            MIGRATION_1_2,
+            MIGRATION_19_TO_20,
+            MIGRATION_21_22
+        ).fallbackToDestructiveMigration().build()
+
+        @Provides
+        fun providesContributionsDao(appDatabase: AppDatabase): ContributionDao =
+            appDatabase.contributionDao()
+
+        @Provides
+        fun providesPlaceDao(appDatabase: AppDatabase): PlaceDao =
+            appDatabase.PlaceDao()
+
+        @Provides
+        fun providesBookmarkLocationsDao(appDatabase: AppDatabase): BookmarkLocationsDao =
+            appDatabase.bookmarkLocationsDao()
+
+        @Provides
+        fun providesDepictDao(appDatabase: AppDatabase): DepictsDao =
+            appDatabase.DepictsDao()
+
+        @Provides
+        fun providesUploadedStatusDao(appDatabase: AppDatabase): UploadedStatusDao =
+            appDatabase.UploadedStatusDao()
+
+        @Provides
+        fun providesNotForUploadStatusDao(appDatabase: AppDatabase): NotForUploadStatusDao =
+            appDatabase.NotForUploadStatusDao()
+
+        @Provides
+        fun providesReviewDao(appDatabase: AppDatabase): ReviewDao =
+            appDatabase.ReviewDao()
+
+        @Provides
+        fun providesBookmarkCategoriesDao (appDatabase: AppDatabase): BookmarkCategoriesDao =
+            appDatabase.bookmarkCategoriesDao()
+
+        @Provides
+        fun providesContentResolver(@ApplicationContext context: Context): ContentResolver =
+            context.contentResolver
 
 
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {

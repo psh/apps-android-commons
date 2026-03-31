@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import fr.free.nrw.commons.CommonsApplication.Companion.IS_LIMITED_CONNECTION_MODE_ENABLED
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.contributions.Contribution
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.BasicKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.repository.UploadRepository
@@ -16,7 +17,6 @@ import timber.log.Timber
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class UploadPresenter @Inject internal constructor(
     private val repository: UploadRepository,
-    @param:Named("default_preferences") private val defaultKvStore: JsonKvStore
+    @DefaultKvStore private val defaultKvStore: JsonKvStore
 ) : UploadContract.UserActionListener {
     private var view = DUMMY
 

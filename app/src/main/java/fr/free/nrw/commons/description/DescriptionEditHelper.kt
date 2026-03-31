@@ -8,12 +8,12 @@ import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
+import fr.free.nrw.commons.di.CommonsPageEdit
 import fr.free.nrw.commons.notification.NotificationHelper
 import fr.free.nrw.commons.notification.NotificationHelper.Companion.NOTIFICATION_EDIT_DESCRIPTION
 import io.reactivex.Single
-import javax.inject.Inject
-import javax.inject.Named
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * Helper class for edit and update given descriptions and showing notification upgradation
@@ -28,7 +28,7 @@ class DescriptionEditHelper @Inject constructor(
      * pageEditClient: methods provided by this member posts the edited descriptions
      * to the Media wiki api
      */
-    @Named("commons-page-edit") val pageEditClient: PageEditClient
+    @CommonsPageEdit val pageEditClient: PageEditClient
 ) {
 
     /**

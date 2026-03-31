@@ -31,7 +31,7 @@ import kotlin.random.Random.Default.nextBoolean
 
 @RunWith(RobolectricTestRunner::class)
 @Config(
-    sdk = [21],
+    sdk = [23],
     application = TestCommonsApplication::class,
     shadows = [ShadowFileProvider::class],
 )

@@ -38,7 +38,7 @@ import java.lang.reflect.Method
 import java.util.Locale
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class SettingsFragmentUnitTests {
     private lateinit var fragment: SettingsFragment

@@ -35,6 +35,7 @@ import fr.free.nrw.commons.bookmarks.locations.BookmarkLocationsDao
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.databinding.FragmentExploreMapBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.explore.ExploreMapRootFragment
 import fr.free.nrw.commons.explore.paging.LiveDataConverter
 import fr.free.nrw.commons.kvstore.JsonKvStore
@@ -80,7 +81,6 @@ import org.osmdroid.views.overlay.ScaleDiskOverlay
 import org.osmdroid.views.overlay.TilesOverlay
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.View,
     LocationUpdateListener, LocationPermissionCallback {
@@ -121,7 +121,7 @@ class ExploreMapFragment : CommonsDaggerSupportFragment(), ExploreMapContract.Vi
     lateinit var exploreMapController: ExploreMapController
 
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     lateinit var applicationKvStore: JsonKvStore
 
     @Inject

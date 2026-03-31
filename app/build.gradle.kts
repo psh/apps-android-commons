@@ -1,5 +1,5 @@
-import java.util.Properties
 import java.io.ByteArrayOutputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "fr.free.nrw.commons"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 35
         versionCode = 1063
         versionName = "6.4.0"
@@ -275,6 +275,8 @@ dependencies {
     // Dependency injector
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.androidx.hilt.compiler)
     testImplementation(libs.hilt.android.testing)
     kaptTest(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)

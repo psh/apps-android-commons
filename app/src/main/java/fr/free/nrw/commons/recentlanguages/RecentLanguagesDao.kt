@@ -5,12 +5,12 @@ import android.content.ContentProviderClient
 import android.content.ContentValues
 import android.database.Cursor
 import android.os.RemoteException
+import fr.free.nrw.commons.di.RecentLanguagesClient
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesContentProvider.Companion.BASE_URI
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable.ALL_FIELDS
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable.COLUMN_CODE
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable.COLUMN_NAME
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -20,7 +20,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class RecentLanguagesDao @Inject constructor(
-    @Named("recent_languages")
+    @RecentLanguagesClient
     private val clientProvider: Provider<ContentProviderClient>
 ) {
 

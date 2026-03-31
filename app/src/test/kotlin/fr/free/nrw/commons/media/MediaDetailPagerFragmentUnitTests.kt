@@ -46,7 +46,7 @@ import java.lang.reflect.Method
 import java.util.concurrent.Callable
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class MediaDetailPagerFragmentUnitTests {
     private lateinit var fragment: MediaDetailPagerFragment

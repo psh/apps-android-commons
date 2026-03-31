@@ -13,6 +13,13 @@ import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.upload.categories.UploadCategoriesFragment
 import fr.free.nrw.commons.upload.license.MediaLicenseFragment
+import fr.free.nrw.commons.auth.SessionManager
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.location.LocationServiceManager
+import fr.free.nrw.commons.mwapi.UserClient
+import io.reactivex.Single
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +35,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class UploadActivityUnitTests {
     private lateinit var activity: UploadActivity
@@ -46,6 +53,18 @@ class UploadActivityUnitTests {
     @Mock
     private lateinit var contributionController: ContributionController
 
+    @Mock
+    private lateinit var sessionManager: SessionManager
+
+    @Mock
+    private lateinit var directKvStore: JsonKvStore
+
+    @Mock
+    private lateinit var userClient: UserClient
+
+    @Mock
+    private lateinit var locationManager: LocationServiceManager
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
@@ -54,15 +73,32 @@ class UploadActivityUnitTests {
         val list = ArrayList<UploadableFile>()
         list.add(uploadableFile)
         intent.putParcelableArrayListExtra(UploadActivity.EXTRA_FILES, list)
-        activity = Robolectric.buildActivity(UploadActivity::class.java, intent).create().get()
+        activity = Robolectric.buildActivity(UploadActivity::class.java, intent).get()
         context = ApplicationProvider.getApplicationContext()
 
         Whitebox.setInternalState(activity, "fragments", mutableListOf(uploadBaseFragment))
         Whitebox.setInternalState(activity, "presenter", presenter)
         Whitebox.setInternalState(activity, "contributionController", contributionController)
+        Whitebox.setInternalState(activity, "sessionManager", sessionManager)
+        Whitebox.setInternalState(activity, "directKvStore", directKvStore)
+        Whitebox.setInternalState(activity, "userClient", userClient)
+        Whitebox.setInternalState(activity, "locationManager", locationManager)
+
+        `when`(userClient.isUserBlockedFromCommons()).thenReturn(Single.just(false))
 
         val config: Configuration = Configuration.Builder().build()
         WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+
+        try {
+            val method: Method = UploadActivity::class.java.getDeclaredMethod(
+                "onCreate",
+                android.os.Bundle::class.java
+            )
+            method.isAccessible = true
+            method.invoke(activity, null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @Test

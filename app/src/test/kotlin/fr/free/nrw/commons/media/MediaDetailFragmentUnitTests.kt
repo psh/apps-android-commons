@@ -27,7 +27,6 @@ import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.soloader.SoLoader
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.whenever
-import fr.free.nrw.commons.locationpicker.LocationPickerActivity
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
@@ -39,6 +38,7 @@ import fr.free.nrw.commons.explore.SearchActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager
+import fr.free.nrw.commons.locationpicker.LocationPickerActivity
 import fr.free.nrw.commons.ui.widget.HtmlTextView
 import io.reactivex.Single
 import org.junit.Assert
@@ -72,7 +72,7 @@ import java.util.Date
 import java.util.Locale
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class MediaDetailFragmentUnitTests {
     private val lastLocation = "last_location_while_uploading"

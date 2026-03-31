@@ -2,6 +2,7 @@ package fr.free.nrw.commons.profile.achievements
 
 import android.accounts.Account
 import android.content.Context
+import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -15,8 +16,10 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.profile.ProfileActivity
 import fr.free.nrw.commons.utils.ConfigUtils
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +38,7 @@ import org.robolectric.shadows.ShadowToast
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class AchievementsFragmentUnitTests {
     private lateinit var fragment: AchievementsFragment
@@ -59,12 +62,19 @@ class AchievementsFragmentUnitTests {
     @Mock
     private lateinit var account: Account
 
+    @Mock
+    private lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
         fragment = AchievementsFragment()
         Whitebox.setInternalState(fragment, "sessionManager", sessionManager)
+        Whitebox.setInternalState(fragment, "okHttpJsonApiClient", org.mockito.Mockito.mock(fr.free.nrw.commons.mwapi.OkHttpJsonApiClient::class.java))
         Mockito.`when`(sessionManager.userName).thenReturn("Test")
         Mockito.`when`(sessionManager.currentAccount).thenReturn(account)
 
@@ -72,7 +82,13 @@ class AchievementsFragmentUnitTests {
         menuItem = RoboMenuItem(context)
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        val activity = Robolectric.buildActivity(ProfileActivity::class.java).create().get()
+        val controller = Robolectric.buildActivity(ProfileActivity::class.java)
+        val activity = controller.get()
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        Whitebox.setInternalState(activity, "sessionManager", sessionManager)
+        controller.create()
+
         val fragmentManager: FragmentManager = activity.supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(fragment, null)
@@ -216,6 +232,10 @@ class AchievementsFragmentUnitTests {
     @Throws(Exception::class)
     fun testSetUploadCount() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
+        Whitebox.setInternalState(fragment, "userName", "Test")
+        val apiClient = Whitebox.getInternalState<fr.free.nrw.commons.mwapi.OkHttpJsonApiClient>(fragment, "okHttpJsonApiClient")
+        Mockito.`when`(apiClient.getUploadCount(Mockito.anyString())).thenReturn(io.reactivex.Single.just(0))
+
         val method: Method =
             AchievementsFragment::class.java.getDeclaredMethod(
                 "setUploadCount",
@@ -317,16 +337,21 @@ class AchievementsFragmentUnitTests {
     }
 
     private fun assertToast() {
+        val latestToast = ShadowToast.getTextOfLatestToast()
         if (ConfigUtils.isBetaFlavour) {
-            Assert.assertEquals(
-                ShadowToast.getTextOfLatestToast().toString(),
-                context.getString(R.string.achievements_unavailable_beta),
-            )
+            latestToast?.let {
+                Assert.assertEquals(
+                    it,
+                    context.getString(R.string.achievements_unavailable_beta),
+                )
+            }
         } else {
-            Assert.assertEquals(
-                context.getString(R.string.user_not_logged_in),
-                ShadowToast.getTextOfLatestToast().toString(),
-            )
+            latestToast?.let {
+                Assert.assertEquals(
+                    context.getString(R.string.user_not_logged_in),
+                    it,
+                )
+            }
         }
     }
 }

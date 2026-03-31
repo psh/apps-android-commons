@@ -3,6 +3,7 @@ package fr.free.nrw.commons.customselector.ui.selector
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.contributions.Contribution
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.database.UploadedStatus
@@ -17,7 +18,6 @@ import fr.free.nrw.commons.utils.CustomSelectorUtils
 import fr.free.nrw.commons.utils.CustomSelectorUtils.Companion.checkWhetherFileExistsOnCommonsUsingSHA1
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -53,7 +53,7 @@ class ImageLoader
         /**
          * Context for coroutine.
          */
-        val context: Context,
+        @ApplicationContext val context: Context,
     ) {
         /**
          * Maps to facilitate image query.

@@ -17,6 +17,8 @@ import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
+import fr.free.nrw.commons.di.CommonsPageEdit
+import fr.free.nrw.commons.di.LoggedInUsername
 import fr.free.nrw.commons.notification.NotificationHelper
 import fr.free.nrw.commons.notification.NotificationHelper.Companion.NOTIFICATION_DELETE
 import fr.free.nrw.commons.review.ReviewController
@@ -31,7 +33,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -40,9 +41,9 @@ import javax.inject.Singleton
 @Singleton
 class DeleteHelper @Inject constructor(
     private val notificationHelper: NotificationHelper,
-    @Named("commons-page-edit") private val pageEditClient: PageEditClient,
+    @CommonsPageEdit private val pageEditClient: PageEditClient,
     private val viewUtil: ViewUtilWrapper,
-    @Named("username") private val username: String
+    @LoggedInUsername private val username: String
 ) {
     private var d: AlertDialog? = null
     private var listener: DialogInterface.OnMultiChoiceClickListener? = null

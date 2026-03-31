@@ -8,24 +8,23 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.ViewPagerAdapter
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.databinding.FragmentExploreBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.utils.ActivityUtils.startActivityWithFlags
 import javax.inject.Inject
-import javax.inject.Named
 
 class ExploreFragment : CommonsDaggerSupportFragment() {
 
     @JvmField
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     var applicationKvStore: JsonKvStore? = null
 
     private var featuredRootFragment: ExploreListRootFragment? = null

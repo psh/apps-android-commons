@@ -24,7 +24,7 @@ import java.util.Collections
 import java.util.Locale
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class LanguagesAdapterTest {
     private lateinit var context: Context

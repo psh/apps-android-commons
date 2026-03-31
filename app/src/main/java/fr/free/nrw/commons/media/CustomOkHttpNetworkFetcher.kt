@@ -11,6 +11,7 @@ import com.facebook.imagepipeline.producers.FetchState
 import com.facebook.imagepipeline.producers.NetworkFetcher
 import com.facebook.imagepipeline.producers.ProducerContext
 import fr.free.nrw.commons.CommonsApplication
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import okhttp3.CacheControl
 import okhttp3.Call
@@ -22,7 +23,6 @@ import timber.log.Timber
 import java.io.IOException
 import java.util.concurrent.Executor
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 // Custom implementation of Fresco's Network fetcher to skip downloading of images when limited connection mode is enabled
@@ -50,7 +50,7 @@ class CustomOkHttpNetworkFetcher
     @Inject
     constructor(
         okHttpClient: OkHttpClient,
-        @Named("default_preferences") defaultKvStore: JsonKvStore
+        @DefaultKvStore defaultKvStore: JsonKvStore
     ) : this(okHttpClient, okHttpClient.dispatcher.executorService, defaultKvStore)
 
     /**

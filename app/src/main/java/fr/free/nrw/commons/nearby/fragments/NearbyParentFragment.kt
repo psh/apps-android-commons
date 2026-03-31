@@ -64,6 +64,7 @@ import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment
 import fr.free.nrw.commons.databinding.FragmentNearbyParentBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.filepicker.FilePicker
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
@@ -142,7 +143,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 import kotlin.concurrent.Volatile
 import kotlin.math.ln
 
@@ -185,7 +185,7 @@ class NearbyParentFragment : CommonsDaggerSupportFragment(),
     lateinit var nearbyController: NearbyController
 
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     lateinit var applicationKvStore: JsonKvStore
 
     @Inject

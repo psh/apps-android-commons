@@ -36,7 +36,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class UploadMediaDetailAdapterUnitTest {
     private lateinit var adapter: UploadMediaDetailAdapter

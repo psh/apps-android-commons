@@ -1,23 +1,8 @@
 package fr.free.nrw.commons.bookmarks.locations
 
-import android.content.ContentProviderClient
-import android.content.ContentValues
-import android.database.Cursor
-import android.database.MatrixCursor
 import android.net.Uri
-import android.os.RemoteException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.inOrder
-import com.nhaarman.mockitokotlin2.isA
-import com.nhaarman.mockitokotlin2.isNull
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.db.AppDatabase
 import fr.free.nrw.commons.location.LatLng
@@ -32,13 +17,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.verifyNoInteractions
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class BookMarkLocationDaoTest {
 
     private lateinit var bookmarkLocationsDao: BookmarkLocationsDao

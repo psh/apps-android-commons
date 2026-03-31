@@ -6,10 +6,11 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import android.text.TextUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.Contribution
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.settings.Prefs
 import fr.free.nrw.commons.utils.ViewUtil.showLongToast
@@ -25,8 +26,8 @@ import javax.inject.Singleton
 @Singleton
 class UploadController @Inject constructor(
     private val sessionManager: SessionManager,
-    private val context: Context,
-    private val store: JsonKvStore
+    @ApplicationContext private val context: Context,
+    @DefaultKvStore private val store: JsonKvStore
 ) {
     /**
      * Starts a new upload task.

@@ -38,6 +38,7 @@ import fr.free.nrw.commons.campaigns.models.Campaign
 import fr.free.nrw.commons.contributions.MainActivity.ActiveFragment
 import fr.free.nrw.commons.databinding.FragmentContributionsBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager
@@ -73,14 +74,13 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
-import javax.inject.Named
 
 class ContributionsFragment : CommonsDaggerSupportFragment(), FragmentManager.OnBackStackChangedListener,
     LocationUpdateListener, MediaDetailProvider, SensorEventListener, ICampaignsView,
     ContributionsContract.View, ContributionsListFragment.Callback {
     @JvmField
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     var store: JsonKvStore? = null
 
     @JvmField

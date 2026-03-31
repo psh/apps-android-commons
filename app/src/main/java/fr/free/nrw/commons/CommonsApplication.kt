@@ -23,6 +23,7 @@ import fr.free.nrw.commons.concurrency.BackgroundPoolExceptionHandler
 import fr.free.nrw.commons.concurrency.ThreadPoolService
 import fr.free.nrw.commons.contributions.ContributionDao
 import fr.free.nrw.commons.data.DBOpenHelper
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.language.AppLanguageLookUpTable
 import fr.free.nrw.commons.logging.FileLoggingTree
@@ -48,7 +49,6 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 import java.io.File
 import javax.inject.Inject
-import javax.inject.Named
 
 @AcraCore(
     buildConfigClass = BuildConfig::class,
@@ -67,13 +67,9 @@ import javax.inject.Named
 )
 
 @HiltAndroidApp
-class CommonsApplication : MultiDexApplication() {
+open class CommonsApplication : MultiDexApplication() {
 
-    @dagger.hilt.EntryPoint
-    @dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
-    interface GsonEntryPoint {
-        fun gson(): com.google.gson.Gson
-    }
+
 
     @Inject
     lateinit var sessionManager: SessionManager
@@ -82,7 +78,7 @@ class CommonsApplication : MultiDexApplication() {
     lateinit var dbOpenHelper: DBOpenHelper
 
     @Inject
-    @field:Named("default_preferences")
+    @DefaultKvStore
     lateinit var defaultPrefs: JsonKvStore
 
     @Inject
@@ -101,12 +97,24 @@ class CommonsApplication : MultiDexApplication() {
      * Used to declare and initialize various components and dependencies
      */
     override fun onCreate() {
+        if (fr.free.nrw.commons.BuildConfig.DEBUG) {
+            instance = this
+        }
         super.onCreate()
 
         instance = this
-        init(this)
+        try {
+            init(this)
+        } catch (e: Exception) {
+            // ACRA might fail in tests if not properly configured
+            Log.e("CommonsApplication", "Failed to initialize ACRA", e)
+        }
 
-        initTimber()
+        try {
+            initTimber()
+        } catch (e: Exception) {
+            Log.e("CommonsApplication", "Failed to initialize Timber", e)
+        }
 
         if (!defaultPrefs.getBoolean("has_user_manually_removed_location")) {
             var defaultExifTagsSet = defaultPrefs.getStringSet(Prefs.MANAGED_EXIF_TAGS)

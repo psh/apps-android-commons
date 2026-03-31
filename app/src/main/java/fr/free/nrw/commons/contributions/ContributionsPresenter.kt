@@ -2,7 +2,7 @@ package fr.free.nrw.commons.contributions
 
 import androidx.work.ExistingWorkPolicy
 import fr.free.nrw.commons.MediaDataExtractor
-import fr.free.nrw.commons.di.CommonsApplicationModule
+import fr.free.nrw.commons.di.IoScheduler
 import fr.free.nrw.commons.repository.UploadRepository
 import fr.free.nrw.commons.upload.worker.WorkRequestHelper.Companion.makeOneTimeWorkRequest
 import fr.free.nrw.commons.utils.ImageUtils
@@ -10,7 +10,6 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * The presenter class for Contributions
@@ -18,7 +17,7 @@ import javax.inject.Named
 class ContributionsPresenter @Inject internal constructor(
     private val contributionsRepository: ContributionsRepository,
     private val uploadRepository: UploadRepository,
-    @param:Named(CommonsApplicationModule.IO_THREAD) private val ioThreadScheduler: Scheduler
+    @param:IoScheduler private val ioThreadScheduler: Scheduler
 ) : ContributionsContract.UserActionListener {
     private var compositeDisposable: CompositeDisposable? = null
     private var view: ContributionsContract.View? = null

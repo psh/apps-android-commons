@@ -2,7 +2,7 @@ package fr.free.nrw.commons.notification
 
 import fr.free.nrw.commons.auth.csrf.CsrfTokenClient
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
-import fr.free.nrw.commons.di.NetworkingModule
+import fr.free.nrw.commons.di.CommonsCsrf
 import fr.free.nrw.commons.notification.models.Notification
 import fr.free.nrw.commons.notification.models.NotificationType
 import fr.free.nrw.commons.utils.DateUtil
@@ -10,7 +10,6 @@ import fr.free.nrw.commons.wikidata.mwapi.MwQueryResponse
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 import fr.free.nrw.commons.wikidata.model.notifications.Notification as WikimediaNotification
 
@@ -18,7 +17,7 @@ import fr.free.nrw.commons.wikidata.model.notifications.Notification as Wikimedi
 class NotificationClient
     @Inject
     constructor(
-        @param:Named(NetworkingModule.NAMED_COMMONS_CSRF) private val csrfTokenClient: CsrfTokenClient,
+        @param:CommonsCsrf private val csrfTokenClient: CsrfTokenClient,
         private val service: NotificationInterface,
     ) {
         fun getNotifications(archived: Boolean): Single<List<Notification>> =

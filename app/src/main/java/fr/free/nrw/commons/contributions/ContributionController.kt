@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import fr.free.nrw.commons.R
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.filepicker.DefaultCallback
 import fr.free.nrw.commons.filepicker.FilePicker
 import fr.free.nrw.commons.filepicker.FilePicker.HandleActivityResult
@@ -18,7 +19,6 @@ import fr.free.nrw.commons.filepicker.FilePicker.configuration
 import fr.free.nrw.commons.filepicker.FilePicker.handleExternalImagesPicked
 import fr.free.nrw.commons.filepicker.FilePicker.onPictureReturnedFromDocuments
 import fr.free.nrw.commons.filepicker.FilePicker.openCameraForImage
-import fr.free.nrw.commons.filepicker.FilePicker.openCustomSelector
 import fr.free.nrw.commons.filepicker.FilePicker.openGallery
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.kvstore.JsonKvStore
@@ -36,11 +36,10 @@ import fr.free.nrw.commons.utils.ViewUtil.showShortToast
 import fr.free.nrw.commons.wikidata.WikidataConstants.PLACE_OBJECT
 import java.util.Arrays
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class ContributionController @Inject constructor(@param:Named("default_preferences") private val defaultKvStore: JsonKvStore) {
+class ContributionController @Inject constructor(@DefaultKvStore private val defaultKvStore: JsonKvStore) {
     private var locationBeforeImageCapture: LatLng? = null
     private var isInAppCameraUpload = false
     // Flag to track if an internal upload is in progress.

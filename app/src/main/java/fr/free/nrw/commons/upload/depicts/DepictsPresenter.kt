@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsController
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.MAIN_THREAD
+import fr.free.nrw.commons.di.IoScheduler
+import fr.free.nrw.commons.di.MainThreadScheduler
 import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.repository.UploadRepository
 import fr.free.nrw.commons.upload.UploadItem
@@ -23,7 +23,6 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.lang.reflect.Proxy
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -34,8 +33,8 @@ class DepictsPresenter
     @Inject
     constructor(
         private val repository: UploadRepository,
-        @param:Named(IO_THREAD) private val ioScheduler: Scheduler,
-        @param:Named(MAIN_THREAD) private val mainThreadScheduler: Scheduler,
+        @param:IoScheduler private val ioScheduler: Scheduler,
+        @param:MainThreadScheduler private val mainThreadScheduler: Scheduler,
     ) : DepictsContract.UserActionListener {
         companion object {
             private val DUMMY = proxy<DepictsContract.View>()

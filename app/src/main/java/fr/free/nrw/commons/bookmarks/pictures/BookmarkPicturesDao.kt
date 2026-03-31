@@ -11,15 +11,15 @@ import fr.free.nrw.commons.bookmarks.pictures.BookmarkPicturesContentProvider.Co
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable.ALL_FIELDS
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable.COLUMN_CREATOR
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable.COLUMN_MEDIA_NAME
+import fr.free.nrw.commons.di.BookmarksClient
 import fr.free.nrw.commons.utils.getString
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
 @Singleton
 class BookmarkPicturesDao @Inject constructor(
-    @param:Named("bookmarks") private val clientProvider: Provider<ContentProviderClient>
+    @BookmarksClient private val clientProvider: Provider<ContentProviderClient>
 ) {
     /**
      * Find all persisted pictures bookmarks on database

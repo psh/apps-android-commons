@@ -6,12 +6,17 @@ import android.os.Looper
 import android.view.MenuItem
 import androidx.test.core.app.ApplicationProvider
 import fr.free.nrw.commons.TestCommonsApplication
+import fr.free.nrw.commons.di.DefaultKvStore
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import org.powermock.reflect.Whitebox
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
@@ -21,7 +26,7 @@ import org.robolectric.fakes.RoboMenuItem
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class SettingsActivityUnitTests {
     private lateinit var activity: SettingsActivity
@@ -31,11 +36,37 @@ class SettingsActivityUnitTests {
     @Mock
     private lateinit var savedInstanceState: Bundle
 
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
+
+    @Mock
+    @DefaultKvStore
+    private lateinit var defaultKvStore: JsonKvStore
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         context = ApplicationProvider.getApplicationContext()
-        activity = Robolectric.buildActivity(SettingsActivity::class.java).create().get()
+
+        activity = Robolectric.buildActivity(SettingsActivity::class.java).get()
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+
+        `when`(systemThemeUtils.isDeviceInNightMode()).thenReturn(false)
+
+        try {
+            val method = activity.javaClass.getDeclaredMethod("onCreate", Bundle::class.java)
+            method.isAccessible = true
+            method.invoke(activity, null)
+        } catch (e: Exception) {
+            try {
+                val method = activity.javaClass.superclass.getDeclaredMethod("onCreate", Bundle::class.java)
+                method.isAccessible = true
+                method.invoke(activity, null)
+            } catch (e2: Exception) {
+            }
+        }
+
         menuItem = RoboMenuItem(null)
     }
 

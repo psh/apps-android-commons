@@ -2,13 +2,12 @@ package fr.free.nrw.commons.contributions
 
 import androidx.paging.PagedList.BoundaryCallback
 import fr.free.nrw.commons.auth.SessionManager
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
+import fr.free.nrw.commons.di.IoScheduler
 import fr.free.nrw.commons.media.MediaClient
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Class that extends PagedList.BoundaryCallback for contributions list It defines the action that
@@ -20,7 +19,7 @@ class ContributionBoundaryCallback
         private val repository: ContributionsRepository,
         private val sessionManager: SessionManager,
         private val mediaClient: MediaClient,
-        @param:Named(IO_THREAD) private val ioThreadScheduler: Scheduler,
+        @param:IoScheduler private val ioThreadScheduler: Scheduler,
     ) : BoundaryCallback<Contribution>() {
         private val compositeDisposable: CompositeDisposable = CompositeDisposable()
         var userName: String? = null

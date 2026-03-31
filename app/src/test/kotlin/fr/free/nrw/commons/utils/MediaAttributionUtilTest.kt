@@ -6,9 +6,10 @@ import com.nhaarman.mockitokotlin2.whenever
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.media.IdAndLabels
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
-
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -17,7 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class, qualifiers="en-rUS")
+@Config(sdk = [23], application = TestCommonsApplication::class, qualifiers="en-rUS")
 class MediaAttributionUtilTest {
 
     @Mock

@@ -3,8 +3,7 @@ package fr.free.nrw.commons.campaigns
 import android.annotation.SuppressLint
 import fr.free.nrw.commons.BasePresenter
 import fr.free.nrw.commons.campaigns.models.Campaign
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.MAIN_THREAD
+import fr.free.nrw.commons.di.MainThreadScheduler
 import fr.free.nrw.commons.mwapi.OkHttpJsonApiClient
 import fr.free.nrw.commons.utils.CommonsDateUtil.getIso8601DateFormatShort
 import io.reactivex.Scheduler
@@ -14,7 +13,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -24,8 +22,8 @@ import javax.inject.Singleton
 @Singleton
 class CampaignsPresenter @Inject constructor(
     private val okHttpJsonApiClient: OkHttpJsonApiClient?,
-    @param:Named(IO_THREAD) private val ioScheduler: Scheduler,
-    @param:Named(MAIN_THREAD) private val mainThreadScheduler: Scheduler
+     private val ioScheduler: Scheduler,
+    @MainThreadScheduler private val mainThreadScheduler: Scheduler
 ) : BasePresenter<ICampaignsView> {
     private var view: ICampaignsView? = null
     private var disposable: Disposable? = null

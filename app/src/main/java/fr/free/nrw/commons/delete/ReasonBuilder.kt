@@ -2,6 +2,7 @@ package fr.free.nrw.commons.delete
 
 import android.annotation.SuppressLint
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
@@ -21,7 +22,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class ReasonBuilder @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val sessionManager: SessionManager,
     private val okHttpJsonApiClient: OkHttpJsonApiClient,
     private val viewUtilWrapper: ViewUtilWrapper

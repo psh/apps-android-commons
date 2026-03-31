@@ -3,10 +3,9 @@ package fr.free.nrw.commons.actions
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.auth.csrf.CsrfTokenClient
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
-import fr.free.nrw.commons.di.NetworkingModule.Companion.NAMED_COMMONS_CSRF
+import fr.free.nrw.commons.di.CommonsCsrf
 import io.reactivex.Observable
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -17,7 +16,7 @@ import javax.inject.Singleton
 class ThanksClient
     @Inject
     constructor(
-        @param:Named(NAMED_COMMONS_CSRF) private val csrfTokenClient: CsrfTokenClient,
+        @param:CommonsCsrf private val csrfTokenClient: CsrfTokenClient,
         private val service: ThanksInterface,
     ) {
         /**

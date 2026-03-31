@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class PicOfDayAppWidgetUnitTests {
     private lateinit var widget: PicOfDayAppWidget
     private lateinit var context: Context

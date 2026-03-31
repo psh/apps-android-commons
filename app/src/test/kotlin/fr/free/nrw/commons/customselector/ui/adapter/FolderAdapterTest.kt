@@ -29,7 +29,7 @@ import org.robolectric.annotation.Config
  * Custom Selector Folder Adapter Test.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class FolderAdapterTest {
     private var uri: Uri = Mockito.mock(Uri::class.java)
     private lateinit var activity: CustomSelectorActivity

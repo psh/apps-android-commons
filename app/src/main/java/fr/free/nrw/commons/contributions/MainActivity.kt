@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.work.ExistingWorkPolicy
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.bookmarks.BookmarkFragment
 import fr.free.nrw.commons.contributions.ContributionsFragment.Companion.newInstance
 import fr.free.nrw.commons.databinding.MainBinding
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.explore.ExploreFragment
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
@@ -34,17 +36,15 @@ import fr.free.nrw.commons.quiz.QuizChecker
 import fr.free.nrw.commons.settings.SettingsFragment
 import fr.free.nrw.commons.startWelcome
 import fr.free.nrw.commons.theme.BaseActivity
-import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 import fr.free.nrw.commons.upload.UploadProgressActivity
 import fr.free.nrw.commons.upload.worker.WorkRequestHelper.Companion.makeOneTimeWorkRequest
 import fr.free.nrw.commons.utils.ViewUtilWrapper
+import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
-import javax.inject.Named
-import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
@@ -85,7 +85,7 @@ class MainActivity : BaseActivity(), FragmentManager.OnBackStackChangedListener 
 
     @JvmField
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     var applicationKvStore: JsonKvStore? = null
 
     @JvmField

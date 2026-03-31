@@ -98,6 +98,7 @@ import fr.free.nrw.commons.description.DescriptionEditHelper
 import fr.free.nrw.commons.description.EditDescriptionConstants.LIST_OF_DESCRIPTION_AND_CAPTION
 import fr.free.nrw.commons.description.EditDescriptionConstants.WIKITEXT
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.explore.depictions.WikidataItemDetailsActivity
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.language.AppLanguageLookUpTable
@@ -137,7 +138,6 @@ import java.util.Objects
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class MediaDetailFragment : CommonsDaggerSupportFragment(), CategoryEditHelper.Callback {
@@ -190,7 +190,7 @@ class MediaDetailFragment : CommonsDaggerSupportFragment(), CategoryEditHelper.C
     lateinit var thanksClient: ThanksClient
 
     @Inject
-    @field:Named("default_preferences")
+    @DefaultKvStore
     lateinit var applicationKvStore: JsonKvStore
 
     private val viewModel: MediaDetailViewModel by viewModels<MediaDetailViewModel> { mediaDetailViewModelFactory }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.fileusages.FileUsagesUiModel
 import fr.free.nrw.commons.fileusages.toUiModel
@@ -102,7 +103,7 @@ class MediaDetailViewModel(
     class MediaDetailViewModelProviderFactory
     @Inject constructor(
         private val okHttpJsonApiClient: OkHttpJsonApiClient,
-        private val applicationContext: Context
+        @ApplicationContext private val applicationContext: Context
     ) :
         ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

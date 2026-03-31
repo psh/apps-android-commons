@@ -16,14 +16,22 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.theme.BaseActivity
 import fr.free.nrw.commons.upload.UploadActivity
 import fr.free.nrw.commons.upload.UploadBaseFragment
+import fr.free.nrw.commons.utils.SystemThemeUtils
+import fr.free.nrw.commons.auth.SessionManager
+import fr.free.nrw.commons.location.LocationServiceManager
+import fr.free.nrw.commons.databinding.UploadDepictsFragmentBinding
+import androidx.lifecycle.MutableLiveData
+import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import io.reactivex.disposables.Disposable
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.powermock.reflect.Whitebox
 import org.robolectric.Robolectric
@@ -33,7 +41,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class DepictsFragmentUnitTests {
     private lateinit var fragment: DepictsFragment
@@ -55,6 +63,15 @@ class DepictsFragmentUnitTests {
     private lateinit var adapter: UploadDepictsAdapter
 
     @Mock
+    private lateinit var presenter: DepictsContract.UserActionListener
+
+    @Mock
+    private lateinit var sessionManager: SessionManager
+
+    @Mock
+    private lateinit var locationManager: LocationServiceManager
+
+    @Mock
     private lateinit var applicationKvStore: JsonKvStore
 
     @Mock
@@ -63,20 +80,40 @@ class DepictsFragmentUnitTests {
     @Mock
     private lateinit var progressDialog: ProgressDialog
 
+    @Mock
+    private lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         context = ApplicationProvider.getApplicationContext()
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        val activity = Robolectric.buildActivity(UploadActivity::class.java).create().get()
+        val controller = Robolectric.buildActivity(UploadActivity::class.java)
+        val activity = controller.get()
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+
+        Whitebox.setInternalState(activity, "contributionController", Mockito.mock(fr.free.nrw.commons.contributions.ContributionController::class.java))
+        Whitebox.setInternalState(activity, "locationManager", Mockito.mock(fr.free.nrw.commons.location.LocationServiceManager::class.java))
+
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            // Ignore
+        }
+
         fragment = DepictsFragment()
         fragmentManager = activity.supportFragmentManager
+
+        layoutInflater = LayoutInflater.from(activity)
+
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(fragment, null)
         fragmentTransaction.commitNowAllowingStateLoss()
-
-        layoutInflater = LayoutInflater.from(activity)
 
         view =
             LayoutInflater
@@ -86,6 +123,15 @@ class DepictsFragmentUnitTests {
         Whitebox.setInternalState(fragment, "callback", callback)
         Whitebox.setInternalState(fragment, "subscribe", disposable)
         Whitebox.setInternalState(fragment, "adapter", adapter)
+        Whitebox.setInternalState(fragment, "presenter", presenter)
+        Whitebox.setInternalState(fragment, "sessionManager", sessionManager)
+        Whitebox.setInternalState(fragment, "locationManager", locationManager)
+        Whitebox.setInternalState(fragment, "applicationKvStore", applicationKvStore)
+
+        val binding = UploadDepictsFragmentBinding.inflate(layoutInflater)
+        Whitebox.setInternalState(fragment, "_binding", binding)
+
+        whenever(presenter.getDepictedItems()).thenReturn(MutableLiveData<List<DepictedItem>>())
     }
 
     @Test

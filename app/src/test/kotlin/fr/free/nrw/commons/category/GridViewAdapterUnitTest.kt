@@ -24,7 +24,7 @@ import org.robolectric.annotation.Config
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class GridViewAdapterUnitTest {
     private lateinit var gridViewAdapter: GridViewAdapter
     private lateinit var activity: CategoryDetailsActivity

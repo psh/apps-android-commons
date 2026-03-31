@@ -26,7 +26,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class RecentSearchesFragmentUnitTest {
     private lateinit var fragment: RecentSearchesFragment

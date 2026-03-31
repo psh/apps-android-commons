@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.contributions.Contribution
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.media.PAGE_ID_PREFIX
 import fr.free.nrw.commons.upload.UploadResult
@@ -34,7 +35,6 @@ import java.util.Locale
 import java.util.Objects
 import java.util.UUID
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -46,7 +46,7 @@ import javax.inject.Singleton
 class WikidataEditService @Inject constructor(
     private val context: Context,
     private val wikidataEditListener: WikidataEditListener?,
-    @param:Named("default_preferences") private val directKvStore: JsonKvStore,
+    @DefaultKvStore private val directKvStore: JsonKvStore,
     private val wikiBaseClient: WikiBaseClient,
     private val wikidataClient: WikidataClient, private val gson: Gson
 ) {

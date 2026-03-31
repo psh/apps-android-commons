@@ -18,12 +18,12 @@ import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable.COLUMN_INSTANCE_LI
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable.COLUMN_IS_SELECTED
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable.COLUMN_NAME
 import fr.free.nrw.commons.category.CategoryItem
+import fr.free.nrw.commons.di.BookmarksItemClient
 import fr.free.nrw.commons.upload.structure.depictions.DepictedItem
 import fr.free.nrw.commons.utils.arrayToString
 import fr.free.nrw.commons.utils.getString
 import fr.free.nrw.commons.utils.getStringArray
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -32,7 +32,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class BookmarkItemsDao @Inject constructor(
-    @param:Named("bookmarksItem") private val clientProvider: Provider<ContentProviderClient>
+    @BookmarksItemClient private val clientProvider: Provider<ContentProviderClient>
 ) {
     /**
      * Find all persisted items bookmarks on database

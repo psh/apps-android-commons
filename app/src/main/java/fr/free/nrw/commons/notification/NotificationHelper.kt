@@ -6,12 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import javax.inject.Inject
-import javax.inject.Singleton
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.R
-import androidx.core.app.NotificationCompat.DEFAULT_ALL
-import androidx.core.app.NotificationCompat.PRIORITY_HIGH
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Helper class that can be used to build a generic notification
@@ -19,7 +18,7 @@ import androidx.core.app.NotificationCompat.PRIORITY_HIGH
  */
 @Singleton
 class NotificationHelper @Inject constructor(
-    context: Context
+    @ApplicationContext context: Context
 ) {
 
     companion object {

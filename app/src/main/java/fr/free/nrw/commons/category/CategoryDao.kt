@@ -12,15 +12,13 @@ import fr.free.nrw.commons.category.CategoryTable.COLUMN_LAST_USED
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_NAME
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_THUMBNAIL
 import fr.free.nrw.commons.category.CategoryTable.COLUMN_TIMES_USED
-
-import java.util.ArrayList
+import fr.free.nrw.commons.di.CategoryClient
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Provider
 
 class CategoryDao @Inject constructor(
-    @Named("category") private val clientProvider: Provider<ContentProviderClient>
+    @CategoryClient private val clientProvider: Provider<ContentProviderClient>
 ) {
 
     fun save(category: Category) {

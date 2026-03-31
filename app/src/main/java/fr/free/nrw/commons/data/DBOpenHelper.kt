@@ -1,21 +1,25 @@
 package fr.free.nrw.commons.data
 
+
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.bookmarks.items.BookmarkItemsTable
 import fr.free.nrw.commons.bookmarks.pictures.BookmarksTable
 import fr.free.nrw.commons.category.CategoryTable
 import fr.free.nrw.commons.explore.recentsearches.RecentSearchesTable
 import fr.free.nrw.commons.recentlanguages.RecentLanguagesTable
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class DBOpenHelper(
-    context: Context,
-    testDelegate: SupportSQLiteOpenHelper? = null
+@Singleton
+class DBOpenHelper @Inject constructor(
+    @ApplicationContext context: Context
 ) {
+    var testDelegate: SupportSQLiteOpenHelper? = null
 
     companion object {
         private const val DATABASE_NAME = "commons.db"

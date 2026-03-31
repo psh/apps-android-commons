@@ -18,6 +18,8 @@ import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import fr.free.nrw.commons.databinding.FragmentReviewImageBinding
 import org.junit.Assert
 import org.junit.Before
@@ -36,7 +38,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ReviewImageFragmentTest {
     private lateinit var fragment: ReviewImageFragment
@@ -56,6 +58,12 @@ class ReviewImageFragmentTest {
     @Mock
     private lateinit var savedInstanceState: Bundle
 
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
     private lateinit var activity: ReviewActivity
 
     private lateinit var binding: FragmentReviewImageBinding
@@ -68,7 +76,15 @@ class ReviewImageFragmentTest {
         SoLoader.setInTestMode()
 
         Fresco.initialize(context)
-        activity = Robolectric.buildActivity(ReviewActivity::class.java).create().get()
+        val activityController = Robolectric.buildActivity(ReviewActivity::class.java)
+        activity = activityController.get()
+        val mockReviewHelper = org.mockito.Mockito.mock(fr.free.nrw.commons.review.ReviewHelper::class.java)
+        org.mockito.Mockito.`when`(mockReviewHelper.getRandomMedia()).thenReturn(io.reactivex.Single.never())
+        Whitebox.setInternalState(activity, "reviewHelper", mockReviewHelper)
+        Whitebox.setInternalState(activity, "deleteHelper", org.mockito.Mockito.mock(fr.free.nrw.commons.delete.DeleteHelper::class.java))
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        activityController.create()
         fragment = ReviewImageFragment()
         val bundle = Bundle()
         bundle.putInt("position", 1)

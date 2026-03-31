@@ -35,7 +35,7 @@ import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.WikipediaInstructionsDialogFragment.Companion.newInstance
 import fr.free.nrw.commons.databinding.FragmentContributionsListBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
-import fr.free.nrw.commons.di.NetworkingModule
+import fr.free.nrw.commons.di.LanguageWikipediaWikiSite
 import fr.free.nrw.commons.filepicker.FilePicker
 import fr.free.nrw.commons.media.MediaClient
 import fr.free.nrw.commons.profile.ProfileActivity
@@ -45,7 +45,6 @@ import fr.free.nrw.commons.utils.copyToClipboard
 import fr.free.nrw.commons.utils.handleWebUrl
 import fr.free.nrw.commons.wikidata.model.WikiSite
 import javax.inject.Inject
-import javax.inject.Named
 
 
 /**
@@ -67,7 +66,7 @@ class ContributionsListFragment : CommonsDaggerSupportFragment(), ContributionsL
     var mediaDataExtractor: MediaDataExtractor? = null
 
     @JvmField
-    @Named(NetworkingModule.NAMED_LANGUAGE_WIKI_PEDIA_WIKI_SITE)
+    @LanguageWikipediaWikiSite
     @Inject
     var languageWikipediaSite: WikiSite? = null
 

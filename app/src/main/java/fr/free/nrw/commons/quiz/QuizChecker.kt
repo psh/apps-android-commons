@@ -3,14 +3,10 @@ package fr.free.nrw.commons.quiz
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
-
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.WelcomeActivity
 import fr.free.nrw.commons.auth.SessionManager
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.mwapi.OkHttpJsonApiClient
 import fr.free.nrw.commons.utils.DialogUtil
@@ -18,6 +14,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**
@@ -30,7 +28,7 @@ import timber.log.Timber
 class QuizChecker @Inject constructor(
     private val sessionManager: SessionManager,
     private val okHttpJsonApiClient: OkHttpJsonApiClient,
-    @Named("default_preferences") private val revertKvStore: JsonKvStore
+    @DefaultKvStore private val revertKvStore: JsonKvStore
 ) {
 
     private var revertCount = 0

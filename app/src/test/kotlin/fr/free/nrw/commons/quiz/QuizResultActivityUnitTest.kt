@@ -17,7 +17,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.fakes.RoboMenu
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class QuizResultActivityUnitTest {
     private lateinit var activity: QuizResultActivity
     private lateinit var quizResultActivity: QuizResultActivity

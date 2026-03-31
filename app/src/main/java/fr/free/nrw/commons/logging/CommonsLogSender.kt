@@ -1,16 +1,15 @@
 package fr.free.nrw.commons.logging
 
 import android.content.Context
-
 import android.os.Bundle
-import javax.inject.Inject
-import javax.inject.Singleton
-
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.utils.ConfigUtils
 import fr.free.nrw.commons.utils.ConfigUtils.getVersionNameWithSha
 import fr.free.nrw.commons.utils.DeviceInfoUtil
 import org.acra.data.CrashReportData
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**
@@ -19,7 +18,7 @@ import org.acra.data.CrashReportData
 @Singleton
 class CommonsLogSender @Inject constructor(
     private val sessionManager: SessionManager,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : LogsSender(sessionManager) {
 
 

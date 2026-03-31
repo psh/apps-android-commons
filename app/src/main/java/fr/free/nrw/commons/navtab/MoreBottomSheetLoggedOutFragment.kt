@@ -17,12 +17,12 @@ import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.databinding.FragmentMoreBottomSheetLoggedOutBinding
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.logging.CommonsLogSender
 import fr.free.nrw.commons.settings.SettingsActivity
-import javax.inject.Inject
-import javax.inject.Named
 import timber.log.Timber
+import javax.inject.Inject
 
 
 @dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +34,7 @@ class MoreBottomSheetLoggedOutFragment : BottomSheetDialogFragment() {
     lateinit var commonsLogSender: CommonsLogSender
 
     @Inject
-    @field: Named("default_preferences")
+    @DefaultKvStore
     lateinit var applicationKvStore: JsonKvStore
 
     override fun onCreateView(

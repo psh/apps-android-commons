@@ -1,17 +1,17 @@
 package fr.free.nrw.commons.contributions
 
 import androidx.paging.DataSource
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * The LocalDataSource class for Contributions
  */
 class ContributionsLocalDataSource @Inject constructor(
-    @param:Named("default_preferences") private val defaultKVStore: JsonKvStore,
+    @DefaultKvStore private val defaultKVStore: JsonKvStore,
     private val contributionDao: ContributionDao
 ) {
     /**

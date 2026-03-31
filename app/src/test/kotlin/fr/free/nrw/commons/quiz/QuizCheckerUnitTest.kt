@@ -25,7 +25,7 @@ import org.robolectric.annotation.Config
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class QuizCheckerUnitTest {
     private lateinit var quizChecker: QuizChecker
     private lateinit var activity: Activity

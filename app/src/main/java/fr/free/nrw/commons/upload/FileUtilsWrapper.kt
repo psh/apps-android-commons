@@ -2,6 +2,7 @@ package fr.free.nrw.commons.upload
 
 import android.content.Context
 import android.net.Uri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.upload.FileUtils.getMimeType
 import timber.log.Timber
@@ -16,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FileUtilsWrapper @Inject constructor(private val context: Context) {
+class FileUtilsWrapper @Inject constructor(@ApplicationContext private val context: Context) {
     fun getSHA1(stream: InputStream?): String =
         stream?.let { FileUtils.getSHA1(it) } ?: ""
 

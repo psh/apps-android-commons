@@ -11,11 +11,14 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.hilt.work.HiltWorker
 import androidx.multidex.BuildConfig
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import fr.free.nrw.commons.BuildConfig.HOME_URL
 import fr.free.nrw.commons.CommonsApplication
 import fr.free.nrw.commons.Media
@@ -47,37 +50,21 @@ import timber.log.Timber
 import java.util.Date
 import java.util.Random
 import java.util.regex.Pattern
-import javax.inject.Inject
 
-class UploadWorker(
-    private var appContext: Context,
-    workerParams: WorkerParameters,
+@HiltWorker
+class UploadWorker @AssistedInject constructor(
+    @Assisted private var appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    val wikidataEditService: WikidataEditService,
+    val sessionManager: SessionManager,
+    val contributionDao: ContributionDao,
+    val uploadedStatusDao: UploadedStatusDao,
+    val uploadClient: UploadClient,
+    val mediaClient: MediaClient,
+    val fileUtilsWrapper: FileUtilsWrapper,
+    val placesRepository: PlacesRepository,
 ) : CoroutineWorker(appContext, workerParams) {
     private var notificationManager: NotificationManagerCompat? = null
-
-    @Inject
-    lateinit var wikidataEditService: WikidataEditService
-
-    @Inject
-    lateinit var sessionManager: SessionManager
-
-    @Inject
-    lateinit var contributionDao: ContributionDao
-
-    @Inject
-    lateinit var uploadedStatusDao: UploadedStatusDao
-
-    @Inject
-    lateinit var uploadClient: UploadClient
-
-    @Inject
-    lateinit var mediaClient: MediaClient
-
-    @Inject
-    lateinit var fileUtilsWrapper: FileUtilsWrapper
-
-    @Inject
-    lateinit var placesRepository: PlacesRepository
 
     private val processingUploadsNotificationTag = BuildConfig.APPLICATION_ID + " : upload_tag"
 
@@ -99,19 +86,10 @@ class UploadWorker(
         )
 
     init {
-        dagger.hilt.android.EntryPointAccessors
-            .fromApplication(appContext, UploadWorkerEntryPoint::class.java)
-            .inject(this)
         currentNotification =
             getNotificationBuilder(CommonsApplication.NOTIFICATION_CHANNEL_ID_ALL)!!
 
         statesToProcess.add(Contribution.STATE_QUEUED)
-    }
-
-    @dagger.hilt.EntryPoint
-    @dagger.hilt.InstallIn(dagger.hilt.components.SingletonComponent::class)
-    interface UploadWorkerEntryPoint {
-        fun inject(worker: UploadWorker)
     }
 
     open inner class NotificationUpdateProgressListener(

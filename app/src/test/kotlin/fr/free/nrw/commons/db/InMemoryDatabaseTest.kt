@@ -20,7 +20,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 abstract class InMemoryDatabaseTest {
     val roomDatabase: AppDatabase by lazy {
         Room.inMemoryDatabaseBuilder(
@@ -43,7 +43,9 @@ abstract class InMemoryDatabaseTest {
     }
 
     val openHelper: DBOpenHelper by lazy {
-        DBOpenHelper(ApplicationProvider.getApplicationContext(), roomDatabase.openHelper)
+        val helper = DBOpenHelper(ApplicationProvider.getApplicationContext())
+        helper.testDelegate = roomDatabase.openHelper
+        helper
     }
 
     @After

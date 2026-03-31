@@ -8,8 +8,8 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.csrf.InvalidLoginTokenException
 import fr.free.nrw.commons.category.CategoryEditHelper
 import fr.free.nrw.commons.category.CategoryItem
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.MAIN_THREAD
+import fr.free.nrw.commons.di.IoScheduler
+import fr.free.nrw.commons.di.MainThreadScheduler
 import fr.free.nrw.commons.repository.UploadRepository
 import fr.free.nrw.commons.upload.depicts.proxy
 import fr.free.nrw.commons.wikidata.mwapi.MwIOException
@@ -21,7 +21,6 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -32,8 +31,8 @@ class CategoriesPresenter
     @Inject
     constructor(
         private val repository: UploadRepository,
-        @param:Named(IO_THREAD) private val ioScheduler: Scheduler,
-        @param:Named(MAIN_THREAD) private val mainThreadScheduler: Scheduler,
+        @param:IoScheduler private val ioScheduler: Scheduler,
+        @param:MainThreadScheduler private val mainThreadScheduler: Scheduler,
     ) : CategoriesContract.UserActionListener {
         companion object {
             private val DUMMY: CategoriesContract.View = proxy()

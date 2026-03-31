@@ -14,7 +14,7 @@ import fr.free.nrw.commons.contributions.Contribution.Companion.STATE_QUEUED
 import fr.free.nrw.commons.contributions.ContributionBoundaryCallback
 import fr.free.nrw.commons.contributions.ContributionsRemoteDataSource
 import fr.free.nrw.commons.contributions.ContributionsRepository
-import fr.free.nrw.commons.di.CommonsApplicationModule
+import fr.free.nrw.commons.di.IoScheduler
 import fr.free.nrw.commons.repository.UploadRepository
 import fr.free.nrw.commons.upload.worker.WorkRequestHelper.Companion.makeOneTimeWorkRequest
 import fr.free.nrw.commons.utils.ImageUtils.IMAGE_OK
@@ -23,7 +23,6 @@ import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import java.util.Calendar
 import javax.inject.Inject
-import javax.inject.Named
 
 
 /**
@@ -33,7 +32,7 @@ import javax.inject.Named
     private val contributionsRemoteDataSource: ContributionsRemoteDataSource,
     private val contributionsRepository: ContributionsRepository,
     private val uploadRepository: UploadRepository,
-    @param:Named(CommonsApplicationModule.IO_THREAD) private val ioThreadScheduler: Scheduler
+    @param:IoScheduler private val ioThreadScheduler: Scheduler
 ) : PendingUploadsContract.UserActionListener {
     private val compositeDisposable = CompositeDisposable()
 

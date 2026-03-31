@@ -14,12 +14,15 @@ import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.databinding.UploadCategoriesFragmentBinding
 import fr.free.nrw.commons.upload.UploadActivity
 import fr.free.nrw.commons.upload.UploadBaseFragment
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import io.reactivex.disposables.Disposable
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.powermock.reflect.Whitebox
 import org.robolectric.Robolectric
@@ -30,7 +33,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class UploadCategoriesFragmentUnitTests {
     private lateinit var fragment: UploadCategoriesFragment
@@ -53,6 +56,12 @@ class UploadCategoriesFragmentUnitTests {
     @Mock
     private lateinit var media: Media
 
+    @Mock
+    private lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    private lateinit var systemThemeUtils: SystemThemeUtils
+
     private lateinit var binding: UploadCategoriesFragmentBinding
 
     @Before
@@ -60,16 +69,24 @@ class UploadCategoriesFragmentUnitTests {
         MockitoAnnotations.openMocks(this)
         context = ApplicationProvider.getApplicationContext()
         OkHttpConnectionFactory.CLIENT = createTestClient()
-        val activity = Robolectric.buildActivity(UploadActivity::class.java).create().get()
+        val controller = Robolectric.buildActivity(UploadActivity::class.java)
+        val activity = controller.get()
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+        Whitebox.setInternalState(activity, "contributionController", Mockito.mock(fr.free.nrw.commons.contributions.ContributionController::class.java))
+        Whitebox.setInternalState(activity, "locationManager", Mockito.mock(fr.free.nrw.commons.location.LocationServiceManager::class.java))
+
+        controller.create()
         fragment = UploadCategoriesFragment()
         fragment.callback = callback
         fragmentManager = activity.supportFragmentManager
-        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.add(fragment, null)
-        fragmentTransaction.commit()
 
         layoutInflater = LayoutInflater.from(activity)
         binding = UploadCategoriesFragmentBinding.inflate(layoutInflater)
+
+        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.add(fragment, null)
+        fragmentTransaction.commitNow()
 
         Whitebox.setInternalState(fragment, "subscribe", subscribe)
         Whitebox.setInternalState(fragment, "adapter", adapter)

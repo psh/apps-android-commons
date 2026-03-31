@@ -23,7 +23,6 @@ import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.nearby.fragments.CommonPlaceClickActions
 import fr.free.nrw.commons.nearby.fragments.PlaceAdapter
 import fr.free.nrw.commons.profile.ProfileActivity
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
@@ -40,7 +39,7 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class BookmarkLocationFragmentUnitTests {
     private lateinit var fragment: BookmarkLocationsFragment

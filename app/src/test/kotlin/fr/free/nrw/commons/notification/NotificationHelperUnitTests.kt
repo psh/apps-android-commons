@@ -18,7 +18,7 @@ import org.robolectric.annotation.Config
 import java.lang.reflect.Field
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class NotificationHelperUnitTests {
     private lateinit var notificationHelper: NotificationHelper
     private lateinit var context: Context

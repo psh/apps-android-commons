@@ -23,7 +23,7 @@ import org.robolectric.fakes.RoboMenuItem
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class ProfileActivityTest {
     @Mock
     private lateinit var activity: ProfileActivity

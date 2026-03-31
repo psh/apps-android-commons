@@ -20,6 +20,8 @@ import fr.free.nrw.commons.CommonsApplication.ActivityLogoutListener
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
 import fr.free.nrw.commons.databinding.FragmentMoreBottomSheetBinding
+import fr.free.nrw.commons.di.CommonsPageEdit
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.feedback.FeedbackContentCreator
 import fr.free.nrw.commons.feedback.FeedbackDialog
 import fr.free.nrw.commons.feedback.OnFeedbackSubmitCallback
@@ -36,7 +38,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 
 @dagger.hilt.android.AndroidEntryPoint
@@ -46,11 +47,11 @@ class MoreBottomSheetFragment : BottomSheetDialogFragment() {
     lateinit var commonsLogSender: CommonsLogSender
 
     @Inject
-    @field: Named("default_preferences")
+    @DefaultKvStore
     lateinit var store: JsonKvStore
 
     @Inject
-    @field: Named("commons-page-edit")
+    @CommonsPageEdit
     lateinit var pageEditClient: PageEditClient
 
     companion object {

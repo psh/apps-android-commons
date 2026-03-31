@@ -28,6 +28,7 @@ import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.ContributionController
 import fr.free.nrw.commons.databinding.ActivityUploadBinding
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.filepicker.Constants.RequestCodes
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.kvstore.BasicKvStore
@@ -39,7 +40,6 @@ import fr.free.nrw.commons.mwapi.UserClient
 import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.settings.Prefs
 import fr.free.nrw.commons.theme.BaseActivity
-import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 import fr.free.nrw.commons.upload.ThumbnailsAdapter.OnThumbnailDeletedListener
 import fr.free.nrw.commons.upload.categories.UploadCategoriesFragment
 import fr.free.nrw.commons.upload.depicts.DepictsFragment
@@ -54,6 +54,7 @@ import fr.free.nrw.commons.utils.PermissionUtils.checkPermissionsAndPerformActio
 import fr.free.nrw.commons.utils.PermissionUtils.hasPartialAccess
 import fr.free.nrw.commons.utils.PermissionUtils.hasPermission
 import fr.free.nrw.commons.utils.ViewUtil.showLongToast
+import fr.free.nrw.commons.utils.applyEdgeToEdgeAllInsets
 import fr.free.nrw.commons.wikidata.WikidataConstants.PLACE_OBJECT
 import fr.free.nrw.commons.wikidata.WikidataConstants.SELECTED_NEARBY_PLACE
 import fr.free.nrw.commons.wikidata.WikidataConstants.SELECTED_NEARBY_PLACE_CATEGORY
@@ -62,7 +63,6 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
-import javax.inject.Named
 
 class UploadActivity : BaseActivity(), UploadContract.View, UploadBaseFragment.Callback,
     OnThumbnailDeletedListener {
@@ -72,7 +72,7 @@ class UploadActivity : BaseActivity(), UploadContract.View, UploadBaseFragment.C
 
     @JvmField
     @Inject
-    @field:Named("default_preferences")
+    @DefaultKvStore
     var directKvStore: JsonKvStore? = null
 
     @JvmField

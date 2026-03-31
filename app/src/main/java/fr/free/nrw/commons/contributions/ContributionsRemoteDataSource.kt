@@ -1,13 +1,12 @@
 package fr.free.nrw.commons.contributions
 
 import androidx.paging.ItemKeyedDataSource
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
+import fr.free.nrw.commons.di.IoScheduler
 import fr.free.nrw.commons.media.MediaClient
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Data-Source which acts as mediator for contributions-data from the API
@@ -16,7 +15,7 @@ class ContributionsRemoteDataSource
     @Inject
     constructor(
         private val mediaClient: MediaClient,
-        @param:Named(IO_THREAD) private val ioThreadScheduler: Scheduler,
+        @param:IoScheduler private val ioThreadScheduler: Scheduler,
     ) : ItemKeyedDataSource<Int, Contribution>() {
         private val compositeDisposable: CompositeDisposable = CompositeDisposable()
         var userName: String? = null

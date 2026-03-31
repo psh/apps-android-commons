@@ -2,8 +2,6 @@ package fr.free.nrw.commons.contributions
 
 import android.content.res.Configuration
 import android.os.Looper
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -12,6 +10,7 @@ import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.launchFragmentInHiltContainer
 import fr.free.nrw.commons.upload.WikidataPlace
 import org.junit.Assert
 import org.junit.Before
@@ -27,10 +26,9 @@ import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Method
 
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ContributionsListFragmentUnitTests {
-    private lateinit var scenario: FragmentScenario<ContributionsListFragment>
     private lateinit var fragment: ContributionsListFragment
 
     private val adapter: ContributionsListAdapter = mock()
@@ -42,22 +40,14 @@ class ContributionsListFragmentUnitTests {
     fun setUp() {
         OkHttpConnectionFactory.CLIENT = createTestClient()
 
-        scenario =
-            launchFragmentInContainer(
-                initialState = Lifecycle.State.RESUMED,
-                themeResId = R.style.LightAppTheme,
-            ) {
-                ContributionsListFragment()
-                    .apply {
-                        contributionsListPresenter = mock()
-                        callback = mock()
-                    }.also {
-                        fragment = it
-                    }
+        launchFragmentInHiltContainer<ContributionsListFragment> {
+            (this as ContributionsListFragment).apply {
+                contributionsListPresenter = mock()
+                callback = mock()
+                adapter = this@ContributionsListFragmentUnitTests.adapter
+            }.also {
+                fragment = it
             }
-
-        scenario.onFragment {
-            it.adapter = adapter
         }
     }
 
@@ -192,9 +182,7 @@ class ContributionsListFragmentUnitTests {
     @Throws(Exception::class)
     fun testAnimateFAB() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        scenario.onFragment {
-            it.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).hide()
-        }
+        fragment.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).hide()
         val method: Method =
             ContributionsListFragment::class.java.getDeclaredMethod(
                 "animateFAB",
@@ -208,9 +196,7 @@ class ContributionsListFragmentUnitTests {
     @Throws(Exception::class)
     fun testAnimateFABCaseShownAndOpen() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        scenario.onFragment {
-            it.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).show()
-        }
+        fragment.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).show()
         val method: Method =
             ContributionsListFragment::class.java.getDeclaredMethod(
                 "animateFAB",
@@ -224,9 +210,7 @@ class ContributionsListFragmentUnitTests {
     @Throws(Exception::class)
     fun testAnimateFABCaseShownAndClose() {
         Shadows.shadowOf(Looper.getMainLooper()).idle()
-        scenario.onFragment {
-            it.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).show()
-        }
+        fragment.requireView().findViewById<FloatingActionButton>(R.id.fab_plus).show()
         val method: Method =
             ContributionsListFragment::class.java.getDeclaredMethod(
                 "animateFAB",

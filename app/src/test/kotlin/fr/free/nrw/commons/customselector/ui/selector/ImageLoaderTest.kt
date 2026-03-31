@@ -52,7 +52,7 @@ import java.util.Date
  */
 @RunWith(RobolectricTestRunner::class)
 @PrepareForTest(PickedFiles::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @ExperimentalCoroutinesApi
 class ImageLoaderTest {
     @Mock

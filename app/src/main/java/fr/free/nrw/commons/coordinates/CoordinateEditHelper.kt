@@ -8,17 +8,17 @@ import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
+import fr.free.nrw.commons.di.CommonsPageEdit
 import fr.free.nrw.commons.notification.NotificationHelper
 import fr.free.nrw.commons.notification.NotificationHelper.Companion.NOTIFICATION_EDIT_COORDINATES
 import fr.free.nrw.commons.utils.ViewUtilWrapper
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.util.Objects
-import javax.inject.Inject
-import javax.inject.Named
 import org.apache.commons.lang3.StringUtils
 import timber.log.Timber
+import java.util.Objects
+import javax.inject.Inject
 
 
 /**
@@ -27,7 +27,7 @@ import timber.log.Timber
  */
 class CoordinateEditHelper @Inject constructor(
     private val notificationHelper: NotificationHelper,
-    @Named("commons-page-edit") private val pageEditClient: PageEditClient,
+    @CommonsPageEdit private val pageEditClient: PageEditClient,
     private val viewUtil: ViewUtilWrapper
 ) {
 

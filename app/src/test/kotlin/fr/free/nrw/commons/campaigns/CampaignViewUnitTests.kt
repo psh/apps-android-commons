@@ -20,7 +20,7 @@ import org.robolectric.annotation.Config
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class CampaignViewUnitTests {
     private lateinit var activityController: ActivityController<Activity>
     private lateinit var activity: MainActivity

@@ -40,6 +40,7 @@ import fr.free.nrw.commons.activity.SingleWebViewActivity
 import fr.free.nrw.commons.campaigns.CampaignView
 import fr.free.nrw.commons.contributions.ContributionController
 import fr.free.nrw.commons.contributions.MainActivity
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.filepicker.FilePicker
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LocationServiceManager
@@ -55,13 +56,12 @@ import fr.free.nrw.commons.utils.ViewUtil
 import fr.free.nrw.commons.utils.handleWebUrl
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Named
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
-    @field: Named("default_preferences")
+    @DefaultKvStore
     lateinit var defaultKvStore: JsonKvStore
 
     @Inject

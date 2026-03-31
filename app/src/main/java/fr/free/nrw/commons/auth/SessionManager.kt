@@ -5,13 +5,14 @@ import android.accounts.AccountManager
 import android.content.Context
 import android.os.Build
 import android.text.TextUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import fr.free.nrw.commons.BuildConfig.ACCOUNT_TYPE
 import fr.free.nrw.commons.auth.login.LoginResult
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import io.reactivex.Completable
 import io.reactivex.Observable
 import javax.inject.Inject
-import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -19,8 +20,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class SessionManager @Inject constructor(
-    private val context: Context,
-    @param:Named("default_preferences") private val defaultKvStore: JsonKvStore
+    @ApplicationContext private val context: Context,
+    @DefaultKvStore private val defaultKvStore: JsonKvStore
 ) {
     private val accountManager: AccountManager get() = AccountManager.get(context)
 

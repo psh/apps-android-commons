@@ -3,6 +3,9 @@ package fr.free.nrw.commons.db
 import android.content.Context
 import android.database.Cursor
 import androidx.room.Room
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.core.app.ApplicationProvider
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.data.DBOpenHelper
@@ -14,7 +17,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class MigrationTest {
 
     @Test
@@ -22,8 +25,27 @@ class MigrationTest {
 
         val context = ApplicationProvider.getApplicationContext<Context>()
 
+        // Ensure CommonsApplication.instance is initialized for migration
+        // In Robolectric, the application from @Config is used, and it should be TestCommonsApplication.
+        // TestCommonsApplication now extends CommonsApplication and calls super.onCreate() which sets instance.
+
         // legacy "commons.db", mock old data.
-        val legacyOpenHelper = DBOpenHelper(context, null)
+        // Need to use a version < 22 to represent legacy DB before Room migration
+        val legacyOpenHelper = FrameworkSQLiteOpenHelperFactory().create(
+            SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name("commons.db")
+                .callback(object : SupportSQLiteOpenHelper.Callback(21) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL("CREATE TABLE categories (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, thumbnail TEXT, last_used INTEGER, times_used INTEGER DEFAULT 0)")
+                        db.execSQL("CREATE TABLE bookmarks (media_name TEXT PRIMARY KEY, media_creator TEXT)")
+                        db.execSQL("CREATE TABLE bookmarksItems (item_name TEXT, item_description TEXT, item_image_url TEXT, item_instance_of TEXT, item_name_categories TEXT, item_description_categories TEXT, item_thumbnail_categories TEXT, item_is_selected INTEGER, item_id TEXT PRIMARY KEY)")
+                        db.execSQL("CREATE TABLE recent_searches (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, last_used INTEGER)")
+                        db.execSQL("CREATE TABLE recent_languages (language_name TEXT, language_code TEXT PRIMARY KEY)")
+                    }
+                    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+                })
+                .build()
+        )
         val legacyDb = legacyOpenHelper.writableDatabase
         legacyDb.execSQL("INSERT INTO categories (name, description, thumbnail, last_used, times_used) VALUES ('Nature', 'desc', 'thumb', 0, 1)")
         legacyDb.execSQL("INSERT INTO bookmarks (media_name, media_creator) VALUES ('media1', 'creator1')")

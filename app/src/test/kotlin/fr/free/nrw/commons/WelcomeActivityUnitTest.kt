@@ -19,7 +19,7 @@ import org.robolectric.shadows.ShadowIntent
  * Tests Welcome Activity Methods
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class WelcomeActivityUnitTest {
     private lateinit var activity: WelcomeActivity
     private lateinit var finishTutorialButton: TextView

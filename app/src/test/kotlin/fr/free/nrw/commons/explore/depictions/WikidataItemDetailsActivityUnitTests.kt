@@ -26,7 +26,7 @@ import org.robolectric.fakes.RoboMenu
 import org.robolectric.fakes.RoboMenuItem
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class WikidataItemDetailsActivityUnitTests {
     private lateinit var activity: WikidataItemDetailsActivity
@@ -45,6 +45,12 @@ class WikidataItemDetailsActivityUnitTests {
 
     @Mock
     private lateinit var wikidataItem: DepictedItem
+
+    @Mock
+    private lateinit var bookmarkItemsDao: fr.free.nrw.commons.bookmarks.items.BookmarkItemsDao
+
+    @Mock
+    private lateinit var depictModel: fr.free.nrw.commons.upload.structure.depictions.DepictModel
 
     @Before
     fun setUp() {
@@ -71,6 +77,8 @@ class WikidataItemDetailsActivityUnitTests {
         Whitebox.setInternalState(activity, "supportFragmentManager", supportFragmentManager)
 
         Whitebox.setInternalState(activity, "wikidataItem", wikidataItem)
+        Whitebox.setInternalState(activity, "bookmarkItemsDao", bookmarkItemsDao)
+        Whitebox.setInternalState(activity, "depictModel", depictModel)
     }
 
     @Test

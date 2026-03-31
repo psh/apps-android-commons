@@ -11,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -23,6 +25,7 @@ import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.ContributionsFragment
 import fr.free.nrw.commons.databinding.UploadDepictsFragmentBinding
 import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.media.MediaDetailFragment
@@ -38,18 +41,15 @@ import io.reactivex.Notification
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Fragment for showing depicted items list in Upload activity after media details
  */
 class DepictsFragment : UploadBaseFragment(), DepictsContract.View {
     @Inject
-    @field:Named("default_preferences")
+    @DefaultKvStore
     lateinit var applicationKvStore: JsonKvStore
 
     @Inject

@@ -12,6 +12,8 @@ import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.customselector.model.CallbackStatus
 import fr.free.nrw.commons.customselector.model.Image
 import fr.free.nrw.commons.customselector.model.Result
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -24,9 +26,17 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.LooperMode
 import java.lang.reflect.Field
+import fr.free.nrw.commons.upload.FileUtilsWrapper
+import fr.free.nrw.commons.upload.FileProcessor
+import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
+import fr.free.nrw.commons.customselector.database.UploadedStatusDao
+import androidx.lifecycle.MutableLiveData
+import fr.free.nrw.commons.customselector.ui.selector.CustomSelectorViewModel
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class ZoomableActivityUnitTests {
     private lateinit var context: Context
@@ -40,6 +50,18 @@ class ZoomableActivityUnitTests {
     @Mock
     private lateinit var images: ArrayList<Image>
 
+    @Mock
+    lateinit var customSelectorViewModelFactory: fr.free.nrw.commons.customselector.ui.selector.CustomSelectorViewModelFactory
+
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
+    @Mock
+    private lateinit var viewModel: CustomSelectorViewModel
+
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
@@ -47,8 +69,29 @@ class ZoomableActivityUnitTests {
         context = ApplicationProvider.getApplicationContext()
         SoLoader.setInTestMode()
         Fresco.initialize(context)
+
+        `when`(customSelectorViewModelFactory.create(CustomSelectorViewModel::class.java))
+            .thenReturn(viewModel)
+        `when`(viewModel.result).thenReturn(MutableLiveData())
+
         val intent = Intent().setData(uri)
-        activity = Robolectric.buildActivity(ZoomableActivity::class.java, intent).create().get()
+        val controller = Robolectric.buildActivity(ZoomableActivity::class.java, intent)
+        activity = controller.get()
+
+        Whitebox.setInternalState(activity, "customSelectorViewModelFactory", customSelectorViewModelFactory)
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+
+        Whitebox.setInternalState(activity, "fileUtilsWrapper", mock(FileUtilsWrapper::class.java))
+        Whitebox.setInternalState(activity, "fileProcessor", mock(FileProcessor::class.java))
+        Whitebox.setInternalState(activity, "notForUploadStatusDao", mock(NotForUploadStatusDao::class.java))
+        Whitebox.setInternalState(activity, "uploadedStatusDao", mock(UploadedStatusDao::class.java))
+
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         image = Image(1, "image", uri, "abc/abc", 1, "bucket1")
 

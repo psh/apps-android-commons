@@ -3,7 +3,6 @@ package fr.free.nrw.commons.nearby;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.Nullable;
 
 /**

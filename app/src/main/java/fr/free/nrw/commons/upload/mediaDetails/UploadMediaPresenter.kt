@@ -2,8 +2,8 @@ package fr.free.nrw.commons.upload.mediaDetails
 
 import android.app.Activity
 import fr.free.nrw.commons.R
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.IO_THREAD
-import fr.free.nrw.commons.di.CommonsApplicationModule.Companion.MAIN_THREAD
+import fr.free.nrw.commons.di.IoScheduler
+import fr.free.nrw.commons.di.MainThreadScheduler
 import fr.free.nrw.commons.filepicker.UploadableFile
 import fr.free.nrw.commons.kvstore.BasicKvStore
 import fr.free.nrw.commons.location.LatLng
@@ -31,12 +31,11 @@ import java.lang.reflect.Proxy
 import java.net.UnknownHostException
 import java.util.Locale
 import javax.inject.Inject
-import javax.inject.Named
 
 class UploadMediaPresenter @Inject constructor(
     private val repository: UploadRepository,
-    @param:Named(IO_THREAD) private val ioScheduler: Scheduler,
-    @param:Named(MAIN_THREAD) private val mainThreadScheduler: Scheduler
+    @param:IoScheduler private val ioScheduler: Scheduler,
+    @param:MainThreadScheduler private val mainThreadScheduler: Scheduler
 ) : UploadMediaDetailsContract.UserActionListener, SimilarImageInterface {
     private var view = DUMMY
 

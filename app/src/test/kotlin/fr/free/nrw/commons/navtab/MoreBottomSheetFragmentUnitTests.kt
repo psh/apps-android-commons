@@ -44,7 +44,7 @@ import org.robolectric.shadows.ShadowDialog
 import java.lang.reflect.Method
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class MoreBottomSheetFragmentUnitTests {
     private lateinit var fragment: MoreBottomSheetFragment

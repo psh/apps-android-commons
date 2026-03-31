@@ -1,5 +1,6 @@
 package fr.free.nrw.commons.location
 
+
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -9,11 +10,16 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class LocationServiceManager(private val context: Context) : LocationListener {
+@Singleton
+class LocationServiceManager @Inject constructor(
+    @ApplicationContext private val context: Context
+) : LocationListener {
 
     companion object {
         // Maybe these values can be improved for efficiency

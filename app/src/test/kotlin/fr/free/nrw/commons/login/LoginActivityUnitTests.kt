@@ -24,7 +24,7 @@ import org.robolectric.fakes.RoboMenuItem
 import java.lang.reflect.Field
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 class LoginActivityUnitTests {
     @Mock
     private lateinit var activity: LoginActivity

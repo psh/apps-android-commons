@@ -39,7 +39,7 @@ import java.util.TreeMap
  * Custom Selector image adapter test.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @ExperimentalCoroutinesApi
 class ImageAdapterTest {
     @Mock

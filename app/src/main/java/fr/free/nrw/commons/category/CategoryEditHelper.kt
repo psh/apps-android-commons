@@ -7,20 +7,21 @@ import fr.free.nrw.commons.BuildConfig
 import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.actions.PageEditClient
+import fr.free.nrw.commons.di.CommonsPageEdit
+import fr.free.nrw.commons.di.LoggedInUsername
 import fr.free.nrw.commons.notification.NotificationHelper
 import fr.free.nrw.commons.utils.ViewUtilWrapper
 import io.reactivex.Observable
 import io.reactivex.Single
-import javax.inject.Inject
-import javax.inject.Named
 import timber.log.Timber
+import javax.inject.Inject
 
 
 class CategoryEditHelper @Inject constructor(
     private val notificationHelper: NotificationHelper,
-    @Named("commons-page-edit") val pageEditClient: PageEditClient,
+    @CommonsPageEdit val pageEditClient: PageEditClient,
     private val viewUtil: ViewUtilWrapper,
-    @Named("username") private val username: String
+    @LoggedInUsername private val username: String
 ) {
 
     /**

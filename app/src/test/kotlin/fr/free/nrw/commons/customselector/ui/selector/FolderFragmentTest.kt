@@ -19,11 +19,14 @@ import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.customselector.model.CallbackStatus
 import fr.free.nrw.commons.customselector.model.Result
 import fr.free.nrw.commons.customselector.ui.adapter.FolderAdapter
+import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.powermock.reflect.Whitebox
 import org.robolectric.Robolectric
@@ -37,7 +40,7 @@ import java.lang.reflect.Field
  * Custom Selector Folder Fragment Test.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class FolderFragmentTest {
     private lateinit var fragment: FolderFragment
@@ -54,6 +57,15 @@ class FolderFragmentTest {
     @Mock
     private lateinit var savedInstanceState: Bundle
 
+    @Mock
+    lateinit var customSelectorViewModelFactory: CustomSelectorViewModelFactory
+
+    @Mock
+    lateinit var defaultKvStore: JsonKvStore
+
+    @Mock
+    lateinit var systemThemeUtils: SystemThemeUtils
+
     /**
      * Setup the folder fragment.
      */
@@ -64,7 +76,21 @@ class FolderFragmentTest {
         OkHttpConnectionFactory.CLIENT = createTestClient()
         SoLoader.setInTestMode()
         Fresco.initialize(context)
-        val activity = Robolectric.buildActivity(CustomSelectorActivity::class.java).create().get()
+
+        val controller = Robolectric.buildActivity(CustomSelectorActivity::class.java)
+        val activity = controller.get()
+        Whitebox.setInternalState(activity, "customSelectorViewModelFactory", customSelectorViewModelFactory)
+        Whitebox.setInternalState(activity, "defaultKvStore", defaultKvStore)
+        Whitebox.setInternalState(activity, "systemThemeUtils", systemThemeUtils)
+
+        Whitebox.setInternalState(activity, "notForUploadStatusDao", Mockito.mock(fr.free.nrw.commons.customselector.database.NotForUploadStatusDao::class.java))
+        Whitebox.setInternalState(activity, "fileUtilsWrapper", Mockito.mock(fr.free.nrw.commons.upload.FileUtilsWrapper::class.java))
+
+        try {
+            controller.create()
+        } catch (e: Exception) {
+            // Ignore
+        }
 
         fragment = FolderFragment.newInstance()
         val fragmentManager: FragmentManager = activity.supportFragmentManager

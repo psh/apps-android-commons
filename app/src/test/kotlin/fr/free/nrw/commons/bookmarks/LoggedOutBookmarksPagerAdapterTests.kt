@@ -17,7 +17,7 @@ import org.robolectric.annotation.LooperMode
  * BookmarksPagerAdapter when user is not loggedIn.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [21], application = TestCommonsApplication::class)
+@Config(sdk = [23], application = TestCommonsApplication::class)
 @LooperMode(LooperMode.Mode.PAUSED)
 class LoggedOutBookmarksPagerAdapterTests {
     @Mock

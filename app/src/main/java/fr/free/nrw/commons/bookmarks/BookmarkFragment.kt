@@ -8,10 +8,10 @@ import fr.free.nrw.commons.contributions.ContributionController
 import fr.free.nrw.commons.contributions.MainActivity
 import fr.free.nrw.commons.databinding.FragmentBookmarksBinding
 import fr.free.nrw.commons.di.CommonsDaggerSupportFragment
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.theme.BaseActivity
 import javax.inject.Inject
-import javax.inject.Named
 
 class BookmarkFragment : CommonsDaggerSupportFragment() {
     private var adapter: BookmarksPagerAdapter? = null
@@ -28,7 +28,7 @@ class BookmarkFragment : CommonsDaggerSupportFragment() {
      */
     @JvmField
     @Inject
-    @Named("default_preferences")
+    @DefaultKvStore
     var applicationKvStore: JsonKvStore? = null
 
     fun setScroll(canScroll: Boolean) {

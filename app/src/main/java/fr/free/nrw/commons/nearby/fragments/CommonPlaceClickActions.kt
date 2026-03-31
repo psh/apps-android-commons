@@ -12,6 +12,7 @@ import androidx.appcompat.widget.PopupMenu
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.LoginActivity
 import fr.free.nrw.commons.contributions.ContributionController
+import fr.free.nrw.commons.di.DefaultKvStore
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.nearby.Place
 import fr.free.nrw.commons.utils.ActivityUtils
@@ -20,12 +21,11 @@ import fr.free.nrw.commons.utils.handleWebUrl
 import fr.free.nrw.commons.wikidata.WikidataConstants
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 class CommonPlaceClickActions
     @Inject
     constructor(
-        @Named("default_preferences") private val applicationKvStore: JsonKvStore,
+        @DefaultKvStore private val applicationKvStore: JsonKvStore,
         private val activity: Activity,
         private val contributionController: ContributionController,
     ) {
