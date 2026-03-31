@@ -2,7 +2,6 @@ package fr.free.nrw.commons.profile.achievements
 
 import android.accounts.Account
 import android.content.Context
-import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.MenuItem

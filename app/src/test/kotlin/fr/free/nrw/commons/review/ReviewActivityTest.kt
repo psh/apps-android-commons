@@ -12,9 +12,9 @@ import fr.free.nrw.commons.Media
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.databinding.ActivityReviewBinding
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.utils.SystemThemeUtils
-import fr.free.nrw.commons.databinding.ActivityReviewBinding
 import io.reactivex.Single
 import org.junit.Assert
 import org.junit.Before

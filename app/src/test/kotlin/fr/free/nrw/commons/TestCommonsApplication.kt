@@ -1,6 +1,5 @@
 package fr.free.nrw.commons
 
-import android.app.Application
 import android.content.Context
 
 class TestCommonsApplication : CommonsApplication() {

@@ -1,9 +1,9 @@
 package fr.free.nrw.commons.category
 
 import android.content.Context
+import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication

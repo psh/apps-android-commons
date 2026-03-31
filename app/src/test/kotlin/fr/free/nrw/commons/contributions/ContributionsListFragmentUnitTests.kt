@@ -2,7 +2,6 @@ package fr.free.nrw.commons.contributions
 
 import android.content.res.Configuration
 import android.os.Looper
-import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.free.nrw.commons.Media

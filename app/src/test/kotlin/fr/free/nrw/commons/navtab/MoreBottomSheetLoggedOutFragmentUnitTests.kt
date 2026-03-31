@@ -1,9 +1,7 @@
 package fr.free.nrw.commons.navtab
 
 import android.os.Looper
-import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.launchFragmentInHiltContainer
 import org.junit.Before

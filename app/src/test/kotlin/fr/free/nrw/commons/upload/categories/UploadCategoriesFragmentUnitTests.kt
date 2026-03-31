@@ -12,9 +12,9 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.databinding.UploadCategoriesFragmentBinding
+import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.upload.UploadActivity
 import fr.free.nrw.commons.upload.UploadBaseFragment
-import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.utils.SystemThemeUtils
 import io.reactivex.disposables.Disposable
 import org.junit.Assert

@@ -18,9 +18,9 @@ import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.createTestClient
+import fr.free.nrw.commons.databinding.FragmentReviewImageBinding
 import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.utils.SystemThemeUtils
-import fr.free.nrw.commons.databinding.FragmentReviewImageBinding
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

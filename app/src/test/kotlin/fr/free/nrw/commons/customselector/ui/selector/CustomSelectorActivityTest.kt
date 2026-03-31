@@ -3,11 +3,7 @@ package fr.free.nrw.commons.customselector.ui.selector
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import androidx.activity.result.ActivityResult
-import fr.free.nrw.commons.databinding.ActivityCustomSelectorBinding
-import fr.free.nrw.commons.databinding.CustomSelectorBottomLayoutBinding
-import fr.free.nrw.commons.databinding.CustomSelectorToolbarBinding
 import fr.free.nrw.commons.OkHttpConnectionFactory
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.contributions.ContributionDao
@@ -15,9 +11,12 @@ import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.customselector.database.NotForUploadStatusDao
 import fr.free.nrw.commons.customselector.model.Image
 import fr.free.nrw.commons.customselector.ui.adapter.ImageAdapter
+import fr.free.nrw.commons.databinding.ActivityCustomSelectorBinding
+import fr.free.nrw.commons.databinding.CustomSelectorBottomLayoutBinding
+import fr.free.nrw.commons.databinding.CustomSelectorToolbarBinding
 import fr.free.nrw.commons.kvstore.JsonKvStore
-import fr.free.nrw.commons.utils.SystemThemeUtils
 import fr.free.nrw.commons.upload.FileUtilsWrapper
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals

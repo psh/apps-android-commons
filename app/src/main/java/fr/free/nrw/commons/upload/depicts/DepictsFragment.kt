@@ -24,8 +24,8 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.auth.SessionManager
 import fr.free.nrw.commons.contributions.ContributionsFragment
 import fr.free.nrw.commons.databinding.UploadDepictsFragmentBinding
-import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.di.DefaultKvStore
+import fr.free.nrw.commons.kvstore.JsonKvStore
 import fr.free.nrw.commons.location.LatLng
 import fr.free.nrw.commons.location.LocationServiceManager
 import fr.free.nrw.commons.media.MediaDetailFragment

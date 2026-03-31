@@ -15,9 +15,9 @@ import fr.free.nrw.commons.R
 import fr.free.nrw.commons.TestCommonsApplication
 import fr.free.nrw.commons.auth.login.LoginClient
 import fr.free.nrw.commons.auth.login.LoginResult
-import fr.free.nrw.commons.utils.SystemThemeUtils
 import fr.free.nrw.commons.createTestClient
 import fr.free.nrw.commons.kvstore.JsonKvStore
+import fr.free.nrw.commons.utils.SystemThemeUtils
 import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Before
